@@ -4,32 +4,22 @@
  * Layout:
  *
  *   Header   : marca + modos (conductor/almacen/supervisor) + estado API
- *   Center   : RoutePanel | TruckLoadView (3D pseudo + drawer) | CopilotChat
- *   Footer   : alertas operativas | comparativa antes/despues
+ *   Center   : izquierda Comandas + Copilot | derecha solo camion 3D
+ *   Below    : RoutePanel + WarningsPanel + StrategyComparator
  *
- * Es deliberadamente simple, prioriza demostrar que cada modulo del backend
- * funciona y que la UI se integra con todos:
- *
- *   - optimizer-route: el RoutePlan se importa y se renderiza tal cual.
- *   - optimizer-load:  optimizeLoad() en el cliente y, opcionalmente, via
- *                      POST /api/optimize-load (ver lib/copilotClient).
- *   - copilot:         POST /api/copilot (con fallback al motor in-browser).
- *   - elevenlabs:      POST /api/voice/query si la API esta disponible.
- *   - speech api:      input por voz con Web Speech API (Chrome/Edge).
- *
- * Modos de UI:
- *
- *   - "driver"     : panel chat extendido, simulacion de descarga grande.
- *   - "warehouse"  : foco en alertas de carga (apilado, accesibilidad).
- *   - "supervisor" : KPIs + comparativa antes/despues.
+ * El nucleo del demo es la herramienta del conductor: la `TruckStage`
+ * con sus 8 palets en 3D, el highlight de la entrega activa, los popups
+ * de detalle y el "vaciado" del camion conforme se entregan paradas.
  */
 import { useEffect, useMemo, useState } from "react";
 import type { CopilotResponse } from "@damm/copilot";
-import { TruckLoadView } from "../components/truck/TruckLoadView";
 import { RoutePanel } from "./RoutePanel";
 import { CopilotChat } from "./CopilotChat";
 import { WarningsPanel } from "./WarningsPanel";
 import { StrategyComparator } from "./StrategyComparator";
+import { TruckStage } from "./truck3d/TruckStage";
+import { DeliveryQueue } from "./truck3d/DeliveryQueue";
+import type { ViewMode } from "./truck3d/TruckView3D";
 import { buildHybrid, buildTraditional } from "../lib/pipeline";
 import { checkApiHealth } from "../lib/copilotClient";
 import styles from "./Dashboard.module.css";
@@ -51,6 +41,11 @@ export function Dashboard() {
   const [currentStopId, setCurrentStopId] = useState<string>(
     hybrid.routePlan.stops[0]?.stopId ?? "",
   );
+  const [deliveredStopIds, setDeliveredStopIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [truckViewMode, setTruckViewMode] = useState<ViewMode>("general");
 
   useEffect(() => {
     void checkApiHealth().then(setApiUp);
@@ -64,6 +59,28 @@ export function Dashboard() {
     if (action.type === "highlight_stop") {
       setCurrentStopId(action.stopId);
     }
+    if (action.type === "highlight_truck_slot") {
+      setSelectedSlotId(action.slotId);
+    }
+  }
+
+  function handleConfirmDelivery(stopId: string) {
+    // Marcar la parada como entregada y avanzar a la siguiente.
+    setDeliveredStopIds((prev) => {
+      const next = new Set(prev);
+      next.add(stopId);
+      return next;
+    });
+    const sortedStops = [...hybrid.routePlan.stops].sort(
+      (a, b) => a.sequence - b.sequence,
+    );
+    const idx = sortedStops.findIndex((s) => s.stopId === stopId);
+    const nextStop = sortedStops
+      .slice(idx + 1)
+      .find((s) => !deliveredStopIds.has(s.stopId));
+    if (nextStop) {
+      setCurrentStopId(nextStop.stopId);
+    }
   }
 
   return (
@@ -75,7 +92,9 @@ export function Dashboard() {
             <h1>Damm Smart Truck Copilot</h1>
             <p>
               Reparto DR0027 · {hybrid.inputData.driver?.name ?? "(sin conductor)"} ·
-              vehiculo {hybrid.inputData.vehicle.id}
+              vehiculo {hybrid.inputData.vehicle.id} ·
+              {" "}
+              {deliveredStopIds.size}/{hybrid.routePlan.stops.length} entregadas
             </p>
           </div>
         </div>
@@ -121,34 +140,51 @@ export function Dashboard() {
         </div>
       </header>
 
-      <section className={styles.main}>
+      <section className={styles.mainTruck}>
+        <div className={styles.driverLeft}>
+          <DeliveryQueue
+            routePlan={hybrid.routePlan}
+            inputData={hybrid.inputData}
+            loadPlan={hybrid.loadPlan}
+            currentStopId={currentStopId}
+            deliveredStopIds={deliveredStopIds}
+            compact
+            onSelectStop={(stopId) => {
+              setCurrentStopId(stopId);
+              if (truckViewMode === "general") setTruckViewMode("next-stop");
+            }}
+            onConfirmDelivery={handleConfirmDelivery}
+          />
+          <CopilotChat
+            className={styles.copilotSidebar}
+            currentStopId={currentStopId}
+            routePlan={hybrid.routePlan}
+            loadPlan={hybrid.loadPlan}
+            inputData={hybrid.inputData}
+            onAction={handleCopilotAction}
+          />
+        </div>
+
+        <div className={styles.truckMainColumn}>
+          <TruckStage
+            loadPlan={hybrid.loadPlan}
+            currentStopId={currentStopId}
+            deliveredStopIds={deliveredStopIds}
+            selectedSlotId={selectedSlotId}
+            viewMode={truckViewMode}
+            onSelectSlot={setSelectedSlotId}
+            onChangeMode={setTruckViewMode}
+          />
+        </div>
+      </section>
+
+      <section className={styles.mainBelow}>
         <RoutePanel
           routePlan={hybrid.routePlan}
           inputData={hybrid.inputData}
           currentStopId={currentStopId}
           onSelectStop={setCurrentStopId}
         />
-
-        <div className={styles.truckPanel}>
-          <div className={styles.truckPanelInner}>
-            <TruckLoadView
-              loadPlan={hybrid.loadPlan}
-              highlightedStopId={currentStopId}
-              title="Vista de camion"
-            />
-          </div>
-        </div>
-
-        <CopilotChat
-          currentStopId={currentStopId}
-          routePlan={hybrid.routePlan}
-          loadPlan={hybrid.loadPlan}
-          inputData={hybrid.inputData}
-          onAction={handleCopilotAction}
-        />
-      </section>
-
-      <section className={styles.footerGrid}>
         <WarningsPanel warnings={filterByMode(mode, hybrid.loadPlan.warnings)} />
         <StrategyComparator
           hybrid={hybrid.loadPlan}

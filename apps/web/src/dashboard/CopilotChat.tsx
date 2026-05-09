@@ -26,6 +26,7 @@ type ChatMessage = {
 };
 
 interface CopilotChatProps {
+  className?: string;
   currentStopId: string;
   routePlan: RoutePlan;
   loadPlan: LoadPlan;
@@ -41,6 +42,7 @@ const SAMPLE_QUESTIONS = [
 ];
 
 export function CopilotChat({
+  className,
   currentStopId,
   routePlan,
   loadPlan,
@@ -157,7 +159,7 @@ export function CopilotChat({
   }
 
   return (
-    <div className={styles.panel}>
+    <div className={[styles.panel, className].filter(Boolean).join(" ")}>
       <div className={styles.panelHeader}>
         <h3>Copiloto IA</h3>
         <span>{voiceOn ? "voz: ON" : "voz: OFF"}</span>

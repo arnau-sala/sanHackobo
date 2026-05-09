@@ -3,6 +3,10 @@
    estados visuales claros para la demo. */
 
 .shell {
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   --damm-red: #e10600;
   --damm-red-dark: #b00500;
   --damm-cream: #f6f1e7;
@@ -153,6 +157,87 @@
   }
 }
 
+/*
+ * Conductor: izquierda comandas + copiloto | derecha solo camion 3D (ancho fluido).
+ */
+.mainTruck {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.driverLeft {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  align-self: stretch;
+}
+
+.truckMainColumn {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+@media (max-width: 1280px) {
+  .mainTruck {
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .mainTruck {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .truckMainColumn {
+    order: -1;
+    min-height: min(520px, 58vh);
+  }
+  .driverLeft {
+    max-height: none;
+    overflow-y: visible;
+  }
+  .panel.copilotSidebar {
+    max-height: 420px;
+  }
+}
+
+/* Below: route + warnings + comparator */
+.mainBelow {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 1280px) {
+  .mainBelow {
+    grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .mainBelow {
+    grid-template-columns: 1fr;
+  }
+}
+
 .panel {
   background: var(--bg-2);
   border: 1px solid var(--border);
@@ -161,6 +246,14 @@
   flex-direction: column;
   min-height: 0;
   max-height: calc(100vh - 220px);
+}
+
+/* Copiloto en columna izquierda: no compite con el max-height generico del panel */
+.panel.copilotSidebar {
+  flex: 1 1 auto;
+  min-height: 200px;
+  max-height: min(42vh, 440px);
+  min-width: 0;
 }
 
 .panelHeader {
