@@ -125,7 +125,7 @@ export function TruckStage(props: TruckStageProps) {
             </div>
           </div>
 
-          <div className={styles.truckDetailSplit}>
+          <div className={styles.truckDetailSplit} data-has-detail={selectedSlot != null}>
             <div className={styles.truckSvgZone}>
               <div className={styles.svgWrap}>
                 <TruckView3D

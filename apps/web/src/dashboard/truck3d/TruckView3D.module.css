@@ -2,9 +2,11 @@
 
    Convenio: el SVG vive en su propio "stage" (tarjeta blanca con header
    rojo y strip P1..P8 debajo) y siempre adapta su ancho al contenedor
-   sin generar scroll horizontal. */
+   sin generar scroll horizontal.
 
-/* Raiz del panel del camion (columna derecha del dashboard). */
+   TABLET MODE: maximiza el camión para que llene toda la zona central. */
+
+/* Raiz del panel del camion (columna central del dashboard). */
 .truckOnlyRoot {
   width: 100%;
   height: 100%;
@@ -14,6 +16,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .truckColumn {
@@ -25,6 +28,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 /* ------------------------- Stage card ------------------------- */
@@ -33,7 +37,7 @@
   position: relative;
   background: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -41,10 +45,10 @@
   min-width: 0;
   max-width: 100%;
   width: 100%;
-  padding: 14px 14px 8px;
+  padding: 4px 6px 4px;
   color: #0f172a;
   box-sizing: border-box;
-  overflow-x: clip;
+  overflow: hidden;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
@@ -52,22 +56,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 4px;
   flex-wrap: wrap;
   min-width: 0;
+  flex-shrink: 0;
 }
 
 .stageHeaderText {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
 .stageBadge {
   width: 3px;
-  height: 18px;
+  height: 16px;
   background: #cc1122;
   border-radius: 2px;
   flex-shrink: 0;
@@ -75,7 +80,7 @@
 
 .stageHeaderText h3 {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 1px;
   text-transform: uppercase;
   font-weight: 800;
@@ -83,11 +88,11 @@
 }
 
 .stagePill {
-  font-size: 11px;
+  font-size: 10px;
   background: #f3f4f6;
   color: #4b5563;
-  border-radius: 6px;
-  padding: 1px 8px;
+  border-radius: 5px;
+  padding: 1px 6px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -95,27 +100,27 @@
 .stageHints {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .stageHint {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: #fffbeb;
   border: 1px solid #fef3c7;
   color: #92400e;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 8px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 6px;
 }
 
 .modeTabs {
   display: inline-flex;
   background: #0f172a;
-  padding: 3px;
-  border-radius: 10px;
+  padding: 2px;
+  border-radius: 8px;
   gap: 2px;
 }
 
@@ -123,9 +128,9 @@
   background: transparent;
   border: 0;
   color: #cbd5e1;
-  font-size: 11px;
-  padding: 5px 10px;
-  border-radius: 8px;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
 }
@@ -136,48 +141,55 @@
   font-weight: 700;
 }
 
-/* Fila: camion (SVG) a la izquierda, panel de detalle a la derecha.
-   El ancho del camion es SIEMPRE el mismo: se reserva hueco para la columna
-   aunque no este visible, asi el SVG no salta de tamaño al abrir/cerrar. */
+/* ---- Truck SVG + optional detail panel side-by-side ---- */
+
 .truckDetailSplit {
-  --truck-detail-gap: 12px;
-  /* Misma logica que .palletDetailColumn: ancho reservado para el panel */
-  --detail-col-w: max(180px, min(220px, 34vw));
+  --truck-detail-gap: 6px;
+  --detail-col-w: max(160px, min(200px, 24vw));
   display: flex;
   flex-direction: row;
   align-items: stretch;
   justify-content: flex-start;
   gap: var(--truck-detail-gap);
   flex: 1 1 auto;
-  min-height: 220px;
+  min-height: 0;
   min-width: 0;
   width: 100%;
-  margin: 4px 0 8px;
+  margin: 0;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
+/* KEY: when no detail panel is shown, the SVG takes ALL the width */
 .truckSvgZone {
-  /* Ancho fijo = stage menos hueco del panel (aunque el aside no exista) */
-  flex: 0 0 auto;
-  width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
-  max-width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
-  min-height: 220px;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-self: stretch;
 }
 
+/* When a detail panel IS shown, shrink the SVG zone to make room */
+.truckDetailSplit[data-has-detail="true"] .truckSvgZone {
+  flex: 0 0 auto;
+  width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  max-width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+}
+
 .palletDetailColumn {
   flex: 0 0 var(--detail-col-w);
   width: var(--detail-col-w);
-  max-width: 240px;
-  min-width: 180px;
+  max-width: 200px;
+  min-width: 140px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 4px;
+  padding-top: 2px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 @media (max-width: 720px) {
@@ -215,14 +227,14 @@
   min-width: 0;
   max-height: 100%;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid #f3f4f6;
-  padding: 4px;
+  padding: 0;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-/* Llena el wrap; viewBox + preserveAspectRatio="xMidYMid meet" escala al maximo dentro del rectangulo */
+/* SVG fills the wrap fully */
 .svg {
   display: block;
   width: 100%;
@@ -233,7 +245,7 @@
   overflow: visible;
 }
 
-/* ------------------------- Summary row ------------------------- */
+/* ------------------------- Summary row (compact) -------------- */
 
 .summaryRow {
   display: grid;
@@ -298,12 +310,12 @@
 
 .summarySlot {
   color: var(--summary-slot-color, #d4a020);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 }
 
 .summaryCount {
-  font-size: 10px;
+  font-size: 11px;
   color: #111827;
   font-weight: 700;
   white-space: nowrap;
@@ -312,7 +324,7 @@
 }
 
 .summaryBar {
-  margin-top: 6px;
+  margin-top: 5px;
   height: 4px;
   border-radius: 3px;
   background: #1a253522;
@@ -326,8 +338,8 @@
 }
 
 .summaryMeta {
-  margin-top: 4px;
-  font-size: 9px;
+  margin-top: 3px;
+  font-size: 10px;
   color: #4b5563;
   line-height: 1.3;
 }
@@ -335,66 +347,69 @@
 .summaryMeta strong {
   display: block;
   color: #111827;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
 }
 
-/* ------------------------- Delivery queue ------------------------- */
+/* ========================= Delivery queue (compact) ========================= */
 
 .queue {
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  min-height: 440px;
-  max-height: 600px;
+  min-height: 0;
+  max-height: none;
   min-width: 0;
   max-width: 100%;
   color: #0f172a;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .queueCompact {
-  min-height: 160px;
-  max-height: min(38vh, 360px);
-  flex-shrink: 0;
+  min-height: 0;
+  max-height: none;
+  flex: 1 1 auto;
 }
 
 .queueHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  padding: 8px 10px;
   border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
 }
 
 .queueHeader h3 {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   letter-spacing: 0.3px;
   color: #0f172a;
 }
 
 .queueHeader span {
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
 }
 
 .queueList {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  min-height: 0;
 }
 
 .queueCard {
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: 8px;
+  padding: 6px 8px;
   cursor: pointer;
   transition: border-color 120ms, box-shadow 120ms;
 }
@@ -409,7 +424,7 @@
 }
 
 .queueCard[data-done="true"] {
-  opacity: 0.55;
+  opacity: 0.5;
   filter: grayscale(0.5);
 }
 
@@ -417,101 +432,101 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
 }
 
 .queueCardHead strong {
   display: block;
-  font-size: 14px;
+  font-size: 12px;
   color: #0f172a;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .queueCardHead small {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .queueParada {
   display: inline-block;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   color: #cc1122;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .queueCardMeta {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 2px;
 }
 
 .queueEta {
-  font-size: 12px;
+  font-size: 11px;
   color: #f59e0b;
   font-weight: 700;
 }
 
 .queueDone {
-  font-size: 10px;
+  font-size: 9px;
   color: #16a34a;
   font-weight: 700;
 }
 
 .queueLabel {
-  margin-top: 10px;
-  font-size: 10px;
+  margin-top: 6px;
+  font-size: 9px;
   color: #64748b;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
   text-transform: uppercase;
   font-weight: 600;
 }
 
 .queueItems {
   list-style: none;
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .queueItems li {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11px;
   color: #0f172a;
 }
 
 .queueItems li i {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   flex-shrink: 0;
 }
 
 .queueMore {
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
   font-style: italic;
 }
 
 .queueFoot {
-  margin-top: 10px;
+  margin-top: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .queueLoc {
-  font-size: 11px;
+  font-size: 10px;
   color: #64748b;
   display: flex;
-  gap: 4px;
+  gap: 3px;
   align-items: center;
 }
 
@@ -519,10 +534,10 @@
   display: inline-block;
   background: #dbeafe;
   color: #1d4ed8;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 5px;
+  padding: 1px 5px;
+  border-radius: 4px;
   font-style: normal;
 }
 
@@ -530,9 +545,9 @@
   background: #cc1122;
   color: #fff;
   border: 0;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 12px;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
   font-weight: 700;
   cursor: pointer;
 }

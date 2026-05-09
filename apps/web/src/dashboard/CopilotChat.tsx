@@ -1,15 +1,13 @@
 /**
- * Chat con el copiloto del conductor.
+ * Copiloto IA — MODO CONDUCCION (solo voz).
  *
- *   - Texto: usa POST /api/copilot (con fallback al motor in-browser).
- *   - Voz salida: POST /api/voice/query devuelve audio TTS de ElevenLabs.
- *   - Voz entrada: SpeechRecognition del navegador (Chrome/Edge).
- *
- * Sample questions estan disenadas para activar cada categoria del motor:
- *   - "donde / descargar / mercancia" -> `answerUnloadQuestion`
- *   - "por que / primero"             -> `answerReasoningQuestion`
- *   - "retornable / recoger"          -> `answerReturnablesQuestion`
- *   - "cambio + numeros"              -> `answerSwapQuestion`
+ * El conductor está conduciendo y NO puede mirar la pantalla ni escribir.
+ * Diseño:
+ *   - Botón de micrófono GRANDE y siempre visible
+ *   - Las respuestas del bot se reproducen automáticamente por voz (TTS)
+ *   - Chips de preguntas rápidas GRANDES para tocar sin mirar
+ *   - El historial de chat se muestra pero el conductor no necesita leerlo
+ *   - Indicador visual de estado (escuchando / pensando / hablando)
  */
 import { useEffect, useRef, useState } from "react";
 import type { InputData, LoadPlan, RoutePlan } from "@damm/optimizer-load";
@@ -25,6 +23,8 @@ type ChatMessage = {
   actions?: CopilotResponse["actions"];
 };
 
+type CopilotState = "idle" | "listening" | "thinking" | "speaking";
+
 interface CopilotChatProps {
   className?: string;
   currentStopId: string;
@@ -34,11 +34,11 @@ interface CopilotChatProps {
   onAction?: (action: CopilotResponse["actions"][number]) => void;
 }
 
-const SAMPLE_QUESTIONS = [
-  "Donde tengo que descargar?",
-  "Por que vamos primero aqui?",
-  "Que retornables recogemos?",
-  "Cambio la parada 4 por la 9?",
+const QUICK_ACTIONS = [
+  { emoji: "📦", label: "¿Qué descargo?", question: "Donde tengo que descargar?" },
+  { emoji: "🔄", label: "Retornables", question: "Que retornables recogemos?" },
+  { emoji: "❓", label: "¿Por qué aquí?", question: "Por que vamos primero aqui?" },
+  { emoji: "🔀", label: "Cambiar orden", question: "Cambio la parada 4 por la 9?" },
 ];
 
 export function CopilotChat({
@@ -53,16 +53,10 @@ export function CopilotChat({
     {
       id: "intro",
       role: "bot",
-      text:
-        "Hola, soy el copiloto. Pregunta por la descarga, la ruta, retornables o " +
-        "simulaciones. Selecciona una parada en la izquierda para que las " +
-        "respuestas tengan contexto.",
+      text: "Copiloto listo. Pulsa el micrófono o una acción rápida.",
     },
   ]);
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [voiceOn, setVoiceOn] = useState(false);
-  const [listening, setListening] = useState(false);
+  const [copilotState, setCopilotState] = useState<CopilotState>("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const bodyRef = useRef<HTMLDivElement | null>(null);
@@ -76,9 +70,8 @@ export function CopilotChat({
 
   async function send(question: string) {
     const trimmed = question.trim();
-    if (!trimmed || busy) return;
-    setText("");
-    setBusy(true);
+    if (!trimmed || copilotState !== "idle") return;
+    setCopilotState("thinking");
     setMessages((prev) => [
       ...prev,
       { id: `u-${Date.now()}`, role: "user", text: trimmed },
@@ -93,7 +86,7 @@ export function CopilotChat({
           loadPlan,
           inputData,
         },
-        { withVoice: voiceOn },
+        { withVoice: true },
       );
 
       setMessages((prev) => [
@@ -108,12 +101,18 @@ export function CopilotChat({
       ]);
       result.response.actions?.forEach((a) => onAction?.(a));
 
+      // Auto-play voice response
       if (result.ttsAudioBase64 && result.ttsMimeType) {
+        setCopilotState("speaking");
         const audio = new Audio(
           `data:${result.ttsMimeType};base64,${result.ttsAudioBase64}`,
         );
         audioRef.current = audio;
-        await audio.play().catch(() => undefined);
+        audio.onended = () => setCopilotState("idle");
+        audio.onerror = () => setCopilotState("idle");
+        await audio.play().catch(() => setCopilotState("idle"));
+      } else {
+        setCopilotState("idle");
       }
     } catch (err) {
       setMessages((prev) => [
@@ -121,19 +120,16 @@ export function CopilotChat({
         {
           id: `e-${Date.now()}`,
           role: "bot",
-          text: `Fallo al consultar al copiloto: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
+          text: `Error: ${err instanceof Error ? err.message : String(err)}`,
         },
       ]);
-    } finally {
-      setBusy(false);
+      setCopilotState("idle");
     }
   }
 
   function startListening() {
-    const SR =
-      window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (copilotState !== "idle") return;
+    const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!SR) {
       alert("Tu navegador no soporta SpeechRecognition (usa Chrome o Edge).");
       return;
@@ -146,27 +142,50 @@ export function CopilotChat({
       const transcript = event.results[0]?.[0]?.transcript ?? "";
       if (transcript) void send(transcript);
     };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
+    rec.onend = () => {
+      if (copilotState === "listening") setCopilotState("idle");
+    };
+    rec.onerror = () => setCopilotState("idle");
     rec.start();
     recognitionRef.current = rec;
-    setListening(true);
+    setCopilotState("listening");
   }
 
   function stopListening() {
     recognitionRef.current?.stop();
-    setListening(false);
+    setCopilotState("idle");
   }
+
+  function handleMicClick() {
+    if (copilotState === "listening") {
+      stopListening();
+    } else if (copilotState === "idle") {
+      startListening();
+    }
+    // If thinking or speaking, ignore click
+  }
+
+  const stateConfig: Record<CopilotState, { icon: string; label: string; color: string }> = {
+    idle: { icon: "🎤", label: "Pulsa para hablar", color: "var(--text-3)" },
+    listening: { icon: "●", label: "Escuchando...", color: "var(--damm-red)" },
+    thinking: { icon: "⏳", label: "Pensando...", color: "var(--warn)" },
+    speaking: { icon: "🔊", label: "Respondiendo...", color: "var(--ok)" },
+  };
+
+  const state = stateConfig[copilotState];
 
   return (
     <div className={[styles.panel, className].filter(Boolean).join(" ")}>
       <div className={styles.panelHeader}>
-        <h3>Copiloto IA</h3>
-        <span>{voiceOn ? "voz: ON" : "voz: OFF"}</span>
+        <h3>🤖 Copiloto IA</h3>
+        <span style={{ color: state.color, fontWeight: 600 }}>
+          {state.label}
+        </span>
       </div>
 
+      {/* Minimal chat history — driver doesn't need to read this */}
       <div className={styles.chatBody} ref={bodyRef}>
-        {messages.map((m) => (
+        {messages.slice(-3).map((m) => (
           <div
             key={m.id}
             className={`${styles.bubble} ${
@@ -174,11 +193,6 @@ export function CopilotChat({
             }`}
           >
             {m.text}
-            {m.role === "bot" && m.source && (
-              <div className={styles.bubbleMeta}>
-                fuente: {m.source === "api" ? "/api/copilot" : "in-browser"}
-              </div>
-            )}
             {m.actions && m.actions.length > 0 && (
               <div className={styles.bubbleActions}>
                 {m.actions.map((a, i) => (
@@ -190,67 +204,48 @@ export function CopilotChat({
             )}
           </div>
         ))}
-        {busy && (
+        {copilotState === "thinking" && (
           <div className={`${styles.bubble} ${styles.bubbleBot}`}>
             <em>pensando…</em>
           </div>
         )}
       </div>
 
+      {/* Quick action chips — large touch targets */}
       <div className={styles.suggestRow}>
-        {SAMPLE_QUESTIONS.map((q) => (
+        {QUICK_ACTIONS.map((qa) => (
           <button
-            key={q}
+            key={qa.question}
             type="button"
             className={styles.suggestChip}
-            onClick={() => void send(q)}
-            disabled={busy}
+            onClick={() => void send(qa.question)}
+            disabled={copilotState !== "idle"}
+            title={qa.question}
           >
-            {q}
+            {qa.emoji} {qa.label}
           </button>
         ))}
       </div>
 
-      <div className={styles.voiceRow}>
-        <label>
-          <input
-            type="checkbox"
-            checked={voiceOn}
-            onChange={(e) => setVoiceOn(e.target.checked)}
-          />{" "}
-          TTS ElevenLabs
-        </label>
-        <span>·</span>
-        <span>
-          Stop activo: <strong>{currentStopId}</strong>
-        </span>
-      </div>
-
-      <div className={styles.composer}>
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Escribe tu pregunta…"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") void send(text);
-          }}
-          disabled={busy}
-        />
+      {/* BIG mic button — main interaction */}
+      <div className={styles.voiceComposer}>
         <button
           type="button"
-          className={styles.btnSecondary}
-          onClick={listening ? stopListening : startListening}
-          title="Hablar"
+          className={styles.voiceBtnLarge}
+          data-listening={copilotState === "listening"}
+          data-state={copilotState}
+          onClick={handleMicClick}
+          disabled={copilotState === "thinking" || copilotState === "speaking"}
+          title={state.label}
+          style={
+            copilotState === "speaking"
+              ? { borderColor: "var(--ok)", background: "rgba(34,197,94,0.15)" }
+              : copilotState === "thinking"
+                ? { borderColor: "var(--warn)", background: "rgba(245,158,11,0.1)" }
+                : undefined
+          }
         >
-          {listening ? "■" : "●"}
-        </button>
-        <button
-          type="button"
-          className={styles.btnPrimary}
-          onClick={() => void send(text)}
-          disabled={busy || !text.trim()}
-        >
-          Enviar
+          {state.icon}
         </button>
       </div>
     </div>

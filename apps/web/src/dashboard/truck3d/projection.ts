@@ -19,9 +19,9 @@
 const COS30 = Math.cos(Math.PI / 6); // ≈ 0.8660
 const SIN30 = 0.5;
 
-export const SCALE = 17;
-export const OX = 370;
-export const OY = 158;
+export const SCALE = 24;
+export const OX = 342;
+export const OY = 150;
 
 export type World = { x: number; y: number; z: number };
 export type Screen = { x: number; y: number };

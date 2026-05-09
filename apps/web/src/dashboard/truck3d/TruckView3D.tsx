@@ -30,8 +30,8 @@ import styles from "./TruckView3D.module.css";
 
 export type ViewMode = "general" | "next-stop";
 
-const VIEWBOX_W = 680;
-const VIEWBOX_H = 400;
+const VIEWBOX_W = 600;
+const VIEWBOX_H = 440;
 
 export type TruckView3DProps = {
   loadPlan: LoadPlan;

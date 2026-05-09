@@ -1,15 +1,11 @@
-/* Damm Smart Truck Copilot - Demo dashboard
-   Tema visual sencillo (rojo Damm + neutros), prioriza legibilidad y
-   estados visuales claros para la demo. */
+/* Damm Smart Truck Copilot - Tablet de camión
+   Diseñado para pantalla rectangular tipo tablet de coche (landscape).
+   El conductor está conduciendo: prioriza tamaño del camión y controles
+   de voz grandes. Sin scroll vertical. */
 
 .shell {
-  overflow-x: hidden;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   --damm-red: #e10600;
   --damm-red-dark: #b00500;
-  --damm-cream: #f6f1e7;
   --bg-1: #0f1115;
   --bg-2: #171b22;
   --bg-3: #1f242d;
@@ -26,62 +22,183 @@
     "Helvetica Neue", Arial, sans-serif;
   background: linear-gradient(180deg, #0a0c10 0%, #0f1115 100%);
   color: var(--text-1);
-  min-height: 100vh;
-  padding: 14px 16px 28px;
+
+  /* Tablet landscape: fill viewport exactly, no scroll */
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  padding: 6px 8px;
+  gap: 6px;
+  box-sizing: border-box;
 }
 
-/* ------------------------- Header ------------------------- */
+/* ------------------------- Header (dynamic, practical) ------------------- */
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 16px;
+  gap: 8px;
+  padding: 5px 12px;
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  min-height: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .logo {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   background: var(--damm-red);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   color: #fff;
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
 .brandText h1 {
-  font-size: 16px;
+  font-size: 13px;
   margin: 0;
 }
 
 .brandText p {
   margin: 0;
-  font-size: 12px;
+  font-size: 10px;
   color: var(--text-2);
+}
+
+/* Progress bar */
+.progressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 120px;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressLabel {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.progressPct {
+  font-size: 11px;
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.progressBar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ok), #4ade80);
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Next stop mini-banner */
+.nextStopBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: rgba(225, 6, 0, 0.08);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  border-radius: 8px;
+  animation: subtle-glow 3s ease-in-out infinite;
+}
+
+@keyframes subtle-glow {
+  0%, 100% { border-color: rgba(225, 6, 0, 0.3); }
+  50% { border-color: rgba(225, 6, 0, 0.6); }
+}
+
+.nextStopLabel {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--damm-red);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.nextStopName {
+  font-size: 12px;
+  color: var(--text-1);
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.nextStopEta {
+  font-size: 11px;
+  color: var(--warn);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Clock */
+.clockBlock {
+  display: flex;
+  align-items: center;
+}
+
+.clock {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
 }
 
 .modes {
   display: flex;
-  gap: 6px;
+  gap: 3px;
   background: var(--bg-3);
-  padding: 4px;
-  border-radius: 10px;
+  padding: 3px;
+  border-radius: 8px;
   border: 1px solid var(--border);
 }
 
@@ -89,102 +206,88 @@
   background: transparent;
   border: 0;
   color: var(--text-2);
-  padding: 6px 12px;
-  border-radius: 7px;
-  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .modeBtn[data-active="true"] {
   background: var(--damm-red);
   color: #fff;
+  box-shadow: 0 0 8px rgba(225, 6, 0, 0.3);
 }
 
 .statusGroup {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   align-items: center;
 }
 
 .statusDot {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   background: var(--bg-3);
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 3px 7px;
+  border-radius: 5px;
   border: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 9px;
   color: var(--text-2);
 }
 
 .statusDot::before {
   content: "";
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--text-3);
 }
 
 .statusDot[data-ok="true"]::before {
   background: var(--ok);
-  box-shadow: 0 0 8px var(--ok);
+  box-shadow: 0 0 5px var(--ok);
 }
 
 .statusDot[data-ok="false"]::before {
   background: var(--crit);
 }
 
-/* ------------------------- Main grid ---------------------- */
-
-.main {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 360px;
-  grid-template-rows: minmax(0, 1fr);
-  gap: 14px;
-  align-items: stretch;
-}
-
-@media (max-width: 1280px) {
-  .main {
-    grid-template-columns: 280px minmax(0, 1fr) 320px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .main {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ========================= MAIN 3-COLUMN LAYOUT ========================= */
 /*
- * Conductor: izquierda comandas + copiloto | derecha solo camion 3D (ancho fluido).
+ * [Route (narrow)] [TRUCK 3D (huge center)] [Comandas+Copilot (right)]
+ * The truck dominates. Everything fits in viewport height.
  */
+
 .mainTruck {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0, 1fr) 300px;
   grid-template-rows: minmax(0, 1fr);
-  gap: 14px;
+  gap: 6px;
   align-items: stretch;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
+  overflow: hidden;
 }
 
-.driverLeft {
+/* ---- Left: Route panel (narrow list) ---- */
+.routeLeft {
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding-right: 4px;
+  overflow: hidden;
   align-self: stretch;
 }
 
+.routeLeft > * {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+/* ---- Center: Truck 3D (biggest area) ---- */
 .truckMainColumn {
   min-width: 0;
   max-width: 100%;
@@ -192,67 +295,44 @@
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  overflow: hidden;
 }
 
-@media (max-width: 1280px) {
+/* ---- Right: Comandas + Copilot stacked ---- */
+.driverRight {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  align-self: stretch;
+}
+
+@media (max-width: 1200px) {
   .mainTruck {
-    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+    grid-template-columns: 170px minmax(0, 1fr) 260px;
   }
 }
 
-@media (max-width: 1024px) {
-  .mainTruck {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto;
-  }
-  .truckMainColumn {
-    order: -1;
-    min-height: min(520px, 58vh);
-  }
-  .driverLeft {
-    max-height: none;
-    overflow-y: visible;
-  }
-  .panel.copilotSidebar {
-    max-height: 420px;
-  }
-}
-
-/* Below: route + warnings + comparator */
-.mainBelow {
-  display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-}
-
-@media (max-width: 1280px) {
-  .mainBelow {
-    grid-template-columns: 280px minmax(0, 1fr) minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 1024px) {
-  .mainBelow {
-    grid-template-columns: 1fr;
-  }
-}
+/* ========================= PANELS ========================= */
 
 .panel {
   background: var(--bg-2);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  max-height: calc(100vh - 220px);
+  max-height: none;
+  overflow: hidden;
 }
 
-/* Copiloto en columna izquierda: no compite con el max-height generico del panel */
+/* Copiloto panel in the right column */
 .panel.copilotSidebar {
-  flex: 1 1 auto;
-  min-height: 200px;
-  max-height: min(42vh, 440px);
+  flex: 0 0 auto;
+  min-height: 0;
+  max-height: none;
   min-width: 0;
 }
 
@@ -260,8 +340,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .panelHeader h3 {
@@ -284,28 +365,28 @@
   min-height: 0;
 }
 
-/* ------------------------- Route panel ------------------- */
+/* ========================= ROUTE PANEL ========================= */
 
 .routeMeta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 4px 4px 12px;
+  gap: 6px;
+  padding: 4px 4px 10px;
 }
 
 .routeMetaCard {
   background: var(--bg-3);
   border-radius: 8px;
   border: 1px solid var(--border);
-  padding: 8px;
+  padding: 6px 8px;
 }
 
 .routeMetaCard span {
   display: block;
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
 }
 
 .routeMetaCard strong {
@@ -316,15 +397,15 @@
 .routeStops {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .routeStop {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 10px;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
   border: 1px solid transparent;
   cursor: pointer;
   background: transparent;
@@ -332,6 +413,7 @@
   text-align: left;
   width: 100%;
   font: inherit;
+  transition: all 0.2s ease;
 }
 
 .routeStop:hover {
@@ -341,36 +423,42 @@
 .routeStop[data-active="true"] {
   background: rgba(225, 6, 0, 0.12);
   border-color: var(--damm-red);
+  box-shadow: 0 0 0 1px rgba(225, 6, 0, 0.2);
+  transform: scale(1.01);
 }
 
 .routeStop[data-done="true"] {
-  opacity: 0.55;
+  opacity: 0.4;
+  transition: opacity 0.4s ease;
 }
 
 .routeStop[data-done="true"] .seq {
   background: var(--ok);
   color: #fff;
+  box-shadow: 0 0 4px rgba(34, 197, 94, 0.3);
 }
 
 .seq {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
   background: var(--bg-3);
   border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text-1);
   flex-shrink: 0;
+  transition: all 0.25s ease;
 }
 
 .routeStop[data-active="true"] .seq {
   background: var(--damm-red);
   color: #fff;
   border-color: var(--damm-red);
+  box-shadow: 0 0 8px rgba(225, 6, 0, 0.4);
 }
 
 .stopBody {
@@ -380,7 +468,7 @@
 
 .stopName {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-1);
   white-space: nowrap;
@@ -390,49 +478,21 @@
 
 .stopMeta {
   display: block;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-3);
 }
 
 .stopBadge {
   font-size: 10px;
-  padding: 2px 6px;
+  padding: 1px 4px;
   background: var(--bg-3);
-  border-radius: 5px;
+  border-radius: 4px;
   color: var(--text-2);
   border: 1px solid var(--border);
   white-space: nowrap;
 }
 
-/* ------------------------- Center / Truck ----------------- */
-
-.truckPanel {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: calc(100vh - 220px);
-}
-
-.truckPanelInner {
-  flex: 1;
-  overflow: auto;
-}
-
-/* The TruckLoadView already has its own card; remove the redundant
-   white background by overriding its CSS variables when nested. */
-.truckPanelInner > div {
-  border-radius: 0 !important;
-  min-height: 0 !important;
-  height: 100%;
-  background: var(--bg-2) !important;
-  color: var(--text-1) !important;
-}
-
-/* ------------------------- Copilot chat ------------------- */
+/* ========================= COPILOT CHAT (voice-only) ========================= */
 
 .chatBody {
   display: flex;
@@ -441,10 +501,11 @@
   padding: 10px;
   overflow-y: auto;
   flex: 1;
+  min-height: 0;
 }
 
 .bubble {
-  max-width: 85%;
+  max-width: 90%;
   padding: 8px 10px;
   border-radius: 10px;
   font-size: 13px;
@@ -468,22 +529,22 @@
 }
 
 .bubbleMeta {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-3);
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .bubbleActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 3px;
+  margin-top: 4px;
 }
 
 .actionChip {
-  font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 5px;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 4px;
   background: var(--bg-2);
   border: 1px solid var(--border);
   color: var(--text-2);
@@ -492,57 +553,123 @@
 .suggestRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
   padding: 6px 10px;
   border-top: 1px solid var(--border);
 }
 
 .suggestChip {
-  font-size: 11px;
-  padding: 4px 8px;
+  font-size: 12px;
+  padding: 6px 10px;
   background: var(--bg-3);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--text-1);
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .suggestChip:hover {
   background: var(--damm-red);
   color: #fff;
   border-color: var(--damm-red);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(225, 6, 0, 0.3);
 }
+
+/* ---------- Voice-only bar (huge mic for driving) ---------- */
+
+.voiceComposer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.voiceBtnLarge {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  background: var(--bg-3);
+  color: var(--text-1);
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.voiceBtnLarge::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.voiceBtnLarge:hover {
+  border-color: var(--damm-red);
+  background: rgba(225, 6, 0, 0.15);
+  transform: scale(1.05);
+}
+
+.voiceBtnLarge[data-listening="true"] {
+  border-color: var(--damm-red);
+  background: var(--damm-red);
+  color: #fff;
+  animation: pulse-mic 1.5s ease-in-out infinite;
+  box-shadow: 0 0 24px rgba(225, 6, 0, 0.5);
+}
+
+.voiceBtnLarge[data-listening="true"]::after {
+  border-color: rgba(225, 6, 0, 0.4);
+  animation: ring-expand 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-mic {
+  0%, 100% { box-shadow: 0 0 12px rgba(225, 6, 0, 0.3); transform: scale(1); }
+  50% { box-shadow: 0 0 28px rgba(225, 6, 0, 0.6); transform: scale(1.04); }
+}
+
+@keyframes ring-expand {
+  0%, 100% { inset: -4px; opacity: 1; }
+  50% { inset: -8px; opacity: 0.5; }
+}
+
+.voiceLabel {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.voiceLabel strong {
+  color: var(--text-2);
+}
+
+/* ---------- Unused legacy styles kept for compat ---------- */
 
 .composer {
-  display: flex;
-  gap: 6px;
-  padding: 10px;
-  border-top: 1px solid var(--border);
+  display: none;
 }
 
-.composer input {
-  flex: 1;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  color: var(--text-1);
-  padding: 8px 10px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 13px;
-}
-
-.composer input:focus {
-  outline: none;
-  border-color: var(--damm-red);
+.voiceRow {
+  display: none;
 }
 
 .btnPrimary {
   background: var(--damm-red);
   border: 0;
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -556,9 +683,9 @@
   background: var(--bg-3);
   border: 1px solid var(--border);
   color: var(--text-1);
-  padding: 8px 10px;
-  border-radius: 8px;
-  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
   cursor: pointer;
 }
 
@@ -566,169 +693,9 @@
   background: var(--border);
 }
 
-.voiceRow {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 0 10px 6px;
-  font-size: 11px;
-  color: var(--text-3);
-}
-
-.voiceRow strong {
-  color: var(--text-1);
-}
-
-/* ------------------------- Footer panels ------------------ */
-
-.footerGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-@media (max-width: 1024px) {
-  .footerGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.footerPanel {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-}
-
-.warningList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 10px;
-}
-
-.warningItem {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-}
-
-.warningItem[data-sev="critical"] {
-  border-color: var(--crit);
-  background: rgba(239, 68, 68, 0.08);
-}
-
-.warningItem[data-sev="warning"] {
-  border-color: var(--warn);
-  background: rgba(245, 158, 11, 0.08);
-}
-
-.warningIcon {
-  font-size: 14px;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-2);
-}
-
-.warningBody {
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.warningBody strong {
-  display: block;
-  font-size: 12px;
-  margin-bottom: 2px;
-}
-
-.warningBody small {
-  font-size: 10px;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
 .empty {
-  padding: 16px;
-  font-size: 12px;
+  padding: 12px;
+  font-size: 11px;
   color: var(--text-3);
   text-align: center;
-}
-
-/* Strategy comparator */
-
-.compareGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 12px;
-}
-
-.compareCard {
-  background: var(--bg-3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px;
-}
-
-.compareCard h4 {
-  margin: 0 0 8px;
-  font-size: 12px;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.compareKpi {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  padding: 4px 0;
-  border-bottom: 1px dashed var(--border);
-}
-
-.compareKpi:last-child {
-  border-bottom: 0;
-}
-
-.compareKpi span {
-  color: var(--text-2);
-}
-
-.compareKpi strong {
-  font-variant-numeric: tabular-nums;
-}
-
-.compareCard[data-best="true"] {
-  border-color: var(--damm-red);
-  background: rgba(225, 6, 0, 0.06);
-}
-
-.compareDelta {
-  font-size: 11px;
-  padding: 6px 10px;
-  background: var(--bg-3);
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.compareDelta span {
-  background: var(--bg-2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 2px 6px;
-}
-
-.compareDelta strong {
-  color: var(--ok);
 }

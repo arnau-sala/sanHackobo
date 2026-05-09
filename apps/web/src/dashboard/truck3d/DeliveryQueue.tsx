@@ -1,21 +1,11 @@
 /**
  * Cola de entregas estilo "Comandas" del mockup del usuario.
  *
- *   Parada #02
- *   09:40
- *   Bar Pepe
- *   C/ Valencia, 150
- *
- *   CAJAS A RECOGER
- *     2 cajas Estrella Damm
- *     1 caja Agua Veri
- *
- *   Ubicacion: Palet P1                  [▶ Iniciar]
- *
- * Solo la parada activa se ve expandida; el resto colapsa con un chevron.
- * Al pulsar "Iniciar" se marca la parada como entregada (los items
- * desaparecen del camion) y avanzamos a la siguiente.
+ * AUTO-SCROLL: cuando se confirma una entrega y se avanza a la siguiente
+ * parada, la lista hace scroll automático para que la parada activa
+ * siempre esté visible. El conductor NO necesita tocar la pantalla.
  */
+import { useEffect, useRef } from "react";
 import type { InputData, LoadPlan, RoutePlan } from "@damm/optimizer-load";
 import { paletteFor } from "./productColors";
 import styles from "./TruckView3D.module.css";
@@ -42,6 +32,8 @@ export function DeliveryQueue({
   onConfirmDelivery,
   compact = false,
 }: DeliveryQueueProps) {
+  const listRef = useRef<HTMLDivElement>(null);
+
   const sortedStops = [...routePlan.stops].sort(
     (a, b) => a.sequence - b.sequence,
   );
@@ -59,6 +51,21 @@ export function DeliveryQueue({
     }
   }
 
+  // AUTO-SCROLL: cuando cambia la parada activa, scroll suave al card
+  useEffect(() => {
+    if (!currentStopId || !listRef.current) return;
+    // Pequeño delay para que el DOM se actualice con la nueva parada expandida
+    const timer = setTimeout(() => {
+      const card = listRef.current?.querySelector(
+        `[data-stop-id="${currentStopId}"]`,
+      ) as HTMLElement | null;
+      if (card) {
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [currentStopId]);
+
   return (
     <div
       className={
@@ -70,7 +77,7 @@ export function DeliveryQueue({
         <span>{sortedStops.length - deliveredStopIds.size} pendientes</span>
       </div>
 
-      <div className={styles.queueList}>
+      <div className={styles.queueList} ref={listRef}>
         {sortedStops.map((rs) => {
           const stop = stopsById.get(rs.stopId);
           const isDone = deliveredStopIds.has(rs.stopId);
@@ -81,6 +88,7 @@ export function DeliveryQueue({
           return (
             <div
               key={rs.stopId}
+              data-stop-id={rs.stopId}
               className={styles.queueCard}
               data-active={isCurrent}
               data-done={isDone}

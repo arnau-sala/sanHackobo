@@ -3,11 +3,12 @@
  *
  *   - Resalta la parada actual (highlight dinamico).
  *   - Marca las paradas previas como completadas.
- *   - Hover/click selecciona la parada y propaga al resto del dashboard.
+ *   - AUTO-SCROLL: al cambiar la parada activa, la lista hace scroll
+ *     suave para que siempre esté visible sin tocar la pantalla.
  *
  * Recicla el contrato `RoutePlan` y `InputData` del optimizador.
  */
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { InputData, RoutePlan } from "@damm/optimizer-load";
 import styles from "./Dashboard.module.css";
 
@@ -24,6 +25,8 @@ export function RoutePanel({
   currentStopId,
   onSelectStop,
 }: RoutePanelProps) {
+  const stopsRef = useRef<HTMLDivElement>(null);
+
   const sortedStops = useMemo(
     () => [...routePlan.stops].sort((a, b) => a.sequence - b.sequence),
     [routePlan],
@@ -38,6 +41,20 @@ export function RoutePanel({
     const cur = sortedStops.find((s) => s.stopId === currentStopId);
     return cur?.sequence ?? 0;
   }, [sortedStops, currentStopId]);
+
+  // AUTO-SCROLL: cuando cambia la parada activa, centrar en la lista
+  useEffect(() => {
+    if (!currentStopId || !stopsRef.current) return;
+    const timer = setTimeout(() => {
+      const btn = stopsRef.current?.querySelector(
+        `[data-stop-id="${currentStopId}"]`,
+      ) as HTMLElement | null;
+      if (btn) {
+        btn.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [currentStopId]);
 
   return (
     <div className={styles.panel}>
@@ -62,7 +79,7 @@ export function RoutePanel({
           </div>
         </div>
 
-        <div className={styles.routeStops}>
+        <div className={styles.routeStops} ref={stopsRef}>
           {sortedStops.map((rs) => {
             const stop = stopById.get(rs.stopId);
             const isActive = rs.stopId === currentStopId;
@@ -74,6 +91,7 @@ export function RoutePanel({
                 className={styles.routeStop}
                 data-active={isActive}
                 data-done={isDone}
+                data-stop-id={rs.stopId}
                 onClick={() => onSelectStop(rs.stopId)}
               >
                 <span className={styles.seq}>{rs.sequence}</span>

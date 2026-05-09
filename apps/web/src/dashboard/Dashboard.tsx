@@ -1,22 +1,18 @@
 /**
- * Damm Smart Truck Copilot - Demo dashboard.
+ * Damm Smart Truck Copilot - Dashboard para conductor.
  *
- * Layout:
- *
- *   Header   : marca + modos (conductor/almacen/supervisor) + estado API
- *   Center   : izquierda Comandas + Copilot | derecha solo camion 3D
- *   Below    : RoutePanel + WarningsPanel + StrategyComparator
- *
- * El nucleo del demo es la herramienta del conductor: la `TruckStage`
- * con sus 8 palets en 3D, el highlight de la entrega activa, los popups
- * de detalle y el "vaciado" del camion conforme se entregan paradas.
+ * Pensado como herramienta REAL para un camionero experto de Damm:
+ *   - Progreso visual de la ruta en el header
+ *   - Reloj en tiempo real
+ *   - Camión 3D grande y claro en el centro
+ *   - Comandas con la parada activa prominente a la derecha
+ *   - Copiloto IA solo por voz (el conductor conduce)
+ *   - Ruta con paradas a la izquierda
  */
 import { useEffect, useMemo, useState } from "react";
 import type { CopilotResponse } from "@damm/copilot";
 import { RoutePanel } from "./RoutePanel";
 import { CopilotChat } from "./CopilotChat";
-import { WarningsPanel } from "./WarningsPanel";
-import { StrategyComparator } from "./StrategyComparator";
 import { TruckStage } from "./truck3d/TruckStage";
 import { DeliveryQueue } from "./truck3d/DeliveryQueue";
 import type { ViewMode } from "./truck3d/TruckView3D";
@@ -34,7 +30,7 @@ const MODES: Array<{ id: Mode; label: string }> = [
 
 export function Dashboard() {
   const hybrid = useMemo(() => buildHybrid(), []);
-  const traditional = useMemo(() => buildTraditional(), []);
+  const _traditional = useMemo(() => buildTraditional(), []);
 
   const [mode, setMode] = useState<Mode>("driver");
   const [apiUp, setApiUp] = useState<boolean | null>(null);
@@ -46,6 +42,13 @@ export function Dashboard() {
   );
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [truckViewMode, setTruckViewMode] = useState<ViewMode>("general");
+  const [clock, setClock] = useState(() => formatClock());
+
+  // Live clock
+  useEffect(() => {
+    const id = setInterval(() => setClock(formatClock()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     void checkApiHealth().then(setApiUp);
@@ -54,6 +57,17 @@ export function Dashboard() {
     }, 12000);
     return () => clearInterval(id);
   }, []);
+
+  // Current stop info for the header banner
+  const currentStop = useMemo(() => {
+    const rs = hybrid.routePlan.stops.find((s) => s.stopId === currentStopId);
+    const stop = hybrid.inputData.stops.find((s) => s.id === currentStopId);
+    return { rs, stop };
+  }, [hybrid, currentStopId]);
+
+  const totalStops = hybrid.routePlan.stops.length;
+  const deliveredCount = deliveredStopIds.size;
+  const progressPct = totalStops > 0 ? (deliveredCount / totalStops) * 100 : 0;
 
   function handleCopilotAction(action: CopilotResponse["actions"][number]) {
     if (action.type === "highlight_stop") {
@@ -65,7 +79,6 @@ export function Dashboard() {
   }
 
   function handleConfirmDelivery(stopId: string) {
-    // Marcar la parada como entregada y avanzar a la siguiente.
     setDeliveredStopIds((prev) => {
       const next = new Set(prev);
       next.add(stopId);
@@ -86,62 +99,114 @@ export function Dashboard() {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <div className={styles.brand}>
-          <span className={styles.logo}>D</span>
-          <div className={styles.brandText}>
-            <h1>Damm Smart Truck Copilot</h1>
-            <p>
-              Reparto DR0027 · {hybrid.inputData.driver?.name ?? "(sin conductor)"} ·
-              vehiculo {hybrid.inputData.vehicle.id} ·
-              {" "}
-              {deliveredStopIds.size}/{hybrid.routePlan.stops.length} entregadas
-            </p>
+        <div className={styles.headerLeft}>
+          <div className={styles.brand}>
+            <span className={styles.logo}>D</span>
+            <div className={styles.brandText}>
+              <h1>Damm Smart Truck Copilot</h1>
+              <p>
+                {hybrid.inputData.driver?.name ?? "Conductor"} · {hybrid.inputData.vehicle.id}
+              </p>
+            </div>
+          </div>
+
+          {/* Live progress */}
+          <div className={styles.progressBlock}>
+            <div className={styles.progressInfo}>
+              <span className={styles.progressLabel}>
+                🚛 {deliveredCount}/{totalStops} entregas
+              </span>
+              <span className={styles.progressPct}>{Math.round(progressPct)}%</span>
+            </div>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${progressPct}%` }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className={styles.modes} role="tablist">
-          {MODES.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              role="tab"
-              className={styles.modeBtn}
-              data-active={mode === m.id}
-              onClick={() => setMode(m.id)}
-            >
-              {m.label}
-            </button>
-          ))}
-        </div>
+        {/* Next stop mini-banner */}
+        {currentStop.rs && (
+          <div className={styles.nextStopBanner}>
+            <span className={styles.nextStopLabel}>▶ PRÓXIMA</span>
+            <strong className={styles.nextStopName}>
+              {currentStop.rs.clientName ?? currentStop.stop?.clientName ?? currentStopId}
+            </strong>
+            {currentStop.rs.arrivalEta && (
+              <span className={styles.nextStopEta}>
+                🕓 {currentStop.rs.arrivalEta}
+              </span>
+            )}
+          </div>
+        )}
 
-        <div className={styles.statusGroup}>
-          <span
-            className={styles.statusDot}
-            data-ok={apiUp === true}
-            title={
-              apiUp === true
-                ? "API en :3001 disponible"
-                : apiUp === false
-                  ? "API caida (modo offline / in-browser)"
-                  : "comprobando..."
-            }
-          >
-            API {apiUp === true ? "ON" : apiUp === false ? "OFF" : "…"}
-          </span>
-          <span className={styles.statusDot} data-ok={true}>
-            optimizer-route
-          </span>
-          <span className={styles.statusDot} data-ok={true}>
-            optimizer-load
-          </span>
-          <span className={styles.statusDot} data-ok={true}>
-            copilot
-          </span>
+        <div className={styles.headerRight}>
+          <div className={styles.modes} role="tablist">
+            {MODES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="tab"
+                className={styles.modeBtn}
+                data-active={mode === m.id}
+                onClick={() => setMode(m.id)}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.clockBlock}>
+            <span className={styles.clock}>{clock}</span>
+          </div>
+
+          <div className={styles.statusGroup}>
+            <span
+              className={styles.statusDot}
+              data-ok={apiUp === true}
+              title={
+                apiUp === true
+                  ? "API disponible"
+                  : apiUp === false
+                    ? "API caida"
+                    : "comprobando..."
+              }
+            >
+              API {apiUp === true ? "ON" : apiUp === false ? "OFF" : "…"}
+            </span>
+            <span className={styles.statusDot} data-ok={true}>copilot</span>
+          </div>
         </div>
       </header>
 
       <section className={styles.mainTruck}>
-        <div className={styles.driverLeft}>
+        {/* LEFT: Route Panel */}
+        <div className={styles.routeLeft}>
+          <RoutePanel
+            routePlan={hybrid.routePlan}
+            inputData={hybrid.inputData}
+            currentStopId={currentStopId}
+            onSelectStop={setCurrentStopId}
+          />
+        </div>
+
+        {/* CENTER: Truck 3D (biggest area) */}
+        <div className={styles.truckMainColumn}>
+          <TruckStage
+            loadPlan={hybrid.loadPlan}
+            currentStopId={currentStopId}
+            deliveredStopIds={deliveredStopIds}
+            selectedSlotId={selectedSlotId}
+            viewMode={truckViewMode}
+            onSelectSlot={setSelectedSlotId}
+            onChangeMode={setTruckViewMode}
+          />
+        </div>
+
+        {/* RIGHT: Comandas + Copilot */}
+        <div className={styles.driverRight}>
           <DeliveryQueue
             routePlan={hybrid.routePlan}
             inputData={hybrid.inputData}
@@ -164,52 +229,14 @@ export function Dashboard() {
             onAction={handleCopilotAction}
           />
         </div>
-
-        <div className={styles.truckMainColumn}>
-          <TruckStage
-            loadPlan={hybrid.loadPlan}
-            currentStopId={currentStopId}
-            deliveredStopIds={deliveredStopIds}
-            selectedSlotId={selectedSlotId}
-            viewMode={truckViewMode}
-            onSelectSlot={setSelectedSlotId}
-            onChangeMode={setTruckViewMode}
-          />
-        </div>
-      </section>
-
-      <section className={styles.mainBelow}>
-        <RoutePanel
-          routePlan={hybrid.routePlan}
-          inputData={hybrid.inputData}
-          currentStopId={currentStopId}
-          onSelectStop={setCurrentStopId}
-        />
-        <WarningsPanel warnings={filterByMode(mode, hybrid.loadPlan.warnings)} />
-        <StrategyComparator
-          hybrid={hybrid.loadPlan}
-          traditional={traditional.loadPlan}
-        />
       </section>
     </div>
   );
 }
 
-function filterByMode(
-  mode: Mode,
-  warnings: ReturnType<typeof buildHybrid>["loadPlan"]["warnings"],
-) {
-  if (mode === "warehouse") {
-    return warnings.filter((w) =>
-      ["heavy_item", "stacking", "missing_data", "capacity"].includes(w.type),
-    );
-  }
-  if (mode === "driver") {
-    return warnings.filter((w) =>
-      ["access", "returnables", "capacity"].includes(w.type),
-    );
-  }
-  return warnings;
+function formatClock(): string {
+  const now = new Date();
+  return now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
 }
 
 export default Dashboard;
