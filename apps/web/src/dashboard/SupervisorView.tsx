@@ -155,6 +155,7 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
   const mapRef    = useRef<mapboxgl.Map|null>(null);
   const markersRef= useRef<mapboxgl.Marker[]>([]);
   const sourcesRef= useRef<string[]>([]);
+  const roadCacheRef = useRef<Map<string, [number,number][]>>(new Map());
 
   const [routes,         setRoutes]         = useState<Route[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
@@ -253,6 +254,33 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
     return () => { map.remove(); mapRef.current = null; };
   }, []);
 
+  // ── Mapbox Directions API: fetch real road route ───────────────────────
+  async function fetchRoadRoute(waypoints: [number,number][]): Promise<[number,number][]> {
+    if (waypoints.length < 2) return waypoints;
+    const token = mapboxgl.accessToken;
+    if (!token) return waypoints;
+
+    const CHUNK = 25; // Mapbox Directions limit
+    const allCoords: [number,number][] = [];
+
+    for (let i = 0; i < waypoints.length - 1; i += CHUNK - 1) {
+      const chunk = waypoints.slice(i, Math.min(i + CHUNK, waypoints.length));
+      const coordStr = chunk.map(c => `${c[0].toFixed(6)},${c[1].toFixed(6)}`).join(";");
+      const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordStr}?geometries=geojson&overview=full&access_token=${token}`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json() as any;
+        const coords: [number,number][] = data.routes?.[0]?.geometry?.coordinates ?? chunk;
+        if (allCoords.length === 0) allCoords.push(...coords);
+        else allCoords.push(...coords.slice(1)); // skip first to avoid duplicate junction
+      } catch {
+        // fallback to straight lines for this chunk
+        allCoords.push(...chunk);
+      }
+    }
+    return allCoords.length > 0 ? allCoords : waypoints;
+  }
+
   // ── Draw routes ────────────────────────────────────────────────────────
   const drawMap = useCallback(() => {
     const map = mapRef.current;
@@ -262,7 +290,7 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
     for (const m of markersRef.current) m.remove();
     markersRef.current = [];
     for (const id of sourcesRef.current) {
-      ["","glow","dir"].forEach(s => { if(map.getLayer(id+s)) map.removeLayer(id+s); });
+      ["","glow"].forEach(s => { if(map.getLayer(id+s)) map.removeLayer(id+s); });
       if (map.getSource(id)) map.removeSource(id);
     }
     sourcesRef.current = [];
@@ -272,7 +300,7 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
     const bounds = new mapboxgl.LngLatBounds();
     let hasAny = false;
 
-    // Depot
+    // Depot marker
     const depEl = document.createElement("div");
     depEl.innerHTML = `<div style="width:40px;height:40px;background:#111827;border:2px solid ${C.gold};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 20px rgba(245,200,66,.4);cursor:pointer;">🏭</div>`;
     new mapboxgl.Marker({ element:depEl, anchor:"center" })
@@ -286,6 +314,10 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
       .addTo(map);
     bounds.extend([2.213, 41.539]);
 
+    // Draw all stop markers immediately with straight-line placeholders,
+    // then async-replace lines with real road routes
+    const DEPOT: [number,number] = [2.213, 41.539];
+
     for (const driver of filteredStats) {
       const color = driver.color;
       const isSel = selectedDriverId === driver.id;
@@ -295,31 +327,43 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
       const validStops = driver.allStops.filter(s => s.lat && s.lng && Math.abs(s.lat)>0.1);
       if (!validStops.length) continue;
 
-      // Route line: depot → stops in sequence
-      const coords: [number,number][] = [
-        [2.213, 41.539],
-        ...validStops.map(s => [s.lng!, s.lat!] as [number,number])
+      const waypoints: [number,number][] = [
+        DEPOT,
+        ...validStops.map(s => [s.lng!, s.lat!] as [number,number]),
+        DEPOT, // return to depot
       ];
 
       const sid = `r-${driver.id}`;
       sourcesRef.current.push(sid);
-      map.addSource(sid, { type:"geojson", data:{ type:"Feature", properties:{}, geometry:{ type:"LineString", coordinates:coords }}});
 
-      // Glow layer
+      // Draw straight placeholder immediately
+      map.addSource(sid, { type:"geojson", data:{ type:"Feature", properties:{}, geometry:{ type:"LineString", coordinates:waypoints }}});
       map.addLayer({ id:sid+"glow", type:"line", source:sid,
         layout:{ "line-join":"round","line-cap":"round" },
-        paint:{ "line-color":color, "line-width":isSel?16:8, "line-opacity":isDim?0:0.12, "line-blur":6 }
+        paint:{ "line-color":color, "line-width":isSel?20:10, "line-opacity":isDim?0:0.1, "line-blur":8 }
       });
-      // Main line
       map.addLayer({ id:sid, type:"line", source:sid,
         layout:{ "line-join":"round","line-cap":"round" },
-        paint:{ "line-color":color, "line-width":isSel?3:1.5, "line-opacity":opacity }
+        paint:{ "line-color":color, "line-width":isSel?3.5:1.8, "line-opacity":opacity, "line-dasharray": isDim ? [2,3] : [1] }
       });
 
-      // Click on line to select driver
       map.on("click", sid, () => setSelectedDriverId(isSel ? null : driver.id));
       map.on("mouseenter", sid, () => map.getCanvas().style.cursor="pointer");
       map.on("mouseleave", sid, () => map.getCanvas().style.cursor="");
+
+      // Async: replace with real road route
+      const cacheKey = `${driver.id}|${selectedDate}`;
+      const cached = roadCacheRef.current.get(cacheKey);
+      if (cached) {
+        const src = map.getSource(sid) as mapboxgl.GeoJSONSource | undefined;
+        src?.setData({ type:"Feature", properties:{}, geometry:{ type:"LineString", coordinates:cached }});
+      } else {
+        fetchRoadRoute(waypoints).then(roadCoords => {
+          roadCacheRef.current.set(cacheKey, roadCoords);
+          const src = map.getSource(sid) as mapboxgl.GeoJSONSource | undefined;
+          src?.setData({ type:"Feature", properties:{}, geometry:{ type:"LineString", coordinates:roadCoords }});
+        });
+      }
 
       // Stop markers
       validStops.forEach((stop, idx) => {
@@ -331,7 +375,7 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
         const isFirst    = idx === 0;
 
         const el = document.createElement("div");
-        const size = isSel ? 22 : 14;
+        const size = isSel ? 22 : 12;
         const borderColor = isFirst ? C.gold : hasCobro ? C.amber : hasBarrel ? "#a78bfa" : "rgba(255,255,255,.2)";
         el.style.cssText = `
           width:${size}px;height:${size}px;border-radius:50%;
@@ -382,7 +426,7 @@ export function SupervisorView({ onBack }: { onBack:()=>void }) {
       const rightPad = selectedDriverId ? 300 : 60;
       map.fitBounds(bounds, { padding:{ top:60, bottom:60, left:leftPad, right:rightPad }, maxZoom:13, duration:800 });
     }
-  }, [routes, filteredStats, selectedDriverId, colorOf, kpis]);
+  }, [routes, filteredStats, selectedDriverId, colorOf, kpis, selectedDate]);
 
   useEffect(() => {
     if (mapReady) drawMap();
