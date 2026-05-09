@@ -14,6 +14,7 @@
 import { getIndexes } from "./rawIndexes";
 import { InputPayload, Stop, Order, OrderItem } from "../types/input.types";
 import { loadEntregas } from "./rawLoader";
+import { geocodeCached } from "./geocoder";
 
 // Productos Damm frecuentes en almacén Mollet — usados cuando no hay datos de línea
 const COMMON_PRODUCTS = [
@@ -52,75 +53,112 @@ const COORDS_BY_POBLACION: Record<string, { lat: number; lng: number }> = {
   "LLIÇÀ D'AMUNT":     { lat: 41.6128, lng: 2.1869 },
 };
 
+// Deterministic hash for reproducible coords when city not in table
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  }
+  return h;
+}
+
 function coordsForPoblacion(poblacion: string): { lat: number; lng: number } {
   const upper = poblacion.toUpperCase().trim();
   for (const [key, coords] of Object.entries(COORDS_BY_POBLACION)) {
     if (upper.includes(key) || key.includes(upper)) return coords;
   }
-  // Fallback: zona Vallès Oriental (área general de Mollet)
+  // Fallback determinístico: evita non-reproducibilidad entre ejecuciones
+  const h = hashStr(upper);
   return {
-    lat: 41.54 + (Math.random() - 0.5) * 0.15,
-    lng: 2.21  + (Math.random() - 0.5) * 0.15,
+    lat: 41.54 + ((h & 0xff) / 255 - 0.5) * 0.15,
+    lng: 2.21  + (((h >> 8) & 0xff) / 255 - 0.5) * 0.15,
   };
 }
 
-// Genera items reales del almacén para un stop (basado en productos reales Mollet)
-function generateRealItems(
-  stopIndex: number,
-  paymentType: "CONTADO" | "CREDITO",
-  idx: ReturnType<typeof getIndexes>
-): OrderItem[] {
-  const items: OrderItem[] = [];
-
-  // Siempre Estrella Damm 1/3 (el producto estrella de toda ruta)
-  const nCajas = paymentType === "CONTADO"
-    ? [6, 12, 18, 24][stopIndex % 4]
-    : [6, 12, 18][stopIndex % 3];
-
-  const ed13Dim = idx.dimensionesByMaterial.get("ED13")?.get("CAJ");
-  const ed13Mat = idx.materialesByMaterialId.get("ED13");
-  items.push({
-    productId: "ED13",
-    name: "ESTRELLA DAMM 1/3 RET. PP",
-    quantity: nCajas,
-    unit: "Caja",
-    volume_L:  ed13Dim?.volumenL  ?? 7.92,
-    weight_kg: ed13Dim?.pesoBrutoKg ?? 17.0,
-    returnable: true,
-    warehouseLocation: ed13Mat?.ubicacion ?? "AA09A1",
-    handlingType: "crate",
-    palletUnitsEach: 1,
-    palletUnitsTotal: nCajas,
-    palletUnits: 1,
-  });
-
-  // Un segundo producto variado (rotación por índice)
-  const secondary = COMMON_PRODUCTS.filter((p) => p.productId !== "ED13")[stopIndex % 6];
-  const secDim = idx.dimensionesByMaterial.get(secondary.productId)?.get(
-    secondary.unit === "Barril" ? "BRL" : "CAJ"
+// Envases vacíos: se RECOGEN en cada parada, no se cargan en el depósito.
+// Patrones SAP identificados en datos reales Damm Mollet:
+//   CJ*     → Caja Damm vacía (plástico retornable)
+//   3ENV*   → Contenedor vacío de terceros (Vichy, Cacaolat, Font d'Or, Letona...)
+//   BRL*V   → Barril inox vacío para intercambio (BRL30V, BRL20V)
+function isEmptyContainer(materialId: string, descripcion: string): boolean {
+  const d = descripcion.toUpperCase();
+  return (
+    materialId.startsWith("CJ")   ||   // CJ13, CJ15 — cajas Damm vacías
+    materialId.startsWith("3ENV") ||   // C.C. de terceros
+    d.includes("VACIO")           ||   // "CAJA DAMM+BOT...VACIO"
+    (materialId.endsWith("V") && d.includes("BARRIL INOX")) // BRL30V, BRL20V
   );
-  const secMat = idx.materialesByMaterialId.get(secondary.productId);
+}
 
-  if (secMat) {
-    const qty = secondary.unit === "Barril" ? 1 : [2, 3, 4][stopIndex % 3];
-    const palletUnitsTotal = qty * secondary.palletUnitsEach;
+function isBarrel(unidad: string): boolean {
+  return unidad === "BRL";
+}
+
+function isReturnable(materialId: string, descripcion: string): boolean {
+  const d = descripcion.toUpperCase();
+  return d.includes("RET") || d.includes("BARRIL") || d.includes("CAJA DAMM");
+}
+
+export interface LineasResult {
+  items:            OrderItem[];   // productos a entregar (se cargan en depósito)
+  returnableCount:  number;        // unidades de envases vacíos a recoger en la parada
+}
+
+// Convierte líneas SAP en items de entrega, separando envases vacíos (recogida)
+function buildItemsFromLineas(
+  lineas: Array<{ material: string; descripcion: string; cantidad: number; unidad: string }>,
+  idx: ReturnType<typeof getIndexes>
+): LineasResult {
+  const items: OrderItem[] = [];
+  let returnableCount = 0;
+
+  for (const linea of lineas) {
+    // Envases vacíos → solo contar como recogida, no añadir al pedido
+    if (isEmptyContainer(linea.material, linea.descripcion)) {
+      returnableCount += linea.cantidad;
+      continue;
+    }
+
+    const matId  = linea.material;
+    const barrel = isBarrel(linea.unidad);
+    const umaKey = barrel ? "BRL" : linea.unidad === "BOT" ? "UN" : "CAJ";
+
+    const dim = idx.dimensionesByMaterial.get(matId)?.get(umaKey)
+             ?? idx.dimensionesByMaterial.get(matId)?.get("CAJ");
+    const mat = idx.materialesByMaterialId.get(matId);
+
+    const palletEach  = barrel ? 4 : 1;
+    const palletTotal = linea.cantidad * palletEach;
+
     items.push({
-      productId: secondary.productId,
-      name: secondary.name,
-      quantity: qty,
-      unit: secondary.unit,
-      volume_L:  secDim?.volumenL  ?? (secondary.unit === "Barril" ? 30.0 : 7.92),
-      weight_kg: secDim?.pesoBrutoKg ?? (secondary.unit === "Barril" ? 42.79 : 17.0),
-      returnable: secondary.returnable,
-      warehouseLocation: secMat.ubicacion,
-      handlingType: secondary.handlingType,
-      palletUnitsEach: secondary.palletUnitsEach,
-      palletUnitsTotal,
-      palletUnits: secondary.palletUnitsEach,
+      productId:         matId,
+      name:              linea.descripcion,
+      quantity:          linea.cantidad,
+      unit:              barrel ? "Barril" : linea.unidad === "BOT" ? "Botella" : "Caja",
+      volume_L:          dim?.volumenL    ?? (barrel ? 30.0 : 7.92),
+      weight_kg:         dim?.pesoBrutoKg ?? (barrel ? 42.79 : 17.0),
+      returnable:        isReturnable(matId, linea.descripcion),
+      warehouseLocation: mat?.ubicacion   ?? "AA00A0",
+      handlingType:      barrel ? "barrel" : "crate",
+      palletUnitsEach:   palletEach,
+      palletUnitsTotal:  palletTotal,
+      palletUnits:       palletEach,
     });
   }
 
-  return items;
+  // Fallback: si no hay líneas de producto, al menos 1 caja ED13
+  if (items.length === 0) {
+    const dim = idx.dimensionesByMaterial.get("ED13")?.get("CAJ");
+    const mat = idx.materialesByMaterialId.get("ED13");
+    items.push({
+      productId: "ED13", name: "ESTRELLA DAMM 1/3 RET. PP", quantity: 6,
+      unit: "Caja", volume_L: dim?.volumenL ?? 7.92, weight_kg: dim?.pesoBrutoKg ?? 17.0,
+      returnable: true, warehouseLocation: mat?.ubicacion ?? "AA09A1",
+      handlingType: "crate", palletUnitsEach: 1, palletUnitsTotal: 6, palletUnits: 1,
+    });
+  }
+
+  return { items, returnableCount };
 }
 
 // ── Función principal ─────────────────────────────────────────────────────────
@@ -175,6 +213,19 @@ export function buildRealInput(options: BuildOptions = {}): InputPayload {
   const isoDate = `${yyyy}-${mm}-${dd}`;
   const dammDay = dateToDammDay(deliveryDate);
 
+  // Pre-calcular direcciones para poder buscar en caché geocoder antes del loop
+  const clientList = Array.from(uniqueClients.entries()).slice(0, options.maxStops);
+  const geocodable = clientList.map(([clienteId], i) => {
+    const dir = idx.direccionesByCliente.get(clienteId);
+    return {
+      id: `stop_${String(i + 1).padStart(3, "0")}`,
+      address: dir?.calle ?? "Dirección no disponible",
+      city: dir?.poblacion ?? "DESCONOCIDO",
+      postalCode: dir ? String(dir.cp) : "00000",
+    };
+  });
+  const geocacheMap = geocodeCached(geocodable);
+
   // Construir stops y orders
   const stops: Stop[] = [];
   const orders: Order[] = [];
@@ -192,8 +243,9 @@ export function buildRealInput(options: BuildOptions = {}): InputPayload {
     const city    = dir?.poblacion ?? "DESCONOCIDO";
     const postalCode = dir ? String(dir.cp) : "00000";
 
-    // Coordenadas (de tabla por ciudad — en prod se geocodificaría)
-    const coords = coordsForPoblacion(city);
+    // Coordenadas: caché geocoder (real) > tabla por ciudad > hash fallback
+    const geocoded = geocacheMap.get(stopId);
+    const coords = geocoded ?? coordsForPoblacion(city);
 
     // Ventana horaria real desde raw_horarios (por deudorId = clienteId en algunos casos)
     let timeWindow = { from: "08:00", to: "14:00" }; // fallback razonable
@@ -227,16 +279,38 @@ export function buildRealInput(options: BuildOptions = {}): InputPayload {
     // historicalConfidence real
     const confidence = idx.confidenceByCliente.get(clienteId) ?? 0.60;
 
-    // Items reales del almacén
-    const items = generateRealItems(stopIdx, paymentType, idx);
-    const totalPalletUnits = items.reduce((s, i) => s + i.palletUnitsTotal, 0);
-    const totalAmount = totalPalletUnits * 8.5; // precio medio por palletUnit (€)
-    const collectionAmount = paymentType === "CONTADO" ? totalAmount : 0;
+    // Todas las entregas de este cliente en este transporte
+    const entregasCliente = transporteData.filter((e) => e.clienteId === clienteId);
+    const orderIds: string[] = [];
+
+    for (let ei = 0; ei < entregasCliente.length; ei++) {
+      const ent       = entregasCliente[ei];
+      const oId       = `order_${String(stopIdx + 1).padStart(3, "0")}_${ei + 1}`;
+      const lineasRaw = idx.lineasByEntrega.get(ent.entrega);
+      const { items, returnableCount } = lineasRaw
+        ? buildItemsFromLineas(lineasRaw.lineas, idx)
+        : buildItemsFromLineas([], idx);
+
+      const totalPu    = items.reduce((s, i) => s + i.palletUnitsTotal, 0);
+      const totalAmt   = Math.round(totalPu * 8.5 * 100) / 100;
+      const collectAmt = paymentType === "CONTADO" ? totalAmt : 0;
+
+      orderIds.push(oId);
+      orders.push({
+        id: oId,
+        stopId,
+        documentId:           String(ent.entrega),
+        items,
+        emptyContainersToPickup: returnableCount,
+        totalAmount:          totalAmt,
+        collectionAmount:     Math.round(collectAmt * 100) / 100,
+      });
+    }
 
     stops.push({
       id: stopId,
       clientId: String(clienteId),
-      clientName: entrega.clienteNombre,
+      clientName: entrega.clienteNombre || entregasCliente[0].clienteNombre,
       address,
       city,
       postalCode,
@@ -247,16 +321,7 @@ export function buildRealInput(options: BuildOptions = {}): InputPayload {
       timeWindow,
       paymentType,
       historicalConfidence: confidence,
-      orderIds: [orderId],
-    });
-
-    orders.push({
-      id: orderId,
-      stopId,
-      documentId: String(entrega.entrega),
-      items,
-      totalAmount: Math.round(totalAmount * 100) / 100,
-      collectionAmount: Math.round(collectionAmount * 100) / 100,
+      orderIds,
     });
 
     stopIdx++;

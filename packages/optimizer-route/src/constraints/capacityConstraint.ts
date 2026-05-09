@@ -1,6 +1,6 @@
 import { VehicleState } from "../types/internal.types";
 import { EnrichedStop } from "../types/internal.types";
-import { PALLET_UNITS_PER_SLOT } from "../types/input.types";
+import { PALLET_UNITS_PER_SLOT, PALLET_UNITS_BARREL } from "../types/input.types";
 
 export interface CapacityFeasibility {
   feasible: boolean;
@@ -15,9 +15,9 @@ export function checkCapacity(
 ): CapacityFeasibility {
   // Al entregar esta parada, liberamos sus palletUnits y cargamos los retornables
   // Los retornables ocupan: barriles vacíos = 4 palletUnits, cajas vacías = 1 palletUnit
-  // Pero como acabamos de entregar, la capacidad neta es:
-  //   usedPalletUnits - delivered + returnablesPalletUnits
-  const returnablesPalletUnits = candidate.returnablesCount; // simplificado: 1 por retornable
+  const returnablesPalletUnits =
+    candidate.barrelCount * PALLET_UNITS_BARREL +
+    (candidate.returnablesCount - candidate.barrelCount); // cajas retornables = 1pu cada una
   const netChange = -candidate.totalPalletUnits + returnablesPalletUnits;
   const usedAfter = vehicleState.usedPalletUnits + netChange;
 

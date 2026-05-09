@@ -9,10 +9,19 @@ import * as path from "path";
 const RAW_DIR = path.resolve(__dirname, "../../../../data/raw");
 
 function loadJson(filename: string): any[] {
-  const raw = fs.readFileSync(path.join(RAW_DIR, filename), "utf-8");
-  // Python exporta NaN como literal JSON inválido — reemplazar antes de parsear
-  const clean = raw.replace(/\bNaN\b/g, "null");
-  return JSON.parse(clean);
+  const fullPath = path.join(RAW_DIR, filename);
+  try {
+    const raw = fs.readFileSync(fullPath, "utf-8");
+    // Python exporta NaN como literal JSON inválido — reemplazar antes de parsear
+    const clean = raw.replace(/\bNaN\b/g, "null");
+    return JSON.parse(clean);
+  } catch (e: any) {
+    throw new Error(
+      `No se puede leer ${filename} desde ${RAW_DIR}.\n` +
+      `  Causa: ${e.message}\n` +
+      `  Comprueba que los 7 archivos raw de Damm estén en data/raw/`
+    );
+  }
 }
 
 // ── Tipos normalizados ────────────────────────────────────────────────────────
@@ -63,6 +72,18 @@ export interface RawMaterial {
   nombre: string;
   ubicacion: string;      // código slot almacén, ej. "AA09A1"
   uma: string;
+}
+
+export interface RawLineaEntrega {
+  nEntrega: number;
+  clienteId: number;
+  clienteNombre: string;
+  lineas: Array<{
+    material: string;
+    descripcion: string;
+    cantidad: number;
+    unidad: string;
+  }>;
 }
 
 export interface RawZona {
@@ -146,6 +167,22 @@ export function loadMateriales(): RawMaterial[] {
       nombre:     String(r["Número de material"] ?? ""),
       ubicacion:  String(r["Ubic."]),
       uma:        String(r["UMB"] ?? "CAJ"),
+    }));
+}
+
+export function loadLineasEntrega(): RawLineaEntrega[] {
+  return loadJson("raw_lineas_entrega.json")
+    .filter((r) => r["n_entrega"] && r["lineas"])
+    .map((r) => ({
+      nEntrega:      Number(r["n_entrega"]),
+      clienteId:     Number(r["cliente"]?.["codigo"] ?? 0),
+      clienteNombre: String(r["cliente"]?.["nombre"] ?? ""),
+      lineas: (r["lineas"] ?? []).map((l: any) => ({
+        material:    String(l["material"]),
+        descripcion: String(l["descripcion"] ?? ""),
+        cantidad:    Number(l["cantidad"] ?? 0),
+        unidad:      String(l["unidad"] ?? "CAJ"),
+      })),
     }));
 }
 

@@ -85,9 +85,11 @@ export interface LoadingInstruction {
 
 export interface ClusterOutput {
   id: string;
-  parkingPointName: string;
+  parkingPointName: string;   // nombre de la calle/zona donde para el camión
+  centroidLat: number;        // coords del centro geométrico del cluster
+  centroidLng: number;
   stopIds: string[];
-  walkingMeters: number;
+  walkingMeters: number;      // distancia máxima a pie desde parking hasta un cliente
   reason: string;
 }
 

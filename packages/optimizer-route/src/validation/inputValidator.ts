@@ -26,6 +26,7 @@ const OrderSchema = z.object({
   stopId: z.string().min(1),
   documentId: z.string().min(1),
   items: z.array(OrderItemSchema),
+  emptyContainersToPickup: z.number().nonnegative().default(0),
   totalAmount: z.number().nonnegative(),
   collectionAmount: z.number().nonnegative(),
 });

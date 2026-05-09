@@ -19,7 +19,8 @@ export interface Order {
   id: string;
   stopId: string;
   documentId: string;
-  items: OrderItem[];
+  items: OrderItem[];        // solo productos a entregar (envases vacíos excluidos)
+  emptyContainersToPickup: number; // unidades de envases vacíos a recoger en esta entrega
   totalAmount: number;
   collectionAmount: number;
 }
@@ -57,6 +58,7 @@ export interface Vehicle {
 export interface Driver {
   id: string;
   name: string;
+  shiftStartTime?: string;             // "HH:MM" — hora salida depósito (default "07:00")
   continuousDriveAlreadyMin?: number;  // conducción acumulada antes de esta ruta
   totalDriveAlreadyTodayMin?: number;
 }

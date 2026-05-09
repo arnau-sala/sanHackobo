@@ -4,11 +4,14 @@
  */
 import {
   loadEntregas, loadDirecciones, loadHorarios,
-  loadDimensiones, loadMateriales, loadZonas,
-  RawEntrega, RawDireccion, RawHorario, RawDimension, RawMaterial, RawZona,
+  loadDimensiones, loadMateriales, loadZonas, loadLineasEntrega,
+  RawEntrega, RawDireccion, RawHorario, RawDimension, RawMaterial, RawZona, RawLineaEntrega,
 } from "./rawLoader";
 
 export interface RawIndexes {
+  // nEntrega → líneas reales del pedido
+  lineasByEntrega: Map<number, RawLineaEntrega>;
+
   // clienteId (910...) → direccion
   direccionesByCliente: Map<number, RawDireccion>;
 
@@ -39,6 +42,12 @@ export function getIndexes(): RawIndexes {
   console.log("📂 Cargando datos raw de Damm...");
   const t0 = Date.now();
 
+  // Líneas de entrega reales
+  const lineasByEntrega = new Map<number, RawLineaEntrega>();
+  for (const l of loadLineasEntrega()) {
+    lineasByEntrega.set(l.nEntrega, l);
+  }
+
   // Direcciones
   const direccionesByCliente = new Map<number, RawDireccion>();
   for (const d of loadDirecciones()) {
@@ -56,7 +65,10 @@ export function getIndexes(): RawIndexes {
   // Confidence: clientes con más entregas históricas = más confianza
   // Escala logarítmica: 1 entrega = 0.50, 5 = 0.70, 20 = 0.85, 50+ = 0.95
   const confidenceByCliente = new Map<number, number>();
-  const maxEntregas = Math.max(...Array.from(entregasByCliente.values()).map((v) => v.length), 1);
+  let maxEntregas = 1;
+  for (const list of entregasByCliente.values()) {
+    if (list.length > maxEntregas) maxEntregas = list.length;
+  }
   for (const [id, list] of entregasByCliente) {
     const n = list.length;
     const score = 0.50 + 0.45 * (Math.log(n + 1) / Math.log(maxEntregas + 1));
@@ -107,6 +119,7 @@ export function getIndexes(): RawIndexes {
   }
 
   _indexes = {
+    lineasByEntrega,
     direccionesByCliente,
     entregasByCliente,
     confidenceByCliente,
@@ -117,6 +130,7 @@ export function getIndexes(): RawIndexes {
   };
 
   console.log(`✅ Índices listos en ${Date.now() - t0}ms`);
+  console.log(`   Entregas con líneas reales:  ${lineasByEntrega.size}`);
   console.log(`   Clientes con dirección:   ${direccionesByCliente.size}`);
   console.log(`   Clientes con historial:   ${entregasByCliente.size}`);
   console.log(`   Clientes con horario:     ${horariosByDeudor.size}`);
