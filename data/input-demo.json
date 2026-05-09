@@ -1,0 +1,1077 @@
+{
+  "loadId": "11764300",
+  "deliveryDate": "2026-05-08",
+  "depot": {
+    "id": "mollet",
+    "name": "DDI Mollet",
+    "lat": 41.5394,
+    "lng": 2.213,
+    "address": "C/Molí de Can Bassa, Nau Damm 1, Pol. Ind. Can Magarola, 08100 Mollet del Vallès"
+  },
+  "vehicle": {
+    "id": "V235045",
+    "plate": "7524KXX",
+    "type": "8_pallet_truck",
+    "palletSlots": 8,
+    "access": [
+      "left",
+      "right",
+      "rear"
+    ]
+  },
+  "driver": {
+    "id": "850004",
+    "name": "Fran Romero"
+  },
+  "stops": [
+    {
+      "id": "stop_001",
+      "clientId": "9100627695",
+      "clientName": "BAR PAVELLO ST JULIA VILATORTA",
+      "address": "AVENIDA SANT LLORENÇ S/N",
+      "city": "SANT JULIÀ DE VILATORTA",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9215,
+      "lng": 2.3242,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "13:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.82,
+      "orderIds": [
+        "order_001",
+        "order_002"
+      ]
+    },
+    {
+      "id": "stop_002",
+      "clientId": "9100727035",
+      "clientName": "BAR EL TUPÍ",
+      "address": "Avinguda Nostra Senyora de Montserrat",
+      "city": "SANT JULIÀ DE VILATORTA",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9208,
+      "lng": 2.3215,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "13:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.88,
+      "orderIds": [
+        "order_003"
+      ]
+    },
+    {
+      "id": "stop_003",
+      "clientId": "9100058180",
+      "clientName": "MAS L'ALBAREDA",
+      "address": "Avinguda de Sant Llorenç 68",
+      "city": "SANT JULIÀ DE VILATORTA",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.922,
+      "lng": 2.3228,
+      "timeWindow": {
+        "from": "08:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.75,
+      "orderIds": [
+        "order_004"
+      ]
+    },
+    {
+      "id": "stop_004",
+      "clientId": "9100129392",
+      "clientName": "BAR NURIA ST.JULIA VILATORTA",
+      "address": "CALLE NURIA 27",
+      "city": "SANT JULIÀ DE VILATORTA",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9195,
+      "lng": 2.3258,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.79,
+      "orderIds": [
+        "order_005",
+        "order_006"
+      ]
+    },
+    {
+      "id": "stop_005",
+      "clientId": "9100056827",
+      "clientName": "CAL TEIXIDOR",
+      "address": "Carrer de Puig-l'agulla s/n",
+      "city": "SANT JULIÀ DE VILATORTA",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9185,
+      "lng": 2.327,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.71,
+      "orderIds": [
+        "order_007"
+      ]
+    },
+    {
+      "id": "stop_006",
+      "clientId": "9100057776",
+      "clientName": "RESTAURANT EL ROSER",
+      "address": "Avinguda Pau Casals 22",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9312,
+      "lng": 2.2878,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "13:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.85,
+      "orderIds": [
+        "order_008"
+      ]
+    },
+    {
+      "id": "stop_007",
+      "clientId": "9100220279",
+      "clientName": "CELLER CALLDETENES",
+      "address": "CALLE GRAN 1",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9298,
+      "lng": 2.2842,
+      "timeWindow": {
+        "from": "10:00",
+        "to": "13:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.68,
+      "orderIds": [
+        "order_009"
+      ]
+    },
+    {
+      "id": "stop_008",
+      "clientId": "9100145307",
+      "clientName": "SUKIPA",
+      "address": "CALLE GRAN 9",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9305,
+      "lng": 2.2856,
+      "timeWindow": {
+        "from": "10:00",
+        "to": "14:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.9,
+      "orderIds": [
+        "order_010"
+      ]
+    },
+    {
+      "id": "stop_009",
+      "clientId": "9100572141",
+      "clientName": "BAR DE LA BENZINERA",
+      "address": "CARRETERA N-141 D S/N",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9325,
+      "lng": 2.282,
+      "timeWindow": {
+        "from": "08:00",
+        "to": "20:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.73,
+      "orderIds": [
+        "order_011"
+      ]
+    },
+    {
+      "id": "stop_010",
+      "clientId": "9100742290",
+      "clientName": "BAR DE LA BENZINERA HIGIENE",
+      "address": "CARRETERA N-141 D S/N",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9325,
+      "lng": 2.282,
+      "timeWindow": {
+        "from": "08:00",
+        "to": "20:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.65,
+      "orderIds": [
+        "order_012"
+      ]
+    },
+    {
+      "id": "stop_011",
+      "clientId": "9100667648",
+      "clientName": "CA LA NENA",
+      "address": "Carrer Gran 20",
+      "city": "CALLDETENES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.931,
+      "lng": 2.2835,
+      "timeWindow": {
+        "from": "10:00",
+        "to": "15:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.83,
+      "orderIds": [
+        "order_013"
+      ]
+    },
+    {
+      "id": "stop_012",
+      "clientId": "9100159144",
+      "clientName": "BAR KARNAK",
+      "address": "CALLE MAJOR 12",
+      "city": "FOLGUEROLES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9345,
+      "lng": 2.3105,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "13:00"
+      },
+      "paymentType": "CONTADO",
+      "historicalConfidence": 0.87,
+      "orderIds": [
+        "order_014"
+      ]
+    },
+    {
+      "id": "stop_013",
+      "clientId": "9100058035",
+      "clientName": "L'ESPAI RESTAURANT",
+      "address": "CALLE REC D'ACUMULADA 9",
+      "city": "FOLGUEROLES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9352,
+      "lng": 2.3125,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.76,
+      "orderIds": [
+        "order_015"
+      ]
+    },
+    {
+      "id": "stop_014",
+      "clientId": "9100385693",
+      "clientName": "LA COCA DE FOLGUEROLES",
+      "address": "Carrer Camí Vell de Vic 16",
+      "city": "FOLGUEROLES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.9338,
+      "lng": 2.3085,
+      "timeWindow": {
+        "from": "09:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.72,
+      "orderIds": [
+        "order_016",
+        "order_017"
+      ]
+    },
+    {
+      "id": "stop_015",
+      "clientId": "9100767890",
+      "clientName": "CAL CISTELLER",
+      "address": "Plaça Mossen Cinto Verdaguer 3",
+      "city": "FOLGUEROLES",
+      "postalCode": "08504",
+      "zone": "DD01",
+      "route": "DR0027",
+      "lat": 41.936,
+      "lng": 2.3118,
+      "timeWindow": {
+        "from": "10:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "historicalConfidence": 0.69,
+      "orderIds": [
+        "order_018"
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "id": "order_001",
+      "stopId": "stop_001",
+      "documentId": "828482327",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 12,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 12,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED15LN",
+          "name": "ESTRELLA DAMM 1/5 LN",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 6.0,
+          "weight_kg": 14.34,
+          "returnable": false,
+          "warehouseLocation": "AA08A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        },
+        {
+          "productId": "VE11",
+          "name": "AGUA VERI 1/1 VIDRIO RET.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 12.0,
+          "weight_kg": 21.59,
+          "returnable": true,
+          "warehouseLocation": "AA11A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 314.92,
+      "collectionAmount": 314.92
+    },
+    {
+      "id": "order_002",
+      "stopId": "stop_001",
+      "documentId": "841094453",
+      "items": [],
+      "totalAmount": 0.0,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_003",
+      "stopId": "stop_002",
+      "documentId": "828482329",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 24,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 24,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        },
+        {
+          "productId": "VO13",
+          "name": "VOLL-DAMM 1/3 RET.",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA07A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        },
+        {
+          "productId": "VE11",
+          "name": "AGUA VERI 1/1 VIDRIO RET.",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 12.0,
+          "weight_kg": 21.59,
+          "returnable": true,
+          "warehouseLocation": "AA11A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 618.38,
+      "collectionAmount": 618.38
+    },
+    {
+      "id": "order_004",
+      "stopId": "stop_003",
+      "documentId": "828482325",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 18,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 18,
+          "palletUnits": 1
+        },
+        {
+          "productId": "TU13",
+          "name": "TURIA 1/3 RET.",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA03A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 390.05,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_005",
+      "stopId": "stop_004",
+      "documentId": "828482328",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 36,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 36,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 2,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 8,
+          "palletUnits": 4
+        },
+        {
+          "productId": "ED15LN",
+          "name": "ESTRELLA DAMM 1/5 LN",
+          "quantity": 6,
+          "unit": "Caja",
+          "volume_L": 6.0,
+          "weight_kg": 14.34,
+          "returnable": false,
+          "warehouseLocation": "AA08A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 6,
+          "palletUnits": 1
+        },
+        {
+          "productId": "FD13",
+          "name": "FREE DAMM 1/3 RET.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA06A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 1435.93,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_006",
+      "stopId": "stop_004",
+      "documentId": "841094454",
+      "items": [],
+      "totalAmount": 0.0,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_007",
+      "stopId": "stop_005",
+      "documentId": "828482326",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 24,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 24,
+          "palletUnits": 1
+        },
+        {
+          "productId": "VO13",
+          "name": "VOLL-DAMM 1/3 RET.",
+          "quantity": 4,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA07A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 4,
+          "palletUnits": 1
+        },
+        {
+          "productId": "DL13",
+          "name": "DAMM LEMON 1/3 RET",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA02A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        },
+        {
+          "productId": "TU20",
+          "name": "TURIA BARRIL 20L.",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 20.0,
+          "weight_kg": 27.39,
+          "returnable": true,
+          "warehouseLocation": "AC03A2",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        }
+      ],
+      "totalAmount": 1073.63,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_008",
+      "stopId": "stop_006",
+      "documentId": "828482335",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 12,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 12,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        },
+        {
+          "productId": "VE32SP",
+          "name": "AGUA VERI 1,5L PET CAJA 12U.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 18.0,
+          "weight_kg": 19.56,
+          "returnable": false,
+          "warehouseLocation": "EB02A1",
+          "handlingType": "pack",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 412.84,
+      "collectionAmount": 412.84
+    },
+    {
+      "id": "order_009",
+      "stopId": "stop_007",
+      "documentId": "828482336",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 6,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 6,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 96.27,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_010",
+      "stopId": "stop_008",
+      "documentId": "828482334",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 18,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 18,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        },
+        {
+          "productId": "EC13",
+          "name": "DAURA DAMM 1/3 RET.",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "BA05A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 702.43,
+      "collectionAmount": 702.43
+    },
+    {
+      "id": "order_011",
+      "stopId": "stop_009",
+      "documentId": "828482339",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 24,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 24,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        },
+        {
+          "productId": "FDT13",
+          "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA04A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 834.21,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_012",
+      "stopId": "stop_010",
+      "documentId": "828482338",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 6,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 6,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 54.22,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_013",
+      "stopId": "stop_011",
+      "documentId": "828482337",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 12,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 12,
+          "palletUnits": 1
+        },
+        {
+          "productId": "TU13",
+          "name": "TURIA 1/3 RET.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA03A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 409.63,
+      "collectionAmount": 409.63
+    },
+    {
+      "id": "order_014",
+      "stopId": "stop_012",
+      "documentId": "828482333",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 12,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 12,
+          "palletUnits": 1
+        },
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30",
+          "quantity": 1,
+          "unit": "Barril",
+          "volume_L": 30.0,
+          "weight_kg": 42.79,
+          "returnable": true,
+          "warehouseLocation": "AA10A1",
+          "handlingType": "barrel",
+          "palletUnitsEach": 4,
+          "palletUnitsTotal": 4,
+          "palletUnits": 4
+        },
+        {
+          "productId": "VO13",
+          "name": "VOLL-DAMM 1/3 RET.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA07A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 448.79,
+      "collectionAmount": 448.79
+    },
+    {
+      "id": "order_015",
+      "stopId": "stop_013",
+      "documentId": "828482331",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 18,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 18,
+          "palletUnits": 1
+        },
+        {
+          "productId": "FD13",
+          "name": "FREE DAMM 1/3 RET.",
+          "quantity": 3,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA06A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 3,
+          "palletUnits": 1
+        },
+        {
+          "productId": "FDL13",
+          "name": "FREE DAMM LIMON 1/3 RET. PP",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA05A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 541.42,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_016",
+      "stopId": "stop_014",
+      "documentId": "828482330",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 6,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 6,
+          "palletUnits": 1
+        },
+        {
+          "productId": "DL13",
+          "name": "DAMM LEMON 1/3 RET",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA02A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 199.32,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_017",
+      "stopId": "stop_014",
+      "documentId": "841094455",
+      "items": [],
+      "totalAmount": 0.0,
+      "collectionAmount": 0.0
+    },
+    {
+      "id": "order_018",
+      "stopId": "stop_015",
+      "documentId": "828482332",
+      "items": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP",
+          "quantity": 6,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA09A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 6,
+          "palletUnits": 1
+        },
+        {
+          "productId": "VO13",
+          "name": "VOLL-DAMM 1/3 RET.",
+          "quantity": 2,
+          "unit": "Caja",
+          "volume_L": 7.92,
+          "weight_kg": 17.0,
+          "returnable": true,
+          "warehouseLocation": "AA07A1",
+          "handlingType": "crate",
+          "palletUnitsEach": 1,
+          "palletUnitsTotal": 2,
+          "palletUnits": 1
+        }
+      ],
+      "totalAmount": 372.95,
+      "collectionAmount": 0.0
+    }
+  ],
+  "_summary": {
+    "totalStops": 15,
+    "totalOrders": 18,
+    "totalPalletUnits": 314,
+    "vehiclePalletSlots": 8,
+    "occupancyPct": 100.0,
+    "palletUnitsPerSlot": 40,
+    "estimatedPhysicalSlots": 8
+  },
+  "_note_palletUnits": "palletUnitsEach: relative loading weight (crate=1, barrel=4). Physical slot estimate: sum(palletUnitsTotal) / 40 cajas_per_slot."
+}

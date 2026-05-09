@@ -1,0 +1,634 @@
+{
+  "depotId": "mollet",
+  "_note": "Warehouse layout extracted from Hoja de Carga 11764300 (DDI Mollet). Aisle AA=ambient returnable bottles, AC=cold kegs/barrels, BA-DB=other beverages, FA-FC=accessories.",
+  "slots": [
+    {
+      "locationCode": "AA02A1",
+      "aisle": "AA",
+      "position": "02",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "DL13",
+          "name": "DAMM LEMON 1/3 RET"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA03A1",
+      "aisle": "AA",
+      "position": "03",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "TU13",
+          "name": "TURIA 1/3 RET."
+        }
+      ]
+    },
+    {
+      "locationCode": "AA04A1",
+      "aisle": "AA",
+      "position": "04",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "FDT13",
+          "name": "FREE DAMM TOSTADA 1/3 RET. PP"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA05A1",
+      "aisle": "AA",
+      "position": "05",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "FDL13",
+          "name": "FREE DAMM LIMON 1/3 RET. PP"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA06A1",
+      "aisle": "AA",
+      "position": "06",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "FD13",
+          "name": "FREE DAMM 1/3 RET."
+        }
+      ]
+    },
+    {
+      "locationCode": "AA07A1",
+      "aisle": "AA",
+      "position": "07",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "VO13",
+          "name": "VOLL-DAMM 1/3 RET."
+        }
+      ]
+    },
+    {
+      "locationCode": "AA08A1",
+      "aisle": "AA",
+      "position": "08",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "ED15LN",
+          "name": "ESTRELLA DAMM 1/5 LN"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA09A1",
+      "aisle": "AA",
+      "position": "09",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "ED13",
+          "name": "ESTRELLA DAMM 1/3 RET. PP"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA10A1",
+      "aisle": "AA",
+      "position": "10",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "ED30",
+          "name": "ESTRELLA DAMM BARRIL 30"
+        }
+      ]
+    },
+    {
+      "locationCode": "AA11A1",
+      "aisle": "AA",
+      "position": "11",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "VE11",
+          "name": "AGUA VERI 1/1 VIDRIO RET."
+        }
+      ]
+    },
+    {
+      "locationCode": "AC01A1",
+      "aisle": "AC",
+      "position": "01",
+      "level": "A1",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "TB8",
+          "name": "BOTELLAS CARBONICO#8 KILOS"
+        },
+        {
+          "productId": "ID20",
+          "name": "INEDIT DAMM BARRIL 20L"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC03A2",
+      "aisle": "AC",
+      "position": "03",
+      "level": "A2",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "TU20",
+          "name": "TURIA BARRIL 20L."
+        }
+      ]
+    },
+    {
+      "locationCode": "AC03A3",
+      "aisle": "AC",
+      "position": "03",
+      "level": "A3",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "DL20",
+          "name": "DAMM LEMON BARRIL 20L."
+        }
+      ]
+    },
+    {
+      "locationCode": "AC04A1",
+      "aisle": "AC",
+      "position": "04",
+      "level": "A1",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "DL30",
+          "name": "DAMM LEMON BARRIL 30"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC04A3",
+      "aisle": "AC",
+      "position": "04",
+      "level": "A3",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0LT0032",
+          "name": "CACAOLAT VIDRIO 20CL RET 30U"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC05A2",
+      "aisle": "AC",
+      "position": "05",
+      "level": "A2",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0LT0009",
+          "name": "LETONA GRAN CREME 1L VR 12U"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC06A1",
+      "aisle": "AC",
+      "position": "06",
+      "level": "A1",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0RF0287",
+          "name": "COCA COLA VR237 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC07A1",
+      "aisle": "AC",
+      "position": "07",
+      "level": "A1",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0AG0011",
+          "name": "VICHY CATALAN GAS 1/2 RET 20U"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC07A2",
+      "aisle": "AC",
+      "position": "07",
+      "level": "A2",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0AG0010",
+          "name": "VICHY CATALAN GAS 1L RET 12U"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC07A3",
+      "aisle": "AC",
+      "position": "07",
+      "level": "A3",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0AG0021",
+          "name": "FONT D.OR MAXIMUM NATURAL 1L RET"
+        }
+      ]
+    },
+    {
+      "locationCode": "AC08A3",
+      "aisle": "AC",
+      "position": "08",
+      "level": "A3",
+      "zone": "cold",
+      "products": [
+        {
+          "productId": "0AG0003",
+          "name": "FONT D.OR NATURAL 1L RET 12U"
+        }
+      ]
+    },
+    {
+      "locationCode": "A0DISTRIDA",
+      "aisle": "A0DISTRIDA",
+      "position": "",
+      "level": "",
+      "zone": "bulk",
+      "products": [
+        {
+          "productId": "0AM4905",
+          "name": "LAYS SAL 20U"
+        }
+      ]
+    },
+    {
+      "locationCode": "BA01A1",
+      "aisle": "BA",
+      "position": "01",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0AG0183",
+          "name": "VICHY CATALAN GAS 30CL RET 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "BA02A3",
+      "aisle": "BA",
+      "position": "02",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF0014",
+          "name": "ZALA GASEOSA 50CL VID. RET 20U"
+        }
+      ]
+    },
+    {
+      "locationCode": "BA03A3",
+      "aisle": "BA",
+      "position": "03",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "ED13SR",
+          "name": "ESTRELLA DAMM 1/3 SIN RETORNO"
+        }
+      ]
+    },
+    {
+      "locationCode": "BA05A1",
+      "aisle": "BA",
+      "position": "05",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "EC13",
+          "name": "DAURA DAMM 1/3 RET."
+        }
+      ]
+    },
+    {
+      "locationCode": "BC04A3",
+      "aisle": "BC",
+      "position": "04",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "VE51SP",
+          "name": "AGUA VERI 5/1 CAJA 3U."
+        }
+      ]
+    },
+    {
+      "locationCode": "CA04A2",
+      "aisle": "CA",
+      "position": "04",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF0019",
+          "name": "COCA COLA LATA 33CL 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "CA06A2",
+      "aisle": "CA",
+      "position": "06",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF0022",
+          "name": "AQUARIUS LIMON 33CL LATA 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "CACB04A1",
+      "aisle": "CACB",
+      "position": "04",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF1697",
+          "name": "COCA COLA IMPORT LATA33 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "CB05A3",
+      "aisle": "CB",
+      "position": "05",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF1698",
+          "name": "COCA COLA ZERO IMPORT LATA33 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "CB06A2",
+      "aisle": "CB",
+      "position": "06",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "NTL13LT6",
+          "name": "NESTEA LIMON 1/3 LATA 4U-PACK 6U"
+        }
+      ]
+    },
+    {
+      "locationCode": "DA07A3",
+      "aisle": "DA",
+      "position": "07",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF1081",
+          "name": "GEISER SIFON 75CL VIDRIO RET 8U"
+        }
+      ]
+    },
+    {
+      "locationCode": "DA09A1",
+      "aisle": "DA",
+      "position": "09",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF0332",
+          "name": "ZALA GASEOSA 50CL S/R 12U"
+        }
+      ]
+    },
+    {
+      "locationCode": "DB04A3",
+      "aisle": "DB",
+      "position": "04",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "ED14P6",
+          "name": "ESTRELLA DAMM 1/4 PACK SEMICERRADO 6U"
+        }
+      ]
+    },
+    {
+      "locationCode": "DB06A1",
+      "aisle": "DB",
+      "position": "06",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0RF0109",
+          "name": "BITTER KAS 200 SR 24U"
+        }
+      ]
+    },
+    {
+      "locationCode": "E007A1",
+      "aisle": "E",
+      "position": "007",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "UE975",
+          "name": "VASO PAPEL ED 33CL"
+        }
+      ]
+    },
+    {
+      "locationCode": "EA08A1",
+      "aisle": "EA",
+      "position": "08",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0VE0465",
+          "name": "SOLAR DE ZUNIL BLANCO 75CL 6U"
+        }
+      ]
+    },
+    {
+      "locationCode": "EB02A1",
+      "aisle": "EB",
+      "position": "02",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "VE32SP",
+          "name": "AGUA VERI 1,5L PET CAJA 12U."
+        }
+      ]
+    },
+    {
+      "locationCode": "EB03A1",
+      "aisle": "EB",
+      "position": "03",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "VE12SP",
+          "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH"
+        }
+      ]
+    },
+    {
+      "locationCode": "FA01A1",
+      "aisle": "FA",
+      "position": "01",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "UC010",
+          "name": "ABRIDOR NORMAL ED"
+        }
+      ]
+    },
+    {
+      "locationCode": "FA02A2",
+      "aisle": "FA",
+      "position": "02",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "UE902",
+          "name": "COPA GRANDE ED"
+        }
+      ]
+    },
+    {
+      "locationCode": "FA03A1",
+      "aisle": "FA",
+      "position": "03",
+      "level": "A1",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0LT0103",
+          "name": "YOSOY AVENA BARISTA 1L BRIK 6U"
+        }
+      ]
+    },
+    {
+      "locationCode": "FA05A2",
+      "aisle": "FA",
+      "position": "05",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0AM0783",
+          "name": "LOTUS BISCOFF 300U"
+        }
+      ]
+    },
+    {
+      "locationCode": "FA06A3",
+      "aisle": "FA",
+      "position": "06",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0LT0033",
+          "name": "LETONA GRAN CREME PET 1,5L PET 6U"
+        }
+      ]
+    },
+    {
+      "locationCode": "FC02A2",
+      "aisle": "FC",
+      "position": "02",
+      "level": "A2",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0AM1290",
+          "name": "XPLICIT AZUCAR 7GR 1000U"
+        }
+      ]
+    },
+    {
+      "locationCode": "FC04A3",
+      "aisle": "FC",
+      "position": "04",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0CF0374",
+          "name": "BONKA INTENSO NATURAL 1KG"
+        }
+      ]
+    },
+    {
+      "locationCode": "FC05A3",
+      "aisle": "FC",
+      "position": "05",
+      "level": "A3",
+      "zone": "ambient",
+      "products": [
+        {
+          "productId": "0CF0355",
+          "name": "BONKA ESSENTIA DESCAFEINADO GRANO 500G"
+        }
+      ]
+    }
+  ]
+}
