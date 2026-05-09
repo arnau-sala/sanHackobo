@@ -1,7 +1,9 @@
 {
-  "name": "@workspace/optimizer-route",
+  "name": "@damm/optimizer-route",
   "version": "0.1.0",
-  "main": "dist/index.js",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "ts-node src/runMock.ts",
     "start": "ts-node src/api/server.ts",

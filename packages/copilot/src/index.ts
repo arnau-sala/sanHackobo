@@ -1,6 +1,6 @@
 import { answerCopilotQuestion } from "./answerQuestion";
 import { buildStructuredPrompt } from "./prompt";
-import { CopilotQuestionInput, CopilotResponse } from "./types";
+import type { CopilotQuestionInput, CopilotResponse } from "./types";
 
 export type CopilotEngineOutput = {
   response: CopilotResponse;
@@ -17,4 +17,4 @@ export function runCopilot(input: CopilotQuestionInput): CopilotEngineOutput {
   };
 }
 
-export * from "./types";
+export type * from "./types";

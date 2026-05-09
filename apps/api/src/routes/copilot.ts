@@ -1,5 +1,4 @@
-import { runCopilot } from "../../../../packages/copilot/src";
-import { CopilotQuestionInput } from "../../../../packages/copilot/src/types";
+import { runCopilot, type CopilotQuestionInput } from "@damm/copilot";
 
 export type HandlerResult = {
   status: number;

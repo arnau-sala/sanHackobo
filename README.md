@@ -62,3 +62,43 @@ Block A: stops 1–4
 Block B: stops 5–8
 Block C: stops 9–12
 Block D: stops 13–18
+```
+
+---
+
+## Repo layout (monorepo)
+
+| Path | Role |
+|------|------|
+| `apps/api` | HTTP API: copilot, voz (ElevenLabs), optimización de ruta |
+| `apps/web` | Frontend Vite + React (visualización / demos) |
+| `packages/copilot` | Motor copilot (contexto + respuestas demo) |
+| `packages/optimizer-route` | Optimizador de ruta |
+| `packages/optimizer-load` | Optimizador de carga |
+| `packages/mock-data` | JSON de escenarios |
+| `packages/contracts` | Tipos compartidos (re-exports) |
+| `docs/` | Contratos API, flujo demo, supuestos |
+| `scripts/data-parser` | Placeholder para parsers |
+
+---
+
+## Developer setup
+
+1. **Requisitos**: Node.js 20+ y npm.
+2. **Instalar**: en la raíz del repo ejecuta `npm install`.
+3. **Entorno** (voz opcional): copia `.env.example` a `.env` y configura `ELEVENLABS_API_KEY` si usas TTS/STT.
+4. **Desarrollo**:
+   - Todo junto: `npm run dev` (API `:3001` + web `:5173`, proxy `/api`).
+   - Solo API: `npm run dev:api`
+   - Solo web: `npm run dev:web`
+5. **Comprobaciones**: `npm run typecheck`, `npm run test`, `npm run build` (cada workspace con script definido).
+
+Más detalle: [docs/demo-flow.md](docs/demo-flow.md), [docs/api-contracts.md](docs/api-contracts.md).
+
+---
+
+## Branch strategy (hackathon)
+
+- `main`: estable para demo / integración.
+- Ramas cortas por feature (`feature/copilot`, `feature/route-opt`, …); merge a `main` o `develop` con PR pequeños para reducir conflictos.
+- Evita historiales no relacionados: si una rama viene de otro repo, usa `cherry-pick` o merge explícito `--allow-unrelated-histories` solo si el equipo lo acuerda.
