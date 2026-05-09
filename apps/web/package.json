@@ -13,8 +13,13 @@
   "dependencies": {
     "@damm/copilot": "*",
     "@damm/optimizer-load": "*",
+    "@types/leaflet": "^1.9.21",
+    "@types/mapbox-gl": "^3.4.1",
+    "leaflet": "^1.9.4",
+    "mapbox-gl": "^3.23.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
