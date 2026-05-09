@@ -9,6 +9,8 @@ Servidor HTTP simple con endpoints de demo para el hackathon.
 - `GET /handsfree` (demo navegador: escucha continua + respuesta de voz)
 - `POST /api/copilot`
 - `POST /api/optimize-route` (body `InputPayload` del optimizador → `routePlan` + `meta`)
+- `POST /api/optimize-load` (body `inputData` + `routePlan` simplificado del motor de carga → `loadPlan`)
+- `POST /api/pipeline` (encadena Persona 2 + 3: por defecto usa `data/input-demo.json` si no envias `inputPayload`)
 - `POST /api/voice/query` (respuesta + audio TTS ElevenLabs)
 - `POST /api/voice/handsfree` (audio -> STT -> copilot -> TTS)
 
@@ -120,3 +122,13 @@ Respuesta:
   }
 }
 ```
+
+## Ejemplo `POST /api/pipeline`
+
+Sin body (o `{}`) usa `data/input-demo.json` y devuelve `inputData` mapeado, `routePlan` completo del optimizador, `loadPlan` y tiempos en `meta`.
+
+```bash
+curl -s -X POST http://localhost:3001/api/pipeline -H "Content-Type: application/json" -d "{}"
+```
+
+Opcional: enviar un `InputPayload` completo en `inputPayload` para usar tus datos en lugar del demo.

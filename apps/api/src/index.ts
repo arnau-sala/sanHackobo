@@ -7,7 +7,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { copilotRoute } from "./routes/copilot";
 import { demoScenarioRoute } from "./routes/demo-scenario";
 import { handsfreeDemoRoute } from "./routes/handsfree-demo";
+import { optimizeLoadHandler } from "./routes/optimize-load";
 import { optimizeRouteHandler } from "./routes/optimize-route";
+import { pipelineHandler } from "./routes/pipeline";
 import { voiceHandsfreeRoute } from "./routes/voice-handsfree";
 import { voiceQueryRoute } from "./routes/voice-query";
 
@@ -134,6 +136,30 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  if (method === "POST" && pathname === "/api/optimize-load") {
+    try {
+      const body = await readJsonBody(req);
+      const result = await optimizeLoadHandler(body);
+      sendJson(res, result.status, result.body);
+      return;
+    } catch {
+      sendJson(res, 400, { error: "JSON invalido en el body" });
+      return;
+    }
+  }
+
+  if (method === "POST" && pathname === "/api/pipeline") {
+    try {
+      const body = await readJsonBody(req);
+      const result = await pipelineHandler(body);
+      sendJson(res, result.status, result.body);
+      return;
+    } catch {
+      sendJson(res, 400, { error: "JSON invalido en el body" });
+      return;
+    }
+  }
+
   if (method === "POST" && pathname === "/api/voice/query") {
     try {
       const body = await readJsonBody(req);
@@ -169,6 +195,8 @@ const server = http.createServer(async (req, res) => {
       "GET /handsfree",
       "POST /api/copilot",
       "POST /api/optimize-route",
+      "POST /api/optimize-load",
+      "POST /api/pipeline",
       "POST /api/voice/query",
       "POST /api/voice/handsfree",
     ],

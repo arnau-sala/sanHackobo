@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@damm/copilot": "*",
+    "@damm/optimizer-load": "*",
     "@damm/optimizer-route": "*"
   },
   "devDependencies": {
