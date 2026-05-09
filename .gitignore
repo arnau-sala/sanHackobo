@@ -28,3 +28,5 @@ __pycache__/
 
 # Large local challenge files (keep local, do not push)
 context/
+
+.env

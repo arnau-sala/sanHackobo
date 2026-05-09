@@ -1,0 +1,27 @@
+{
+  "name": "sanhackobo",
+  "version": "1.0.0",
+  "description": "Prototype for the Damm / DDI Interhack challenge.",
+  "main": "apps/api/src/index.ts",
+  "scripts": {
+    "dev:api": "tsx watch apps/api/src/index.ts",
+    "start:api": "tsx apps/api/src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnau-sala/sanHackobo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arnau-sala/sanHackobo/issues"
+  },
+  "homepage": "https://github.com/arnau-sala/sanHackobo#readme",
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
