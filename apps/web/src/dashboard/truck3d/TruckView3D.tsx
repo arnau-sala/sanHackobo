@@ -16,15 +16,14 @@
  *                            llevan halo amber + callout "Recoger aqui"
  *
  * El componente es controlado: recibe `selectedSlotId`, `currentStopId`,
- * `viewMode` y emite `onSelectSlot`. El "vaciado" del camion lo calcula
- * `palletRenderModel` a partir de `deliveredStopIds`.
+ * `viewMode` y emite `onSelectSlot` (el panel de detalle lo pinta TruckStage).
+ * El "vaciado" del camion lo calcula `palletRenderModel` a partir de
+ * `deliveredStopIds`.
  */
 import { useMemo } from "react";
 import type { LoadPlan, PalletSlot } from "@damm/optimizer-load";
 import { Pallet3D } from "./Pallet3D";
-import { PalletPopup } from "./PalletPopup";
 import { TruckShell } from "./TruckShell";
-import { buildPalletStack } from "./buildPalletStack";
 import { buildRenderPallet, slotBox, type RenderPallet } from "./palletRenderModel";
 import { iso } from "./projection";
 import styles from "./TruckView3D.module.css";
@@ -92,12 +91,7 @@ export function TruckView3D({
     [placed],
   );
 
-  // 4. Datos del popup (si hay slot seleccionado).
-  const selected = selectedSlotId
-    ? placed.find((p) => p.slot.slotId === selectedSlotId)
-    : null;
-
-  // 5. Callout "↓ Recoger aqui" sobre el palet activo si solo hay uno.
+  // 4. Callout "↓ Recoger aqui" sobre el palet activo si solo hay uno.
   const calloutSlot =
     viewMode === "next-stop" && highlightedSlotIds.size > 0
       ? placed.find((p) => highlightedSlotIds.has(p.slot.slotId))
@@ -108,7 +102,6 @@ export function TruckView3D({
       className={styles.svg}
       viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
       preserveAspectRatio="xMidYMid meet"
-      style={{ aspectRatio: `${VIEWBOX_W} / ${VIEWBOX_H}` }}
       xmlns="http://www.w3.org/2000/svg"
       onClick={() => onSelectSlot?.(null)}
     >
@@ -143,21 +136,6 @@ export function TruckView3D({
           x1={calloutSlot.bbox.x1}
           y0={calloutSlot.bbox.y0}
           y1={calloutSlot.bbox.y1}
-        />
-      )}
-
-      {selected && (
-        <PalletPopup
-          slot={selected.slot}
-          stack={buildPalletStack(
-            selected.slot.items.filter(
-              (it) => !deliveredStopIds.has(it.stopId),
-            ),
-            { reservedForReturnables: selected.slot.accessPriority === "returnables" },
-          )}
-          render={selected.render}
-          bbox={selected.bbox}
-          onClose={() => onSelectSlot?.(null)}
         />
       )}
     </svg>

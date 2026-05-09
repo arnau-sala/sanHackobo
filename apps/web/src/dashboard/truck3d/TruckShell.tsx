@@ -8,7 +8,7 @@
  * Composicion:
  *   - Cabina (delante del trailer, en y negativa): chasis + cabina
  *     bicolor + ventanas, parrilla, faros, deflector y rueda delantera.
- *   - Pared frontal del trailer (y=0) en blanco con costillas verticales.
+ *   - Pared frontal del trailer (y=0) en blanco liso + logo Damm.
  *   - Suelo (z=0) gris claro con linea central de pasillo.
  */
 import { iso, pts } from "./projection";
@@ -17,29 +17,64 @@ export const TW = 8;
 export const TD = 12;
 export const TH = 4.5;
 
+/** Rojo puro: cara frontal de la cabina y logo Damm en la pared (mismo tono). */
+const CABIN_FRONT_RED = "#FF0000";
+
+/** Textura plana (u,v) en [0,1]² → cara frontal del trailer y=0 (x,z mundo). */
+function trailerFrontLogoMatrix(): string {
+  const marginX = 0.2 * TW;
+  const marginZBot = 0.14 * TH;
+  const marginZTop = 0.22 * TH;
+  const zTop = TH - marginZTop;
+  const zBot = marginZBot;
+  const q00 = iso(marginX, 0, zTop);
+  const q10 = iso(TW - marginX, 0, zTop);
+  const q01 = iso(marginX, 0, zBot);
+  const ex0 = q10[0] - q00[0];
+  const ex1 = q10[1] - q00[1];
+  const ey0 = q01[0] - q00[0];
+  const ey1 = q01[1] - q00[1];
+  return `matrix(${ex0},${ex1},${ey0},${ey1},${q00[0]},${q00[1]})`;
+}
+
 export function TruckShell() {
   return (
     <g data-truck-shell>
+      <defs>
+        {/*
+          Fondo negro del PNG → transparente; mismo rojo que la cara frontal de la cabina.
+        */}
+        <filter
+          id="dammWallLogoPaint"
+          x="-15%"
+          y="-15%"
+          width="130%"
+          height="130%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="lumaMask" />
+          <feFlood floodColor={CABIN_FRONT_RED} floodOpacity="1" result="redFlood" />
+          <feComposite in="redFlood" in2="lumaMask" operator="in" result="logoRed" />
+        </filter>
+      </defs>
+
       <TruckCabin />
 
       {/* Pared frontal del trailer (detras de los palets) */}
       <polygon
         points={pts([iso(0, 0, 0), iso(TW, 0, 0), iso(TW, 0, TH), iso(0, 0, TH)])}
         fill="#F3F4F6"
-        stroke="#D1D5DB"
-        strokeWidth="1"
+        stroke="none"
       />
-      {[1, 2, 3, 4, 5, 6, 7].map((x) => (
-        <line
-          key={`fw${x}`}
-          x1={iso(x, 0, 0)[0]}
-          y1={iso(x, 0, 0)[1]}
-          x2={iso(x, 0, TH)[0]}
-          y2={iso(x, 0, TH)[1]}
-          stroke="#E5E7EB"
-          strokeWidth="1"
-        />
-      ))}
+      <image
+        href={`${import.meta.env.BASE_URL}damm-truck-logo.png`}
+        width={1}
+        height={1}
+        preserveAspectRatio="xMidYMid meet"
+        transform={trailerFrontLogoMatrix()}
+        filter="url(#dammWallLogoPaint)"
+        style={{ pointerEvents: "none" }}
+      />
 
       {/* Halo gris bajo el remolque */}
       <polygon
@@ -119,7 +154,7 @@ function TruckCabin() {
           iso(cx1, cy0, cz1),
           iso(cx0, cy0, cz1),
         ])}
-        fill="#CC1122"
+        fill={CABIN_FRONT_RED}
       />
 
       {/* Parabrisas */}

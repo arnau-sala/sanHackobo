@@ -136,29 +136,99 @@
   font-weight: 700;
 }
 
-.svgWrap {
-  position: relative;
-  flex: 1 1 auto;
+/* Fila: camion (SVG) a la izquierda, panel de detalle a la derecha.
+   El ancho del camion es SIEMPRE el mismo: se reserva hueco para la columna
+   aunque no este visible, asi el SVG no salta de tamaño al abrir/cerrar. */
+.truckDetailSplit {
+  --truck-detail-gap: 12px;
+  /* Misma logica que .palletDetailColumn: ancho reservado para el panel */
+  --detail-col-w: max(180px, min(220px, 34vw));
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: var(--truck-detail-gap);
+  flex: 1 1 auto;
   min-height: 220px;
-  width: 100%;
-  max-width: 100%;
   min-width: 0;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #f3f4f6;
+  width: 100%;
   margin: 4px 0 8px;
-  padding: 4px;
   box-sizing: border-box;
 }
 
-.svg {
+.truckSvgZone {
+  /* Ancho fijo = stage menos hueco del panel (aunque el aside no exista) */
+  flex: 0 0 auto;
+  width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  max-width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  min-width: 0;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.palletDetailColumn {
+  flex: 0 0 var(--detail-col-w);
+  width: var(--detail-col-w);
+  max-width: 240px;
+  min-width: 180px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .truckDetailSplit {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .truckSvgZone {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .palletDetailColumn {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    justify-content: stretch;
+    padding-top: 0;
+  }
+
+  .palletDetailColumn > div {
+    max-width: none !important;
+  }
+}
+
+.svgWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   max-width: 100%;
-  height: auto;
+  min-width: 0;
+  max-height: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Llena el wrap; viewBox + preserveAspectRatio="xMidYMid meet" escala al maximo dentro del rectangulo */
+.svg {
   display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   vertical-align: top;
   overflow: visible;
 }

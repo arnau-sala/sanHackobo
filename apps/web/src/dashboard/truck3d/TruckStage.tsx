@@ -1,17 +1,18 @@
 /**
  * TruckStage = panel del camion 3D + strip de resumen P1..P8.
  *
- * El popup vive ahora DENTRO del SVG (`<foreignObject>` en TruckView3D),
- * asi cuando el SVG se redimensiona el popup sigue pegado al palet sin
- * tener que sincronizar coordenadas DOM ↔ SVG.
+ * Al seleccionar un palet, el detalle se muestra en una columna HTML a la
+ * derecha del SVG (el camion queda solo en la zona izquierda del stage).
  *
  * Comandas y copilot viven en la columna izquierda del Dashboard.
  */
 import { useMemo } from "react";
 import type { LoadPlan } from "@damm/optimizer-load";
 import { TruckView3D, type ViewMode } from "./TruckView3D";
+import { PalletDetailPanel } from "./PalletPopup";
 import { PalletSummaryRow } from "./PalletSummaryRow";
 import { buildPalletStack, type PalletStackInfo } from "./buildPalletStack";
+import { buildRenderPallet } from "./palletRenderModel";
 import styles from "./TruckView3D.module.css";
 
 export type TruckStageProps = {
@@ -70,6 +71,23 @@ export function TruckStage(props: TruckStageProps) {
     return set;
   }, [loadPlan, currentStopId, deliveredStopIds]);
 
+  const selectedSlot = useMemo(() => {
+    if (!selectedSlotId) return null;
+    return loadPlan.palletSlots.find((s) => s.slotId === selectedSlotId) ?? null;
+  }, [loadPlan, selectedSlotId]);
+
+  const selectedRender = useMemo(() => {
+    if (!selectedSlot) return null;
+    const idx = loadPlan.palletSlots
+      .slice(0, 8)
+      .findIndex((s) => s.slotId === selectedSlot.slotId);
+    if (idx < 0) return null;
+    return buildRenderPallet(selectedSlot, { index: idx, deliveredStopIds });
+  }, [selectedSlot, loadPlan, deliveredStopIds]);
+
+  const selectedStack =
+    selectedSlotId != null ? stacks.get(selectedSlotId) : undefined;
+
   return (
     <div className={styles.truckOnlyRoot}>
       <div className={styles.truckColumn}>
@@ -107,15 +125,32 @@ export function TruckStage(props: TruckStageProps) {
             </div>
           </div>
 
-          <div className={styles.svgWrap}>
-            <TruckView3D
-              loadPlan={loadPlan}
-              deliveredStopIds={deliveredStopIds}
-              currentStopId={currentStopId}
-              selectedSlotId={selectedSlotId}
-              onSelectSlot={onSelectSlot}
-              viewMode={viewMode}
-            />
+          <div className={styles.truckDetailSplit}>
+            <div className={styles.truckSvgZone}>
+              <div className={styles.svgWrap}>
+                <TruckView3D
+                  loadPlan={loadPlan}
+                  deliveredStopIds={deliveredStopIds}
+                  currentStopId={currentStopId}
+                  selectedSlotId={selectedSlotId}
+                  onSelectSlot={onSelectSlot}
+                  viewMode={viewMode}
+                />
+              </div>
+            </div>
+            {selectedSlot && selectedRender && selectedStack && (
+              <aside
+                className={styles.palletDetailColumn}
+                aria-label="Detalle del palet"
+              >
+                <PalletDetailPanel
+                  slot={selectedSlot}
+                  stack={selectedStack}
+                  render={selectedRender}
+                  onClose={() => onSelectSlot(null)}
+                />
+              </aside>
+            )}
           </div>
 
           <PalletSummaryRow

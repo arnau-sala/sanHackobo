@@ -6,9 +6,8 @@
  * SVG necesita para pintarlo:
  *
  *   - pos: posicion (col 0..1, row 0..3) en la grilla 4×2
- *   - cols: 2 franjas de carga (frente/trás en profundidad del palet),
- *           cada una con su `BrandKey` y numero de capas (0/1/2). Al
- *           entregar paradas las capas bajan → el camion se va vaciando.
+ *   - cargoKind: "crates" (dos franjas de cajones) o "kegs" (4 barriles 2×2)
+ *   - cols: por franja (cajas) o duplicado coherente (barriles); capas 0/1/2
  *   - typeLabel + accentColor + lista de productos para el popup.
  */
 import type { LoadedItem, PalletSlot } from "@damm/optimizer-load";
@@ -36,6 +35,11 @@ export type RenderPallet = {
   slotId: string;
   pos: { col: 0 | 1; row: 0 | 1 | 2 | 3 };
   cols: [RenderColumn, RenderColumn];
+  /**
+   * Palet homogeneo: o solo cajones de botellas (dos franjas) o solo barriles
+   * (cuatro unidades 2×2). Nunca se mezclan en el mismo palet.
+   */
+  cargoKind: "crates" | "kegs";
 
   typeLabel: "Cajas" | "Mixto" | "Barriles" | "Retornables" | "Vacio";
   sideStr: string;
@@ -49,6 +53,45 @@ export type RenderPallet = {
 };
 
 const DEFAULT_BRAND: BrandKey = "xibeca";
+
+/**
+ * Dos palets del total de 8 muestran barriles (4× 2×2). El resto, cajas.
+ * Orden `loadPlan.palletSlots`: 0=P1 .. 7=P8. Aqui: P3 y P5 (indices 2 y 4).
+ */
+const KEG_PALLETS_VISUAL_INDICES = new Set<number>([2, 4]);
+
+/** Un solo palet de cajas con plastico / marca Estrella Damm (rojo). */
+const ESTRELLA_DAMM_VISUAL_INDEX = 6;
+
+function pickKegBrandKey(items: LoadedItem[]): BrandKey {
+  const kegs = items.filter((it) => it.handlingType === "keg");
+  if (kegs.length === 0) {
+    return "barrilED30";
+  }
+  const byFamily = new Map<string, number>();
+  for (const it of kegs) {
+    const fam = familyOf(it.productId, it.name);
+    byFamily.set(fam, (byFamily.get(fam) ?? 0) + it.quantity);
+  }
+  const top = [...byFamily.entries()].sort((a, b) => b[1] - a[1])[0]![0];
+  return familyToBrandKey(top, { isKeg: true });
+}
+
+/** Capas 0/1/2 para todo el palet de barriles (sin franjas). */
+function computeUnifiedStackLayers(
+  items: LoadedItem[],
+  remainingItems: LoadedItem[],
+): 0 | 1 | 2 {
+  if (items.length === 0 || remainingItems.length === 0) {
+    return 0;
+  }
+  const totalInit = items.reduce((a, it) => a + it.quantity, 0);
+  const totalRem = remainingItems.reduce((a, it) => a + it.quantity, 0);
+  const ratio = totalInit > 0 ? totalRem / totalInit : 0;
+  if (ratio >= 0.55) return 2;
+  if (ratio >= 0.15) return 1;
+  return 0;
+}
 
 /**
  * Calcula la familia dominante por franja a partir de los items
@@ -230,6 +273,36 @@ export function buildRenderPallet(
     brands,
   );
 
+  const forceKegPallet =
+    KEG_PALLETS_VISUAL_INDICES.has(index) && !reservedForReturnables;
+
+  let cargoKind: "crates" | "kegs" = "crates";
+  let cols: [RenderColumn, RenderColumn] = [
+    { brandKey: brands.col0, layers: layers0 },
+    { brandKey: brands.col1, layers: layers1 },
+  ];
+
+  if (forceKegPallet) {
+    cargoKind = "kegs";
+    const kegKey = pickKegBrandKey(slot.items);
+    const uni = computeUnifiedStackLayers(slot.items, remainingItems);
+    cols = [
+      { brandKey: kegKey, layers: uni },
+      { brandKey: kegKey, layers: uni },
+    ];
+  }
+
+  if (
+    cargoKind === "crates" &&
+    !reservedForReturnables &&
+    index === ESTRELLA_DAMM_VISUAL_INDEX
+  ) {
+    cols = [
+      { brandKey: "estrellaDamm", layers: cols[0].layers },
+      { brandKey: "estrellaDamm", layers: cols[1].layers },
+    ];
+  }
+
   const typeLabel = decideTypeLabel(remainingItems, reservedForReturnables);
   const accentColor = ACCENT_BY_TYPE[typeLabel] ?? "#3B82F6";
 
@@ -285,10 +358,8 @@ export function buildRenderPallet(
   return {
     slotId: slot.slotId,
     pos: { col, row },
-    cols: [
-      { brandKey: brands.col0, layers: layers0 },
-      { brandKey: brands.col1, layers: layers1 },
-    ],
+    cols,
+    cargoKind,
     typeLabel,
     sideStr,
     stops,
