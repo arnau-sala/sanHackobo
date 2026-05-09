@@ -1,7 +1,7 @@
 {
-  "id": "route_plan_11624127_1778341412083",
+  "id": "route_plan_11624127_1778346775374",
   "loadId": "11624127",
-  "generatedAt": "2026-05-09T15:43:32.083Z",
+  "generatedAt": "2026-05-09T17:12:55.374Z",
   "deliveryDate": "2026-03-30",
   "algorithm": "greedy_multi_objective_v1",
   "depot": {
@@ -23,90 +23,6 @@
   "stops": [
     {
       "sequence": 1,
-      "stopId": "stop_010",
-      "clusterId": "cluster_05",
-      "clientId": "9100560544",
-      "clientName": "CAFETERIA LUISIANA",
-      "address": "PASEO JOAN MIRO 8",
-      "city": "PARETS DEL VALLES",
-      "lat": 41.547348317480605,
-      "lng": 2.2059719382440974,
-      "timeWindow": {
-        "from": "07:00",
-        "to": "13:00"
-      },
-      "paymentType": "CONTADO",
-      "eta": {
-        "estimated": "07:01",
-        "earliest": "07:00",
-        "latest": "07:06",
-        "confidencePct": 77
-      },
-      "waitMinutes": 0,
-      "serviceMinutes": 10,
-      "driveDistanceM": 1060,
-      "driveMinutes": 1,
-      "parkingPoint": {
-        "name": "PASEO JOAN MIRO 8, PARETS DEL VALLES",
-        "lat": 41.547348317480605,
-        "lng": 2.2059719382440974,
-        "walkingMeters": 0
-      },
-      "orders": [
-        {
-          "orderId": "order_010",
-          "documentId": "828250372",
-          "items": [
-            {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
-              "unit": "Caja",
-              "palletUnitsTotal": 12
-            },
-            {
-              "productId": "FD13",
-              "name": "FREE DAMM 1/3 RET.",
-              "quantity": 2,
-              "unit": "Caja",
-              "palletUnitsTotal": 2
-            }
-          ],
-          "collectionAmount": 119,
-          "totalAmount": 119
-        }
-      ],
-      "collectionAmountTotal": 119,
-      "palletUnitsDelivered": 14,
-      "returnablesToPickup": 14,
-      "vehicleStateAfter": {
-        "usedPalletUnits": 253,
-        "totalPalletUnits": 320,
-        "occupancyPct": 79,
-        "returnablesOnBoard": 14
-      },
-      "reasoning": [
-        {
-          "text": "Parada más cercana disponible",
-          "type": "positive"
-        },
-        {
-          "text": "Cobro CONTADO pendiente (119.00 €) — prioritario",
-          "type": "warning"
-        }
-      ],
-      "scoreDebug": {
-        "total": 0.564,
-        "proximity": 0.934,
-        "urgency": 0.2,
-        "confidence": 0.77,
-        "cohesion": 0,
-        "paymentPriority": 1,
-        "capacityImpact": 1
-      }
-    },
-    {
-      "sequence": 2,
       "stopId": "stop_001",
       "clusterId": "cluster_01",
       "clientId": "119751",
@@ -128,46 +44,60 @@
       },
       "waitMinutes": 0,
       "serviceMinutes": 10,
-      "driveDistanceM": 1060,
-      "driveMinutes": 1,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_001",
+          "orderId": "order_001_1",
           "documentId": "828250359",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
-              "unit": "Caja",
-              "palletUnitsTotal": 6
-            },
-            {
-              "productId": "ED15LN",
-              "name": "ESTRELLA DAMM 1/5 LN",
+              "productId": "ED13LT",
+              "name": "ESTRELLA DAMM 1/3 LATA",
               "quantity": 2,
               "unit": "Caja",
               "palletUnitsTotal": 2
+            },
+            {
+              "productId": "FD13LT",
+              "name": "FREE DAMM 1/3 LATA LC",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 10,
+              "unit": "Caja",
+              "palletUnitsTotal": 10
+            },
+            {
+              "productId": "VE13SP",
+              "name": "AGUA VERI 1/3 PET CAJA 35U. T.TH",
+              "quantity": 6,
+              "unit": "Caja",
+              "palletUnitsTotal": 6
             }
           ],
-          "collectionAmount": 68,
-          "totalAmount": 68
+          "collectionAmount": 170,
+          "totalAmount": 170
         }
       ],
-      "collectionAmountTotal": 68,
-      "palletUnitsDelivered": 8,
-      "returnablesToPickup": 6,
+      "collectionAmountTotal": 170,
+      "palletUnitsDelivered": 20,
+      "returnablesToPickup": 0,
       "vehicleStateAfter": {
-        "usedPalletUnits": 245,
+        "usedPalletUnits": 281,
         "totalPalletUnits": 320,
-        "occupancyPct": 77,
-        "returnablesOnBoard": 20
+        "occupancyPct": 88,
+        "returnablesOnBoard": 0
       },
       "reasoning": [
         {
@@ -175,13 +105,13 @@
           "type": "positive"
         },
         {
-          "text": "Cobro CONTADO pendiente (68.00 €) — prioritario",
+          "text": "Cobro CONTADO pendiente (170.00 €) — prioritario",
           "type": "warning"
         }
       ],
       "scoreDebug": {
-        "total": 0.531,
-        "proximity": 0.934,
+        "total": 0.554,
+        "proximity": 1,
         "urgency": 0.1,
         "confidence": 0.74,
         "cohesion": 0,
@@ -190,7 +120,7 @@
       }
     },
     {
-      "sequence": 3,
+      "sequence": 2,
       "stopId": "stop_003",
       "clusterId": "cluster_01",
       "clientId": "9100054481",
@@ -215,43 +145,141 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_003",
+          "orderId": "order_003_1",
           "documentId": "828250363",
           "items": [
             {
               "productId": "ED13",
               "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 18,
+              "quantity": 4,
               "unit": "Caja",
-              "palletUnitsTotal": 18
+              "palletUnitsTotal": 4
+            },
+            {
+              "productId": "ED15LN",
+              "name": "ESTRELLA DAMM 1/5 LN",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FDL13",
+              "name": "FREE DAMM LIMON 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             },
             {
               "productId": "VO13",
               "name": "VOLL-DAMM 1/3 RET.",
-              "quantity": 4,
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 4
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AG0183",
+              "name": "VICHY CATALAN GAS 30CL RET 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0044",
+              "name": "MAGNO BRANDY 70CL",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0137",
+              "name": "YACHTING WHISKY PEACHE 70CL",
+              "quantity": 6,
+              "unit": "Botella",
+              "palletUnitsTotal": 6
+            },
+            {
+              "productId": "0LI0204",
+              "name": "J&B RARE WHISKY 1L",
+              "quantity": 2,
+              "unit": "Botella",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0LI0030",
+              "name": "ZOCO PACHARAN 1L",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0089",
+              "name": "PONCHE CABALLERO LICOR 1L",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0138",
+              "name": "BAILEYS ORIGINAL 1L",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0062",
+              "name": "PUJOL RON 1L",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LI0045",
+              "name": "SOBERANO BRANDY 1L",
+              "quantity": 1,
+              "unit": "Botella",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FD13",
+              "name": "FREE DAMM 1/3 RET.",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
             }
           ],
-          "collectionAmount": 187,
-          "totalAmount": 187
+          "collectionAmount": 221,
+          "totalAmount": 221
         }
       ],
-      "collectionAmountTotal": 187,
-      "palletUnitsDelivered": 22,
-      "returnablesToPickup": 22,
+      "collectionAmountTotal": 221,
+      "palletUnitsDelivered": 26,
+      "returnablesToPickup": 12,
       "vehicleStateAfter": {
-        "usedPalletUnits": 223,
+        "usedPalletUnits": 255,
         "totalPalletUnits": 320,
-        "occupancyPct": 70,
-        "returnablesOnBoard": 42
+        "occupancyPct": 80,
+        "returnablesOnBoard": 12
       },
       "reasoning": [
         {
@@ -263,7 +291,7 @@
           "type": "positive"
         },
         {
-          "text": "Cobro CONTADO pendiente (187.00 €) — prioritario",
+          "text": "Cobro CONTADO pendiente (221.00 €) — prioritario",
           "type": "warning"
         }
       ],
@@ -278,7 +306,7 @@
       }
     },
     {
-      "sequence": 4,
+      "sequence": 3,
       "stopId": "stop_013",
       "clusterId": "cluster_01",
       "clientId": "9100583212",
@@ -303,43 +331,85 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_013",
+          "orderId": "order_013_1",
           "documentId": "828250361",
           "items": [
             {
               "productId": "ED13",
               "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
-              "unit": "Caja",
-              "palletUnitsTotal": 6
-            },
-            {
-              "productId": "ED15LN",
-              "name": "ESTRELLA DAMM 1/5 LN",
               "quantity": 2,
               "unit": "Caja",
               "palletUnitsTotal": 2
+            },
+            {
+              "productId": "TU13",
+              "name": "TURIA 1/3 RET.",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0235",
+              "name": "LA LEVANTINA AVENA ESP.HOST 1L 6U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0090",
+              "name": "LETONA SEMI SIN LACTOSA 1L PET 6U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 4,
+              "unit": "Caja",
+              "palletUnitsTotal": 4
+            },
+            {
+              "productId": "TU13",
+              "name": "TURIA 1/3 RET.",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 68
+          "totalAmount": 102
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 8,
-      "returnablesToPickup": 6,
+      "palletUnitsDelivered": 12,
+      "returnablesToPickup": 5,
       "vehicleStateAfter": {
-        "usedPalletUnits": 215,
+        "usedPalletUnits": 243,
         "totalPalletUnits": 320,
-        "occupancyPct": 67,
-        "returnablesOnBoard": 48
+        "occupancyPct": 76,
+        "returnablesOnBoard": 17
       },
       "reasoning": [
         {
@@ -366,7 +436,7 @@
       }
     },
     {
-      "sequence": 5,
+      "sequence": 4,
       "stopId": "stop_007",
       "clusterId": "cluster_01",
       "clientId": "9100371825",
@@ -391,43 +461,43 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_007",
+          "orderId": "order_007_1",
           "documentId": "828250360",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
+              "productId": "0RF0287",
+              "name": "/-COCA COLA VR237 24U",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 6
+              "palletUnitsTotal": 1
             },
             {
-              "productId": "ED15LN",
-              "name": "ESTRELLA DAMM 1/5 LN",
-              "quantity": 2,
+              "productId": "0LM1683",
+              "name": "GC ECO SECAMANOS 2C 300X184MM 143M 6U",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 2
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 68
+          "totalAmount": 17
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 8,
-      "returnablesToPickup": 6,
+      "palletUnitsDelivered": 2,
+      "returnablesToPickup": 1,
       "vehicleStateAfter": {
-        "usedPalletUnits": 207,
+        "usedPalletUnits": 241,
         "totalPalletUnits": 320,
-        "occupancyPct": 65,
-        "returnablesOnBoard": 54
+        "occupancyPct": 75,
+        "returnablesOnBoard": 18
       },
       "reasoning": [
         {
@@ -454,7 +524,7 @@
       }
     },
     {
-      "sequence": 6,
+      "sequence": 5,
       "stopId": "stop_004",
       "clusterId": "cluster_01",
       "clientId": "9100054565",
@@ -479,22 +549,22 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_004",
+          "orderId": "order_004_1",
           "documentId": "828250362",
           "items": [
             {
               "productId": "ED13",
               "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
+              "quantity": 14,
               "unit": "Caja",
-              "palletUnitsTotal": 6
+              "palletUnitsTotal": 14
             },
             {
               "productId": "FD13",
@@ -502,20 +572,192 @@
               "quantity": 2,
               "unit": "Caja",
               "palletUnitsTotal": 2
+            },
+            {
+              "productId": "VO13",
+              "name": "VOLL-DAMM 1/3 RET.",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 8,
+              "unit": "Caja",
+              "palletUnitsTotal": 8
+            },
+            {
+              "productId": "0AM1290",
+              "name": "XPLICIT AZUCAR 7GR  1000U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 8,
+              "unit": "Caja",
+              "palletUnitsTotal": 8
+            },
+            {
+              "productId": "FDL13",
+              "name": "FREE DAMM LIMON 1/3 RET. PP",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0AM1634",
+              "name": "XPLICIT EDULCORANTE 1G 150U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 68
+          "totalAmount": 348.5
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 8,
-      "returnablesToPickup": 8,
+      "palletUnitsDelivered": 41,
+      "returnablesToPickup": 29,
       "vehicleStateAfter": {
-        "usedPalletUnits": 199,
+        "usedPalletUnits": 200,
         "totalPalletUnits": 320,
-        "occupancyPct": 62,
-        "returnablesOnBoard": 62
+        "occupancyPct": 63,
+        "returnablesOnBoard": 47
+      },
+      "reasoning": [
+        {
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
+          "type": "positive"
+        },
+        {
+          "text": "Parada más cercana disponible",
+          "type": "positive"
+        },
+        {
+          "text": "Pago CRÉDITO — no requiere cobro en parada",
+          "type": "info"
+        }
+      ],
+      "scoreDebug": {
+        "total": 0.703,
+        "proximity": 1,
+        "urgency": 0.2,
+        "confidence": 0.78,
+        "cohesion": 1,
+        "paymentPriority": 0.3,
+        "capacityImpact": 1
+      }
+    },
+    {
+      "sequence": 6,
+      "stopId": "stop_009",
+      "clusterId": "cluster_01",
+      "clientId": "9100530919",
+      "clientName": "LA GRANJA",
+      "address": "CAN MAGRE 23",
+      "city": "MOLLET DEL VALLÈS",
+      "lat": 41.5394,
+      "lng": 2.213,
+      "timeWindow": {
+        "from": "08:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "eta": {
+        "estimated": "08:50",
+        "earliest": "08:46",
+        "latest": "08:54",
+        "confidencePct": 78
+      },
+      "waitMinutes": 0,
+      "serviceMinutes": 10,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
+      "parkingPoint": {
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
+        "lat": 41.5394,
+        "lng": 2.2130000000000005,
+        "walkingMeters": 0
+      },
+      "orders": [
+        {
+          "orderId": "order_009_1",
+          "documentId": "828250358",
+          "items": [
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 20,
+              "unit": "Caja",
+              "palletUnitsTotal": 20
+            },
+            {
+              "productId": "ED15LN",
+              "name": "ESTRELLA DAMM 1/5 LN",
+              "quantity": 5,
+              "unit": "Caja",
+              "palletUnitsTotal": 5
+            },
+            {
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "VO13",
+              "name": "VOLL-DAMM 1/3 RET.",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "NTL13LT6",
+              "name": "NESTEA LIMON 1/3 LATA 4U-PACK 6U.",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "NTF13L6F",
+              "name": "NESTEA F.ROJOS 33CL LATA 4U-P6U SDR HT",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "NTY13LT6",
+              "name": "NESTEA TE VERDE MARACUYA1/3LATA 4U-P6UHT",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            }
+          ],
+          "collectionAmount": 0,
+          "totalAmount": 272
+        }
+      ],
+      "collectionAmountTotal": 0,
+      "palletUnitsDelivered": 32,
+      "returnablesToPickup": 29,
+      "vehicleStateAfter": {
+        "usedPalletUnits": 168,
+        "totalPalletUnits": 320,
+        "occupancyPct": 53,
+        "returnablesOnBoard": 76
       },
       "reasoning": [
         {
@@ -543,94 +785,6 @@
     },
     {
       "sequence": 7,
-      "stopId": "stop_009",
-      "clusterId": "cluster_01",
-      "clientId": "9100530919",
-      "clientName": "LA GRANJA",
-      "address": "CAN MAGRE 23",
-      "city": "MOLLET DEL VALLÈS",
-      "lat": 41.5394,
-      "lng": 2.213,
-      "timeWindow": {
-        "from": "08:00",
-        "to": "14:00"
-      },
-      "paymentType": "CREDITO",
-      "eta": {
-        "estimated": "08:50",
-        "earliest": "08:46",
-        "latest": "08:54",
-        "confidencePct": 78
-      },
-      "waitMinutes": 0,
-      "serviceMinutes": 10,
-      "driveDistanceM": 0,
-      "driveMinutes": 0,
-      "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
-        "lat": 41.5394,
-        "lng": 2.213,
-        "walkingMeters": 0
-      },
-      "orders": [
-        {
-          "orderId": "order_009",
-          "documentId": "828250358",
-          "items": [
-            {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 18,
-              "unit": "Caja",
-              "palletUnitsTotal": 18
-            },
-            {
-              "productId": "VO13",
-              "name": "VOLL-DAMM 1/3 RET.",
-              "quantity": 4,
-              "unit": "Caja",
-              "palletUnitsTotal": 4
-            }
-          ],
-          "collectionAmount": 0,
-          "totalAmount": 187
-        }
-      ],
-      "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 22,
-      "returnablesToPickup": 22,
-      "vehicleStateAfter": {
-        "usedPalletUnits": 177,
-        "totalPalletUnits": 320,
-        "occupancyPct": 55,
-        "returnablesOnBoard": 84
-      },
-      "reasoning": [
-        {
-          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
-          "type": "positive"
-        },
-        {
-          "text": "Parada más cercana disponible",
-          "type": "positive"
-        },
-        {
-          "text": "Pago CRÉDITO — no requiere cobro en parada",
-          "type": "info"
-        }
-      ],
-      "scoreDebug": {
-        "total": 0.703,
-        "proximity": 1,
-        "urgency": 0.2,
-        "confidence": 0.78,
-        "cohesion": 1,
-        "paymentPriority": 0.3,
-        "capacityImpact": 1
-      }
-    },
-    {
-      "sequence": 8,
       "stopId": "stop_005",
       "clusterId": "cluster_01",
       "clientId": "9100111065",
@@ -655,43 +809,50 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+        "name": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
         "lat": 41.5394,
-        "lng": 2.213,
+        "lng": 2.2130000000000005,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_005",
+          "orderId": "order_005_1",
           "documentId": "828250364",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
+              "productId": "0AG0183",
+              "name": "VICHY CATALAN GAS 30CL RET 24U",
+              "quantity": 2,
               "unit": "Caja",
-              "palletUnitsTotal": 6
+              "palletUnitsTotal": 2
             },
             {
-              "productId": "EC13",
-              "name": "DAURA DAMM 1/3 RET.",
-              "quantity": 3,
+              "productId": "0RF0014",
+              "name": "ZALA GASEOSA 50CL VID. RET 20U",
+              "quantity": 2,
               "unit": "Caja",
-              "palletUnitsTotal": 3
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0RF0010",
+              "name": "LIMON GLAS 1,5 S/R 6U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
             }
           ],
-          "collectionAmount": 76.5,
-          "totalAmount": 76.5
+          "collectionAmount": 51,
+          "totalAmount": 51
         }
       ],
-      "collectionAmountTotal": 76.5,
-      "palletUnitsDelivered": 9,
-      "returnablesToPickup": 9,
+      "collectionAmountTotal": 51,
+      "palletUnitsDelivered": 6,
+      "returnablesToPickup": 4,
       "vehicleStateAfter": {
-        "usedPalletUnits": 168,
+        "usedPalletUnits": 162,
         "totalPalletUnits": 320,
-        "occupancyPct": 53,
-        "returnablesOnBoard": 93
+        "occupancyPct": 51,
+        "returnablesOnBoard": 80
       },
       "reasoning": [
         {
@@ -707,7 +868,7 @@
           "type": "positive"
         },
         {
-          "text": "Cobro CONTADO pendiente (76.50 €) — prioritario",
+          "text": "Cobro CONTADO pendiente (51.00 €) — prioritario",
           "type": "warning"
         }
       ],
@@ -722,9 +883,9 @@
       }
     },
     {
-      "sequence": 9,
+      "sequence": 8,
       "stopId": "stop_018",
-      "clusterId": "cluster_04",
+      "clusterId": "cluster_03",
       "clientId": "9100761848",
       "clientName": "DAHLIA PASTISSERIA",
       "address": "Carrer d'Aragó 11",
@@ -747,43 +908,85 @@
       "driveDistanceM": 3393,
       "driveMinutes": 4,
       "parkingPoint": {
-        "name": "CALLE VICTOR CATALA 9, PARETS DEL VALLÈS",
+        "name": "Zona descarga — Avinguda Pedra del Diable, Parets del Vallès (4 clientes)",
         "lat": 41.5683,
         "lng": 2.2261,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_018",
+          "orderId": "order_018_1",
           "documentId": "828250366",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 12
+              "palletUnitsTotal": 1
             },
             {
-              "productId": "DL13",
-              "name": "DAMM LEMON 1/3 RET",
-              "quantity": 4,
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 4
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "NTL13LT6",
+              "name": "NESTEA LIMON 1/3 LATA 4U-PACK 6U.",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0ZU0021",
+              "name": "GRANINI NARANJA 20CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0ZU0024",
+              "name": "GRANINI PIÑA 20CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LM2431",
+              "name": "BOLSA IND. DE BASURA G120 85x104CM 10U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0ZU0020",
+              "name": "GRANINI MELOCOTON  20CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0ZU0271",
+              "name": "GRANINI LIMONADA 20CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
-          "collectionAmount": 136,
-          "totalAmount": 136
+          "collectionAmount": 68,
+          "totalAmount": 68
         }
       ],
-      "collectionAmountTotal": 136,
-      "palletUnitsDelivered": 16,
-      "returnablesToPickup": 16,
+      "collectionAmountTotal": 68,
+      "palletUnitsDelivered": 8,
+      "returnablesToPickup": 0,
       "vehicleStateAfter": {
-        "usedPalletUnits": 152,
+        "usedPalletUnits": 154,
         "totalPalletUnits": 320,
         "occupancyPct": 48,
-        "returnablesOnBoard": 109
+        "returnablesOnBoard": 80
       },
       "reasoning": [
         {
@@ -791,7 +994,7 @@
           "type": "positive"
         },
         {
-          "text": "Cobro CONTADO pendiente (136.00 €) — prioritario",
+          "text": "Cobro CONTADO pendiente (68.00 €) — prioritario",
           "type": "warning"
         }
       ],
@@ -806,9 +1009,9 @@
       }
     },
     {
-      "sequence": 10,
+      "sequence": 9,
       "stopId": "stop_008",
-      "clusterId": "cluster_04",
+      "clusterId": "cluster_03",
       "clientId": "9100413240",
       "clientName": "CAN LITU'S",
       "address": "CALLE VICTOR CATALA 9",
@@ -827,47 +1030,96 @@
         "confidencePct": 84
       },
       "waitMinutes": 0,
-      "serviceMinutes": 15,
+      "serviceMinutes": 10,
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "CALLE VICTOR CATALA 9, PARETS DEL VALLÈS",
+        "name": "Zona descarga — Avinguda Pedra del Diable, Parets del Vallès (4 clientes)",
         "lat": 41.5683,
         "lng": 2.2261,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_008",
+          "orderId": "order_008_1",
           "documentId": "828250367",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 2,
               "unit": "Caja",
-              "palletUnitsTotal": 12
+              "palletUnitsTotal": 2
             },
             {
-              "productId": "ED30",
-              "name": "ESTRELLA DAMM BARRIL 30",
+              "productId": "TB8",
+              "name": "BOTELLAS CARBONICO 8 KILOS",
               "quantity": 1,
-              "unit": "Barril",
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AM5383",
+              "name": "PROEZA TOMATE FRITO EXTRA LATA 3KG",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0AM5578",
+              "name": "PROEZA ACEITE GIRASOL 5L",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "VE32SP",
+              "name": "AGUA VERI 1,5L PET CAJA 12U.",
+              "quantity": 4,
+              "unit": "Caja",
               "palletUnitsTotal": 4
+            },
+            {
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0RF0019",
+              "name": "/-COCA COLA LATA 33CL 24U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 136
+          "totalAmount": 127.5
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 16,
-      "returnablesToPickup": 13,
+      "palletUnitsDelivered": 15,
+      "returnablesToPickup": 4,
       "vehicleStateAfter": {
-        "usedPalletUnits": 136,
+        "usedPalletUnits": 139,
         "totalPalletUnits": 320,
         "occupancyPct": 43,
-        "returnablesOnBoard": 122
+        "returnablesOnBoard": 84
       },
       "reasoning": [
         {
@@ -877,10 +1129,6 @@
         {
           "text": "Parada más cercana disponible",
           "type": "positive"
-        },
-        {
-          "text": "1 barril(es) — requiere transpaleta",
-          "type": "info"
         },
         {
           "text": "Pago CRÉDITO — no requiere cobro en parada",
@@ -898,9 +1146,9 @@
       }
     },
     {
-      "sequence": 11,
+      "sequence": 10,
       "stopId": "stop_017",
-      "clusterId": "cluster_04",
+      "clusterId": "cluster_03",
       "clientId": "9100759612",
       "clientName": "AKI MISMO",
       "address": "Carrer Salvador Espriu 6",
@@ -913,9 +1161,9 @@
       },
       "paymentType": "CREDITO",
       "eta": {
-        "estimated": "10:39",
-        "earliest": "10:35",
-        "latest": "10:43",
+        "estimated": "10:34",
+        "earliest": "10:30",
+        "latest": "10:38",
         "confidencePct": 82
       },
       "waitMinutes": 0,
@@ -923,43 +1171,50 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "CALLE VICTOR CATALA 9, PARETS DEL VALLÈS",
+        "name": "Zona descarga — Avinguda Pedra del Diable, Parets del Vallès (4 clientes)",
         "lat": 41.5683,
         "lng": 2.2261,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_017",
+          "orderId": "order_017_1",
           "documentId": "828250368",
           "items": [
             {
               "productId": "ED13",
               "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
+              "quantity": 2,
               "unit": "Caja",
-              "palletUnitsTotal": 12
+              "palletUnitsTotal": 2
             },
             {
-              "productId": "EC13",
-              "name": "DAURA DAMM 1/3 RET.",
-              "quantity": 3,
+              "productId": "0AM5579",
+              "name": "PROEZA AOVE 5L",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 3
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 127.5
+          "totalAmount": 34
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 15,
-      "returnablesToPickup": 15,
+      "palletUnitsDelivered": 4,
+      "returnablesToPickup": 3,
       "vehicleStateAfter": {
-        "usedPalletUnits": 121,
+        "usedPalletUnits": 135,
         "totalPalletUnits": 320,
-        "occupancyPct": 38,
-        "returnablesOnBoard": 137
+        "occupancyPct": 42,
+        "returnablesOnBoard": 87
       },
       "reasoning": [
         {
@@ -986,9 +1241,9 @@
       }
     },
     {
-      "sequence": 12,
+      "sequence": 11,
       "stopId": "stop_012",
-      "clusterId": "cluster_04",
+      "clusterId": "cluster_03",
       "clientId": "9100566100",
       "clientName": "OH LA LA",
       "address": "AVENIDA LLUIS COMPANYS 39",
@@ -1001,9 +1256,9 @@
       },
       "paymentType": "CREDITO",
       "eta": {
-        "estimated": "10:49",
-        "earliest": "10:45",
-        "latest": "10:53",
+        "estimated": "10:44",
+        "earliest": "10:40",
+        "latest": "10:48",
         "confidencePct": 80
       },
       "waitMinutes": 0,
@@ -1011,43 +1266,99 @@
       "driveDistanceM": 0,
       "driveMinutes": 0,
       "parkingPoint": {
-        "name": "CALLE VICTOR CATALA 9, PARETS DEL VALLÈS",
+        "name": "Zona descarga — Avinguda Pedra del Diable, Parets del Vallès (4 clientes)",
         "lat": 41.5683,
         "lng": 2.2261,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_012",
+          "orderId": "order_012_1",
           "documentId": "828250365",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 18,
-              "unit": "Caja",
-              "palletUnitsTotal": 18
-            },
-            {
               "productId": "DL13",
               "name": "DAMM LEMON 1/3 RET",
-              "quantity": 4,
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 4
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "FDL13",
+              "name": "FREE DAMM LIMON 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "BH13P6",
+              "name": "BOHEMIA DAMM 1/3SR CESTA 6U.150ANIV.",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0009",
+              "name": "LETONA GRAN CREME 1L VR 12U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0VE0524",
+              "name": "SEÑORIO DE LIZIA VERDEJO RUEDA 75CL 6U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "UBH01",
+              "name": "COPA 33 CL BH",
+              "quantity": 12,
+              "unit": "Caja",
+              "palletUnitsTotal": 12
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FDL13",
+              "name": "FREE DAMM LIMON 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 187
+          "totalAmount": 212.5
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 22,
-      "returnablesToPickup": 22,
+      "palletUnitsDelivered": 25,
+      "returnablesToPickup": 7,
       "vehicleStateAfter": {
-        "usedPalletUnits": 99,
+        "usedPalletUnits": 110,
         "totalPalletUnits": 320,
-        "occupancyPct": 31,
-        "returnablesOnBoard": 159
+        "occupancyPct": 34,
+        "returnablesOnBoard": 94
       },
       "reasoning": [
         {
@@ -1074,99 +1385,95 @@
       }
     },
     {
-      "sequence": 13,
-      "stopId": "stop_006",
-      "clusterId": "cluster_03",
-      "clientId": "9100158099",
-      "clientName": "RESTAURANTE EL SOL",
-      "address": "CALLE VICTOR CATALA 15",
+      "sequence": 12,
+      "stopId": "stop_010",
+      "clusterId": "cluster_02",
+      "clientId": "9100560544",
+      "clientName": "CAFETERIA LUISIANA",
+      "address": "PASEO JOAN MIRO 8",
       "city": "PARETS DEL VALLES",
-      "lat": 41.57654396772906,
-      "lng": 2.2100215884847034,
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
       "timeWindow": {
-        "from": "08:00",
-        "to": "14:00"
+        "from": "07:00",
+        "to": "13:00"
       },
-      "paymentType": "CREDITO",
+      "paymentType": "CONTADO",
       "eta": {
-        "estimated": "11:01",
-        "earliest": "10:57",
-        "latest": "11:05",
-        "confidencePct": 78
+        "estimated": "11:08",
+        "earliest": "11:03",
+        "latest": "11:13",
+        "confidencePct": 77
       },
       "waitMinutes": 0,
       "serviceMinutes": 10,
-      "driveDistanceM": 1621,
-      "driveMinutes": 2,
+      "driveDistanceM": 11374,
+      "driveMinutes": 14,
       "parkingPoint": {
-        "name": "CALLE VICTOR CATALA 15, PARETS DEL VALLES",
-        "lat": 41.57654396772906,
-        "lng": 2.2100215884847034,
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_006",
-          "documentId": "828250369",
+          "orderId": "order_010_1",
+          "documentId": "828250372",
           "items": [
             {
               "productId": "ED13",
               "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 18,
-              "unit": "Caja",
-              "palletUnitsTotal": 18
-            },
-            {
-              "productId": "DL13",
-              "name": "DAMM LEMON 1/3 RET",
               "quantity": 4,
               "unit": "Caja",
               "palletUnitsTotal": 4
+            },
+            {
+              "productId": "UE902",
+              "name": "COPA GRANDE ED",
+              "quantity": 12,
+              "unit": "Caja",
+              "palletUnitsTotal": 12
             }
           ],
-          "collectionAmount": 0,
-          "totalAmount": 187
+          "collectionAmount": 136,
+          "totalAmount": 136
         }
       ],
-      "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 22,
-      "returnablesToPickup": 22,
+      "collectionAmountTotal": 136,
+      "palletUnitsDelivered": 16,
+      "returnablesToPickup": 4,
       "vehicleStateAfter": {
-        "usedPalletUnits": 77,
+        "usedPalletUnits": 94,
         "totalPalletUnits": 320,
-        "occupancyPct": 24,
-        "returnablesOnBoard": 181
+        "occupancyPct": 29,
+        "returnablesOnBoard": 98
       },
       "reasoning": [
         {
-          "text": "Parada más cercana disponible",
-          "type": "positive"
-        },
-        {
-          "text": "Pago CRÉDITO — no requiere cobro en parada",
-          "type": "info"
+          "text": "Cobro CONTADO pendiente (136.00 €) — prioritario",
+          "type": "warning"
         }
       ],
       "scoreDebug": {
-        "total": 0.518,
-        "proximity": 0.9,
+        "total": 0.341,
+        "proximity": 0.297,
         "urgency": 0.2,
-        "confidence": 0.78,
+        "confidence": 0.77,
         "cohesion": 0,
-        "paymentPriority": 0.3,
+        "paymentPriority": 1,
         "capacityImpact": 1
       }
     },
     {
-      "sequence": 14,
+      "sequence": 13,
       "stopId": "stop_015",
-      "clusterId": "cluster_08",
+      "clusterId": "cluster_02",
       "clientId": "9100671265",
       "clientName": "RESTAURANT GUST D'ASIA",
       "address": "Avinguda de Francesc Macià 12",
       "city": "PARETS DEL VALLES",
-      "lat": 41.5566706653776,
-      "lng": 2.27026653476491,
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
       "timeWindow": {
         "from": "06:00",
         "to": "13:30"
@@ -1180,128 +1487,182 @@
       },
       "waitMinutes": 0,
       "serviceMinutes": 10,
-      "driveDistanceM": 5478,
-      "driveMinutes": 7,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
       "parkingPoint": {
-        "name": "Avinguda de Francesc Macià 12, PARETS DEL VALLES",
-        "lat": 41.5566706653776,
-        "lng": 2.27026653476491,
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_015",
+          "orderId": "order_015_1",
           "documentId": "828250370",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 18,
+              "productId": "0AG0019",
+              "name": "FONT D.OR MAXIMUM NATURAL 1/2 RET 20U",
+              "quantity": 10,
               "unit": "Caja",
-              "palletUnitsTotal": 18
+              "palletUnitsTotal": 10
             },
             {
-              "productId": "VO13",
-              "name": "VOLL-DAMM 1/3 RET.",
-              "quantity": 4,
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 1,
               "unit": "Caja",
-              "palletUnitsTotal": 4
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0VE0463",
+              "name": "SOLAR DE ZUNIL TINTO 75CL 6U",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0RF0006",
+              "name": "FUENTPINOS GASEOSA 50CL RET 20U ",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AM0238",
+              "name": "FEMUA VINAGRE DE VINO BLANCO 5 L.",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0LM2321",
+              "name": "GC MANTELES BUEN PROVECHO BURDEOS 30x40",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
             }
           ],
-          "collectionAmount": 187,
-          "totalAmount": 187
+          "collectionAmount": 170,
+          "totalAmount": 170
         }
       ],
-      "collectionAmountTotal": 187,
-      "palletUnitsDelivered": 22,
-      "returnablesToPickup": 22,
+      "collectionAmountTotal": 170,
+      "palletUnitsDelivered": 20,
+      "returnablesToPickup": 11,
       "vehicleStateAfter": {
-        "usedPalletUnits": 55,
+        "usedPalletUnits": 74,
         "totalPalletUnits": 320,
-        "occupancyPct": 17,
-        "returnablesOnBoard": 203
+        "occupancyPct": 23,
+        "returnablesOnBoard": 109
       },
       "reasoning": [
         {
-          "text": "Cobro CONTADO pendiente (187.00 €) — prioritario",
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
+          "type": "positive"
+        },
+        {
+          "text": "Parada más cercana disponible",
+          "type": "positive"
+        },
+        {
+          "text": "Cobro CONTADO pendiente (170.00 €) — prioritario",
           "type": "warning"
         }
       ],
       "scoreDebug": {
-        "total": 0.468,
-        "proximity": 0.661,
+        "total": 0.737,
+        "proximity": 1,
         "urgency": 0.2,
         "confidence": 0.77,
-        "cohesion": 0,
+        "cohesion": 1,
         "paymentPriority": 1,
         "capacityImpact": 1
       }
     },
     {
-      "sequence": 15,
+      "sequence": 14,
       "stopId": "stop_016",
-      "clusterId": "cluster_09",
+      "clusterId": "cluster_02",
       "clientId": "9100733969",
       "clientName": "RESTAURANT BRUNCH",
       "address": "CALLE XALOC 1",
       "city": "PARETS DEL VALLES",
-      "lat": 41.5673387699391,
-      "lng": 2.2815319162048042,
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
       "timeWindow": {
         "from": "08:00",
         "to": "14:00"
       },
       "paymentType": "CREDITO",
       "eta": {
-        "estimated": "11:30",
-        "earliest": "11:26",
-        "latest": "11:34",
+        "estimated": "11:28",
+        "earliest": "11:24",
+        "latest": "11:32",
         "confidencePct": 82
       },
       "waitMinutes": 0,
       "serviceMinutes": 10,
-      "driveDistanceM": 1512,
-      "driveMinutes": 2,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
       "parkingPoint": {
-        "name": "CALLE XALOC 1, PARETS DEL VALLES",
-        "lat": 41.5673387699391,
-        "lng": 2.2815319162048042,
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_016",
+          "orderId": "order_016_1",
           "documentId": "828250371",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 6,
-              "unit": "Caja",
-              "palletUnitsTotal": 6
-            },
-            {
-              "productId": "FD13",
-              "name": "FREE DAMM 1/3 RET.",
+              "productId": "0LT0103",
+              "name": "YOSOY AVENA BARISTA 1L BRIK 6U",
               "quantity": 2,
               "unit": "Caja",
               "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0LT0009",
+              "name": "LETONA GRAN CREME 1L VR 12U",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0LT0090",
+              "name": "LETONA SEMI SIN LACTOSA 1L PET 6U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LM1788",
+              "name": "CHICOPEE LAVETTE BAYETA AZUL 51x36 25U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 68
+          "totalAmount": 59.5
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 8,
-      "returnablesToPickup": 8,
+      "palletUnitsDelivered": 7,
+      "returnablesToPickup": 3,
       "vehicleStateAfter": {
-        "usedPalletUnits": 47,
+        "usedPalletUnits": 67,
         "totalPalletUnits": 320,
-        "occupancyPct": 15,
-        "returnablesOnBoard": 211
+        "occupancyPct": 21,
+        "returnablesOnBoard": 112
       },
       "reasoning": [
+        {
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
+          "type": "positive"
+        },
         {
           "text": "Parada más cercana disponible",
           "type": "positive"
@@ -1312,171 +1673,87 @@
         }
       ],
       "scoreDebug": {
-        "total": 0.524,
-        "proximity": 0.906,
+        "total": 0.707,
+        "proximity": 1,
         "urgency": 0.2,
         "confidence": 0.82,
-        "cohesion": 0,
+        "cohesion": 1,
         "paymentPriority": 0.3,
         "capacityImpact": 1
       }
     },
     {
-      "sequence": 16,
-      "stopId": "stop_014",
-      "clusterId": "cluster_07",
-      "clientId": "9100643487",
-      "clientName": "BAR JALEY (PARETS)",
-      "address": "Avinguda de Francesc Macià 11",
-      "city": "PARETS DEL VALLES",
-      "lat": 41.49115371670336,
-      "lng": 2.2270976838567917,
-      "timeWindow": {
-        "from": "07:00",
-        "to": "13:00"
-      },
-      "paymentType": "CREDITO",
-      "eta": {
-        "estimated": "11:52",
-        "earliest": "11:48",
-        "latest": "11:56",
-        "confidencePct": 78
-      },
-      "waitMinutes": 0,
-      "serviceMinutes": 15,
-      "driveDistanceM": 9607,
-      "driveMinutes": 12,
-      "parkingPoint": {
-        "name": "Avinguda de Francesc Macià 11, PARETS DEL VALLES",
-        "lat": 41.49115371670336,
-        "lng": 2.2270976838567917,
-        "walkingMeters": 0
-      },
-      "orders": [
-        {
-          "orderId": "order_014",
-          "documentId": "828250374",
-          "items": [
-            {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
-              "unit": "Caja",
-              "palletUnitsTotal": 12
-            },
-            {
-              "productId": "ED30",
-              "name": "ESTRELLA DAMM BARRIL 30",
-              "quantity": 1,
-              "unit": "Barril",
-              "palletUnitsTotal": 4
-            }
-          ],
-          "collectionAmount": 0,
-          "totalAmount": 136
-        }
-      ],
-      "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 16,
-      "returnablesToPickup": 13,
-      "vehicleStateAfter": {
-        "usedPalletUnits": 31,
-        "totalPalletUnits": 320,
-        "occupancyPct": 10,
-        "returnablesOnBoard": 224
-      },
-      "reasoning": [
-        {
-          "text": "1 barril(es) — requiere transpaleta",
-          "type": "info"
-        },
-        {
-          "text": "Pago CRÉDITO — no requiere cobro en parada",
-          "type": "info"
-        }
-      ],
-      "scoreDebug": {
-        "total": 0.345,
-        "proximity": 0.406,
-        "urgency": 0.2,
-        "confidence": 0.78,
-        "cohesion": 0,
-        "paymentPriority": 0.3,
-        "capacityImpact": 1
-      }
-    },
-    {
-      "sequence": 17,
+      "sequence": 15,
       "stopId": "stop_002",
       "clusterId": "cluster_02",
       "clientId": "9100041840",
       "clientName": "BAR SAGITARIO",
       "address": "Carrer d'Aragó 2",
       "city": "PARETS DEL VALLES",
-      "lat": 41.48147925844096,
-      "lng": 2.1998158512849013,
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
       "timeWindow": {
         "from": "08:00",
         "to": "14:00"
       },
       "paymentType": "CREDITO",
       "eta": {
-        "estimated": "12:10",
-        "earliest": "12:06",
-        "latest": "12:14",
+        "estimated": "11:38",
+        "earliest": "11:34",
+        "latest": "11:42",
         "confidencePct": 79
       },
       "waitMinutes": 0,
-      "serviceMinutes": 15,
-      "driveDistanceM": 2514,
-      "driveMinutes": 3,
+      "serviceMinutes": 10,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
       "parkingPoint": {
-        "name": "Carrer d'Aragó 2, PARETS DEL VALLES",
-        "lat": 41.48147925844096,
-        "lng": 2.1998158512849013,
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
         "walkingMeters": 0
       },
       "orders": [
         {
-          "orderId": "order_002",
+          "orderId": "order_002_1",
           "documentId": "828250373",
           "items": [
             {
-              "productId": "ED13",
-              "name": "ESTRELLA DAMM 1/3 RET. PP",
-              "quantity": 12,
+              "productId": "0CF0080",
+              "name": "XPLICIT NATURAL CREMOSO 1KG",
+              "quantity": 2,
               "unit": "Caja",
-              "palletUnitsTotal": 12
+              "palletUnitsTotal": 2
             },
             {
-              "productId": "ED30",
-              "name": "ESTRELLA DAMM BARRIL 30",
-              "quantity": 1,
-              "unit": "Barril",
-              "palletUnitsTotal": 4
+              "productId": "0CF0080",
+              "name": "XPLICIT NATURAL CREMOSO 1KG",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
             }
           ],
           "collectionAmount": 0,
-          "totalAmount": 136
+          "totalAmount": 34
         }
       ],
       "collectionAmountTotal": 0,
-      "palletUnitsDelivered": 16,
-      "returnablesToPickup": 13,
+      "palletUnitsDelivered": 4,
+      "returnablesToPickup": 0,
       "vehicleStateAfter": {
-        "usedPalletUnits": 15,
+        "usedPalletUnits": 63,
         "totalPalletUnits": 320,
-        "occupancyPct": 5,
-        "returnablesOnBoard": 237
+        "occupancyPct": 20,
+        "returnablesOnBoard": 112
       },
       "reasoning": [
         {
-          "text": "Parada más cercana disponible",
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
           "type": "positive"
         },
         {
-          "text": "1 barril(es) — requiere transpaleta",
-          "type": "info"
+          "text": "Parada más cercana disponible",
+          "type": "positive"
         },
         {
           "text": "Pago CRÉDITO — no requiere cobro en parada",
@@ -1484,11 +1761,315 @@
         }
       ],
       "scoreDebug": {
-        "total": 0.5,
-        "proximity": 0.844,
+        "total": 0.704,
+        "proximity": 1,
         "urgency": 0.2,
         "confidence": 0.79,
-        "cohesion": 0,
+        "cohesion": 1,
+        "paymentPriority": 0.3,
+        "capacityImpact": 1
+      }
+    },
+    {
+      "sequence": 16,
+      "stopId": "stop_006",
+      "clusterId": "cluster_02",
+      "clientId": "9100158099",
+      "clientName": "RESTAURANTE EL SOL",
+      "address": "CALLE VICTOR CATALA 15",
+      "city": "PARETS DEL VALLES",
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
+      "timeWindow": {
+        "from": "08:00",
+        "to": "14:00"
+      },
+      "paymentType": "CREDITO",
+      "eta": {
+        "estimated": "11:48",
+        "earliest": "11:44",
+        "latest": "11:52",
+        "confidencePct": 78
+      },
+      "waitMinutes": 0,
+      "serviceMinutes": 10,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
+      "parkingPoint": {
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
+        "walkingMeters": 0
+      },
+      "orders": [
+        {
+          "orderId": "order_006_1",
+          "documentId": "828250369",
+          "items": [
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "VE12SP",
+              "name": "AGUA VERI 1/2 PET CAJA 24U. T.TH",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "VE32SP",
+              "name": "AGUA VERI 1,5L PET CAJA 12U.",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0RF0019",
+              "name": "/-COCA COLA LATA 33CL 24U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0RF0020",
+              "name": "/-FANTA NARANJA LATA 33CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0RF0079",
+              "name": "/-COCA COLA ZERO LATA 33CL 24U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0RF0012",
+              "name": "FUENTPINOS GASEOSA  500 PET 12U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AM0285",
+              "name": "JUANFRA ACEITUNAS RELLENAS DE ANCHOA 2KG",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            }
+          ],
+          "collectionAmount": 0,
+          "totalAmount": 119
+        }
+      ],
+      "collectionAmountTotal": 0,
+      "palletUnitsDelivered": 14,
+      "returnablesToPickup": 3,
+      "vehicleStateAfter": {
+        "usedPalletUnits": 49,
+        "totalPalletUnits": 320,
+        "occupancyPct": 15,
+        "returnablesOnBoard": 115
+      },
+      "reasoning": [
+        {
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
+          "type": "positive"
+        },
+        {
+          "text": "Parada más cercana disponible",
+          "type": "positive"
+        },
+        {
+          "text": "Pago CRÉDITO — no requiere cobro en parada",
+          "type": "info"
+        }
+      ],
+      "scoreDebug": {
+        "total": 0.703,
+        "proximity": 1,
+        "urgency": 0.2,
+        "confidence": 0.78,
+        "cohesion": 1,
+        "paymentPriority": 0.3,
+        "capacityImpact": 1
+      }
+    },
+    {
+      "sequence": 17,
+      "stopId": "stop_014",
+      "clusterId": "cluster_02",
+      "clientId": "9100643487",
+      "clientName": "BAR JALEY (PARETS)",
+      "address": "Avinguda de Francesc Macià 11",
+      "city": "PARETS DEL VALLES",
+      "lat": 41.47147058823529,
+      "lng": 2.182058823529412,
+      "timeWindow": {
+        "from": "07:00",
+        "to": "13:00"
+      },
+      "paymentType": "CREDITO",
+      "eta": {
+        "estimated": "11:58",
+        "earliest": "11:54",
+        "latest": "12:02",
+        "confidencePct": 78
+      },
+      "waitMinutes": 0,
+      "serviceMinutes": 10,
+      "driveDistanceM": 0,
+      "driveMinutes": 0,
+      "parkingPoint": {
+        "name": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+        "lat": 41.47147058823529,
+        "lng": 2.182058823529412,
+        "walkingMeters": 0
+      },
+      "orders": [
+        {
+          "orderId": "order_014_1",
+          "documentId": "828250374",
+          "items": [
+            {
+              "productId": "ED13",
+              "name": "ESTRELLA DAMM 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0LT0103",
+              "name": "YOSOY AVENA BARISTA 1L BRIK 6U",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0LT0090",
+              "name": "LETONA SEMI SIN LACTOSA 1L PET 6U",
+              "quantity": 2,
+              "unit": "Caja",
+              "palletUnitsTotal": 2
+            },
+            {
+              "productId": "0LT0033",
+              "name": "LETONA GRAN CREME PET 1,5L PET 6U",
+              "quantity": 3,
+              "unit": "Caja",
+              "palletUnitsTotal": 3
+            },
+            {
+              "productId": "0ZU0020",
+              "name": "GRANINI MELOCOTON  20CL 24U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AM0874",
+              "name": "DIETILINEA EDULCORANTE    100U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "0AM1290",
+              "name": "XPLICIT AZUCAR 7GR  1000U",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            },
+            {
+              "productId": "FDT13",
+              "name": "FREE DAMM TOSTADA 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            }
+          ],
+          "collectionAmount": 0,
+          "totalAmount": 110.5
+        },
+        {
+          "orderId": "order_014_2",
+          "documentId": "841066954",
+          "items": [
+            {
+              "productId": "ED15LN",
+              "name": "ESTRELLA DAMM 1/5 LN",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            }
+          ],
+          "collectionAmount": 0,
+          "totalAmount": 8.5
+        },
+        {
+          "orderId": "order_014_3",
+          "documentId": "841066955",
+          "items": [
+            {
+              "productId": "FDL13",
+              "name": "FREE DAMM LIMON 1/3 RET. PP",
+              "quantity": 1,
+              "unit": "Caja",
+              "palletUnitsTotal": 1
+            }
+          ],
+          "collectionAmount": 0,
+          "totalAmount": 8.5
+        }
+      ],
+      "collectionAmountTotal": 0,
+      "palletUnitsDelivered": 15,
+      "returnablesToPickup": 4,
+      "vehicleStateAfter": {
+        "usedPalletUnits": 34,
+        "totalPalletUnits": 320,
+        "occupancyPct": 11,
+        "returnablesOnBoard": 119
+      },
+      "reasoning": [
+        {
+          "text": "Mismo punto de aparcamiento que parada anterior — sin reposicionamiento",
+          "type": "positive"
+        },
+        {
+          "text": "Parada más cercana disponible",
+          "type": "positive"
+        },
+        {
+          "text": "Pago CRÉDITO — no requiere cobro en parada",
+          "type": "info"
+        }
+      ],
+      "scoreDebug": {
+        "total": 0.703,
+        "proximity": 1,
+        "urgency": 0.2,
+        "confidence": 0.78,
+        "cohesion": 1,
         "paymentPriority": 0.3,
         "capacityImpact": 1
       }
@@ -1498,222 +2079,280 @@
   "loadingOrder": [
     {
       "loadingPosition": 1,
-      "stopId": "stop_002",
-      "clientName": "BAR SAGITARIO",
-      "palletUnits": 16,
-      "barrels": 1,
-      "crates": 12,
+      "stopId": "stop_014",
+      "clientName": "BAR JALEY (PARETS)",
+      "palletUnits": 15,
+      "barrels": 0,
+      "crates": 15,
       "warehouseLocations": [
+        "AA04A1",
+        "AA05A1",
+        "AA08A1",
         "AA09A1",
-        "AA10A1"
+        "DA09A1",
+        "FA02A2",
+        "FA03A1",
+        "FA06A3",
+        "FC02A2",
+        "ZCG"
       ],
-      "note": "1 barril(es) — colocar al fondo, usar transpaleta"
+      "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 2,
-      "stopId": "stop_014",
-      "clientName": "BAR JALEY (PARETS)",
-      "palletUnits": 16,
-      "barrels": 1,
-      "crates": 12,
+      "stopId": "stop_006",
+      "clientName": "RESTAURANTE EL SOL",
+      "palletUnits": 14,
+      "barrels": 0,
+      "crates": 14,
       "warehouseLocations": [
         "AA09A1",
-        "AA10A1"
+        "CA03A3",
+        "CA04A2",
+        "CA05A3",
+        "CA07A2",
+        "EB02A1",
+        "EB03A1",
+        "FA06A3",
+        "ZCG"
       ],
-      "note": "1 barril(es) — colocar al fondo, usar transpaleta"
+      "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 3,
-      "stopId": "stop_016",
-      "clientName": "RESTAURANT BRUNCH",
-      "palletUnits": 8,
+      "stopId": "stop_002",
+      "clientName": "BAR SAGITARIO",
+      "palletUnits": 4,
       "barrels": 0,
-      "crates": 8,
+      "crates": 4,
       "warehouseLocations": [
-        "AA06A1",
-        "AA09A1"
+        "FC02A2"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 4,
-      "stopId": "stop_015",
-      "clientName": "RESTAURANT GUST D'ASIA",
-      "palletUnits": 22,
+      "stopId": "stop_016",
+      "clientName": "RESTAURANT BRUNCH",
+      "palletUnits": 7,
       "barrels": 0,
-      "crates": 22,
+      "crates": 7,
       "warehouseLocations": [
-        "AA07A1",
-        "AA09A1"
+        "AC05A2",
+        "FA02A2",
+        "FA03A1",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 5,
-      "stopId": "stop_006",
-      "clientName": "RESTAURANTE EL SOL",
-      "palletUnits": 22,
+      "stopId": "stop_015",
+      "clientName": "RESTAURANT GUST D'ASIA",
+      "palletUnits": 20,
       "barrels": 0,
-      "crates": 22,
+      "crates": 20,
       "warehouseLocations": [
-        "AA02A1",
-        "AA09A1"
+        "AC08A1",
+        "AC08A3",
+        "EA08A2",
+        "FA06A3",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 6,
-      "stopId": "stop_012",
-      "clientName": "OH LA LA",
-      "palletUnits": 22,
+      "stopId": "stop_010",
+      "clientName": "CAFETERIA LUISIANA",
+      "palletUnits": 16,
       "barrels": 0,
-      "crates": 22,
+      "crates": 16,
       "warehouseLocations": [
-        "AA02A1",
-        "AA09A1"
+        "AA09A1",
+        "PLV"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 7,
-      "stopId": "stop_017",
-      "clientName": "AKI MISMO",
-      "palletUnits": 15,
+      "stopId": "stop_012",
+      "clientName": "OH LA LA",
+      "palletUnits": 25,
       "barrels": 0,
-      "crates": 15,
+      "crates": 25,
       "warehouseLocations": [
+        "AA02A1",
+        "AA05A1",
         "AA09A1",
-        "BA05A1"
+        "AC05A2",
+        "DB04A3",
+        "EB03A1",
+        "EC07A3",
+        "PLV"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 8,
-      "stopId": "stop_008",
-      "clientName": "CAN LITU'S",
-      "palletUnits": 16,
-      "barrels": 1,
-      "crates": 12,
+      "stopId": "stop_017",
+      "clientName": "AKI MISMO",
+      "palletUnits": 4,
+      "barrels": 0,
+      "crates": 4,
       "warehouseLocations": [
-        "AA09A1",
-        "AA10A1"
+        "A0DISTRIDA",
+        "AA09A1"
       ],
-      "note": "1 barril(es) — colocar al fondo, usar transpaleta"
+      "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 9,
-      "stopId": "stop_018",
-      "clientName": "DAHLIA PASTISSERIA",
-      "palletUnits": 16,
+      "stopId": "stop_008",
+      "clientName": "CAN LITU'S",
+      "palletUnits": 15,
       "barrels": 0,
-      "crates": 16,
+      "crates": 15,
       "warehouseLocations": [
-        "AA02A1",
-        "AA09A1"
+        "A0DISTRIDA",
+        "AA04A1",
+        "AC01A1",
+        "CA04A2",
+        "EB02A1",
+        "EB03A1",
+        "FA06A3",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 10,
-      "stopId": "stop_005",
-      "clientName": "CAN PRAT RESTAURANT",
-      "palletUnits": 9,
+      "stopId": "stop_018",
+      "clientName": "DAHLIA PASTISSERIA",
+      "palletUnits": 8,
       "barrels": 0,
-      "crates": 9,
+      "crates": 8,
       "warehouseLocations": [
-        "AA09A1",
-        "BA05A1"
+        "CB06A2",
+        "DA09A1",
+        "DA09A2",
+        "DA09A3",
+        "EB03A1",
+        "FA06A3",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 11,
-      "stopId": "stop_009",
-      "clientName": "LA GRANJA",
-      "palletUnits": 22,
+      "stopId": "stop_005",
+      "clientName": "CAN PRAT RESTAURANT",
+      "palletUnits": 6,
       "barrels": 0,
-      "crates": 22,
+      "crates": 6,
       "warehouseLocations": [
-        "AA07A1",
-        "AA09A1"
+        "BA01A1",
+        "BA02A3",
+        "CA07A1"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 12,
-      "stopId": "stop_004",
-      "clientName": "ESPAI BAR",
-      "palletUnits": 8,
+      "stopId": "stop_009",
+      "clientName": "LA GRANJA",
+      "palletUnits": 32,
       "barrels": 0,
-      "crates": 8,
+      "crates": 32,
       "warehouseLocations": [
-        "AA06A1",
-        "AA09A1"
+        "A0DISTRIDA",
+        "AA04A1",
+        "AA07A1",
+        "AA08A1",
+        "AA09A1",
+        "CB06A2",
+        "DA01A1"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 13,
-      "stopId": "stop_007",
-      "clientName": "TINO FRANKFURT",
-      "palletUnits": 8,
+      "stopId": "stop_004",
+      "clientName": "ESPAI BAR",
+      "palletUnits": 41,
       "barrels": 0,
-      "crates": 8,
+      "crates": 41,
       "warehouseLocations": [
-        "AA08A1",
-        "AA09A1"
+        "AA05A1",
+        "AA06A1",
+        "AA07A1",
+        "AA09A1",
+        "FA06A3",
+        "FC01C4",
+        "FC02A2"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 14,
-      "stopId": "stop_013",
-      "clientName": "RACO DEL SEMI CACHOPO",
-      "palletUnits": 8,
+      "stopId": "stop_007",
+      "clientName": "TINO FRANKFURT",
+      "palletUnits": 2,
       "barrels": 0,
-      "crates": 8,
+      "crates": 2,
       "warehouseLocations": [
-        "AA08A1",
-        "AA09A1"
+        "AC06A1",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 15,
-      "stopId": "stop_003",
-      "clientName": "CHUS RESTAURANT",
-      "palletUnits": 22,
+      "stopId": "stop_013",
+      "clientName": "RACO DEL SEMI CACHOPO",
+      "palletUnits": 12,
       "barrels": 0,
-      "crates": 22,
+      "crates": 12,
       "warehouseLocations": [
-        "AA07A1",
-        "AA09A1"
+        "AA03A1",
+        "AA09A1",
+        "EB03A1",
+        "FA02A2",
+        "FA06A3"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 16,
-      "stopId": "stop_001",
-      "clientName": "BK MOLLET",
-      "palletUnits": 8,
+      "stopId": "stop_003",
+      "clientName": "CHUS RESTAURANT",
+      "palletUnits": 26,
       "barrels": 0,
-      "crates": 8,
+      "crates": 26,
       "warehouseLocations": [
+        "AA04A1",
+        "AA05A1",
+        "AA06A1",
+        "AA07A1",
         "AA08A1",
-        "AA09A1"
+        "AA09A1",
+        "BA01A1",
+        "ZCG"
       ],
       "note": "Cajas — colocar accesibles"
     },
     {
       "loadingPosition": 17,
-      "stopId": "stop_010",
-      "clientName": "CAFETERIA LUISIANA",
-      "palletUnits": 14,
+      "stopId": "stop_001",
+      "clientName": "BK MOLLET",
+      "palletUnits": 20,
       "barrels": 0,
-      "crates": 14,
+      "crates": 20,
       "warehouseLocations": [
-        "AA06A1",
-        "AA09A1"
+        "CA01A1",
+        "CA01A3",
+        "EB03A1",
+        "EB04A1"
       ],
       "note": "Cajas — colocar accesibles"
     }
@@ -1721,7 +2360,9 @@
   "clusters": [
     {
       "id": "cluster_01",
-      "parkingPointName": "AVENIDA RABASSAIRES 40, MOLLET DEL VALLÈS",
+      "parkingPointName": "Zona descarga — Carrer de Pere Ramon, Mollet del Vallès (7 clientes)",
+      "centroidLat": 41.5394,
+      "centroidLng": 2.2130000000000005,
       "stopIds": [
         "stop_001",
         "stop_003",
@@ -1731,30 +2372,30 @@
         "stop_009",
         "stop_013"
       ],
-      "walkingMeters": 0,
-      "reason": "7 clientes a menos de 80m — mismo punto de aparcamiento"
+      "walkingMeters": 3.6961274035411776e-11,
+      "reason": "7 clientes en radio de 80m — mismo punto de aparcamiento"
     },
     {
       "id": "cluster_02",
-      "parkingPointName": "Carrer d'Aragó 2, PARETS DEL VALLES",
+      "parkingPointName": "Zona descarga — Carrer de la Bifurcació, Montcada i Reixac (6 clientes)",
+      "centroidLat": 41.47147058823529,
+      "centroidLng": 2.182058823529412,
       "stopIds": [
-        "stop_002"
+        "stop_002",
+        "stop_006",
+        "stop_010",
+        "stop_014",
+        "stop_015",
+        "stop_016"
       ],
       "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
+      "reason": "6 clientes en radio de 80m — mismo punto de aparcamiento"
     },
     {
       "id": "cluster_03",
-      "parkingPointName": "CALLE VICTOR CATALA 15, PARETS DEL VALLES",
-      "stopIds": [
-        "stop_006"
-      ],
-      "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
-    },
-    {
-      "id": "cluster_04",
-      "parkingPointName": "CALLE VICTOR CATALA 9, PARETS DEL VALLÈS",
+      "parkingPointName": "Zona descarga — Avinguda Pedra del Diable, Parets del Vallès (4 clientes)",
+      "centroidLat": 41.5683,
+      "centroidLng": 2.2261,
       "stopIds": [
         "stop_008",
         "stop_012",
@@ -1762,99 +2403,65 @@
         "stop_018"
       ],
       "walkingMeters": 0,
-      "reason": "4 clientes a menos de 80m — mismo punto de aparcamiento"
+      "reason": "4 clientes en radio de 80m — mismo punto de aparcamiento"
     },
     {
-      "id": "cluster_05",
-      "parkingPointName": "PASEO JOAN MIRO 8, PARETS DEL VALLES",
-      "stopIds": [
-        "stop_010"
-      ],
-      "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
-    },
-    {
-      "id": "cluster_06",
+      "id": "cluster_04",
       "parkingPointName": "CALLE LAS CREMADES S/N, CALDES DE MONTBUI",
+      "centroidLat": 41.63,
+      "centroidLng": 2.1669,
       "stopIds": [
         "stop_011"
-      ],
-      "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
-    },
-    {
-      "id": "cluster_07",
-      "parkingPointName": "Avinguda de Francesc Macià 11, PARETS DEL VALLES",
-      "stopIds": [
-        "stop_014"
-      ],
-      "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
-    },
-    {
-      "id": "cluster_08",
-      "parkingPointName": "Avinguda de Francesc Macià 12, PARETS DEL VALLES",
-      "stopIds": [
-        "stop_015"
-      ],
-      "walkingMeters": 0,
-      "reason": "Único cliente en este radio"
-    },
-    {
-      "id": "cluster_09",
-      "parkingPointName": "CALLE XALOC 1, PARETS DEL VALLES",
-      "stopIds": [
-        "stop_016"
       ],
       "walkingMeters": 0,
       "reason": "Único cliente en este radio"
     }
   ],
   "kpis": {
-    "totalDistanceKm": 32.8,
-    "totalDriveMinutes": 32,
-    "totalServiceMinutes": 185,
+    "totalDistanceKm": 22.7,
+    "totalDriveMinutes": 18,
+    "totalServiceMinutes": 170,
     "totalWaitMinutes": 0,
-    "totalCollectionEur": 773.5,
-    "palletOccupancyPct": 83,
-    "returnablesTotalPickup": 237,
+    "totalCollectionEur": 816,
+    "palletOccupancyPct": 94,
+    "returnablesTotalPickup": 119,
     "skippedStops": [
       {
         "stopId": "stop_011",
         "clientName": "PISCINAS LES CREMADES",
-        "reason": "Ventana cerrada a las 10:00 — llegaría a las 12:46"
+        "reason": "Ventana cerrada a las 10:00 — llegaría a las 12:30"
       }
     ],
     "routeAdherencePct": 100
   },
   "comparison": {
     "baseline": {
-      "km": 73.9,
-      "minutes": 405,
+      "km": 98.9,
+      "minutes": 423,
       "description": "Orden original del input (ruta DR sin optimizar)"
     },
     "optimized": {
-      "km": 32.8,
-      "minutes": 217,
+      "km": 22.7,
+      "minutes": 188,
       "description": "Orden recomendado por scoring multi-objetivo"
     },
     "savings": {
-      "km": 41.1,
-      "minutes": 188,
-      "percentage": 56
+      "km": 76.2,
+      "minutes": 235,
+      "percentage": 77
     }
   },
   "returnToDepotEta": {
-    "estimated": "12:33",
-    "earliest": "12:28",
-    "latest": "12:38",
+    "estimated": "12:18",
+    "earliest": "12:13",
+    "latest": "12:23",
     "confidencePct": 90
   },
   "meta": {
-    "solveMs": 3,
+    "solveMs": 2,
     "stopsRequested": 18,
     "stopsPlanned": 17,
     "stopsSkipped": 1,
-    "ordersTotal": 18
+    "ordersTotal": 20
   }
 }
