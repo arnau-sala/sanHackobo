@@ -1,6 +1,6 @@
 export type LatLng = {
-  lat: number;
-  lng: number;
+  lat?: number;
+  lng?: number;
 };
 
 export type TimeWindow = {
@@ -18,6 +18,8 @@ export type Vehicle = {
   type: string;
   palletSlots: number;
   access: string[];
+  maxVolume?: number;
+  maxWeight?: number;
 };
 
 export type Driver = {
@@ -29,9 +31,9 @@ export type Stop = {
   id: string;
   clientId: string;
   clientName: string;
-  address: string;
-  zone: string;
-  route: string;
+  address?: string;
+  zone?: string;
+  route?: string;
   timeWindow?: TimeWindow;
   historicalConfidence?: number;
   orders: string[];
@@ -59,7 +61,7 @@ export type Order = {
 export type InputData = {
   depot: Depot;
   vehicle: Vehicle;
-  driver: Driver;
+  driver?: Driver;
   stops: Stop[];
   orders: Order[];
 };

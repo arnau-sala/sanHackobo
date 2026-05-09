@@ -1,0 +1,641 @@
+/* Damm Smart Truck Copilot - Demo dashboard
+   Tema visual sencillo (rojo Damm + neutros), prioriza legibilidad y
+   estados visuales claros para la demo. */
+
+.shell {
+  --damm-red: #e10600;
+  --damm-red-dark: #b00500;
+  --damm-cream: #f6f1e7;
+  --bg-1: #0f1115;
+  --bg-2: #171b22;
+  --bg-3: #1f242d;
+  --border: #2a313d;
+  --text-1: #e8ebf0;
+  --text-2: #a9b0bd;
+  --text-3: #6b7280;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --crit: #ef4444;
+  --info: #38bdf8;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(180deg, #0a0c10 0%, #0f1115 100%);
+  color: var(--text-1);
+  min-height: 100vh;
+  padding: 14px 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ------------------------- Header ------------------------- */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--damm-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.brandText h1 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.brandText p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.modes {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-3);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.modeBtn {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.modeBtn[data-active="true"] {
+  background: var(--damm-red);
+  color: #fff;
+}
+
+.statusGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.statusDot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-3);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+.statusDot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+
+.statusDot[data-ok="true"]::before {
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+}
+
+.statusDot[data-ok="false"]::before {
+  background: var(--crit);
+}
+
+/* ------------------------- Main grid ---------------------- */
+
+.main {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) 360px;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (max-width: 1280px) {
+  .main {
+    grid-template-columns: 280px minmax(0, 1fr) 320px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100vh - 220px);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panelHeader h3 {
+  font-size: 13px;
+  margin: 0;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.panelHeader span {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.panelBody {
+  overflow-y: auto;
+  padding: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ------------------------- Route panel ------------------- */
+
+.routeMeta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 4px 4px 12px;
+}
+
+.routeMetaCard {
+  background: var(--bg-3);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 8px;
+}
+
+.routeMetaCard span {
+  display: block;
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.routeMetaCard strong {
+  font-size: 14px;
+  color: var(--text-1);
+}
+
+.routeStops {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.routeStop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  font: inherit;
+}
+
+.routeStop:hover {
+  background: var(--bg-3);
+}
+
+.routeStop[data-active="true"] {
+  background: rgba(225, 6, 0, 0.12);
+  border-color: var(--damm-red);
+}
+
+.routeStop[data-done="true"] {
+  opacity: 0.55;
+}
+
+.routeStop[data-done="true"] .seq {
+  background: var(--ok);
+  color: #fff;
+}
+
+.seq {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  flex-shrink: 0;
+}
+
+.routeStop[data-active="true"] .seq {
+  background: var(--damm-red);
+  color: #fff;
+  border-color: var(--damm-red);
+}
+
+.stopBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.stopName {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stopMeta {
+  display: block;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.stopBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  background: var(--bg-3);
+  border-radius: 5px;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* ------------------------- Center / Truck ----------------- */
+
+.truckPanel {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: calc(100vh - 220px);
+}
+
+.truckPanelInner {
+  flex: 1;
+  overflow: auto;
+}
+
+/* The TruckLoadView already has its own card; remove the redundant
+   white background by overriding its CSS variables when nested. */
+.truckPanelInner > div {
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  height: 100%;
+  background: var(--bg-2) !important;
+  color: var(--text-1) !important;
+}
+
+/* ------------------------- Copilot chat ------------------- */
+
+.chatBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.bubbleUser {
+  background: var(--damm-red);
+  color: #fff;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+
+.bubbleBot {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+
+.bubbleMeta {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 4px;
+}
+
+.bubbleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.actionChip {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+
+.suggestRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--border);
+}
+
+.suggestChip {
+  font-size: 11px;
+  padding: 4px 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.suggestChip:hover {
+  background: var(--damm-red);
+  color: #fff;
+  border-color: var(--damm-red);
+}
+
+.composer {
+  display: flex;
+  gap: 6px;
+  padding: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.composer input {
+  flex: 1;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.composer input:focus {
+  outline: none;
+  border-color: var(--damm-red);
+}
+
+.btnPrimary {
+  background: var(--damm-red);
+  border: 0;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  color: var(--text-1);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btnSecondary:hover {
+  background: var(--border);
+}
+
+.voiceRow {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 0 10px 6px;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.voiceRow strong {
+  color: var(--text-1);
+}
+
+/* ------------------------- Footer panels ------------------ */
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .footerGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footerPanel {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.warningList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+}
+
+.warningItem {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+}
+
+.warningItem[data-sev="critical"] {
+  border-color: var(--crit);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.warningItem[data-sev="warning"] {
+  border-color: var(--warn);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.warningIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-2);
+}
+
+.warningBody {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.warningBody strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.warningBody small {
+  font-size: 10px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.empty {
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+/* Strategy comparator */
+
+.compareGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+}
+
+.compareCard {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.compareCard h4 {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.compareKpi {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.compareKpi:last-child {
+  border-bottom: 0;
+}
+
+.compareKpi span {
+  color: var(--text-2);
+}
+
+.compareKpi strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.compareCard[data-best="true"] {
+  border-color: var(--damm-red);
+  background: rgba(225, 6, 0, 0.06);
+}
+
+.compareDelta {
+  font-size: 11px;
+  padding: 6px 10px;
+  background: var(--bg-3);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.compareDelta span {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.compareDelta strong {
+  color: var(--ok);
+}

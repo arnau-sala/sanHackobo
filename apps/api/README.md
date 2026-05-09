@@ -6,9 +6,11 @@ Servidor HTTP simple con endpoints de demo para el hackathon.
 
 - `GET /health`
 - `GET /api/demo-scenario`
+- `GET /api/pipeline/run` (mock end-to-end: `inputData` + `routePlan` + `loadPlan`)
 - `GET /handsfree` (demo navegador: escucha continua + respuesta de voz)
 - `POST /api/copilot`
 - `POST /api/optimize-route` (body `InputPayload` del optimizador → `routePlan` + `meta`)
+- `POST /api/optimize-load` (body `{ inputData, routePlan, options? }` → `loadPlan` + `meta`; usa mocks si llega vacío)
 - `POST /api/voice/query` (respuesta + audio TTS ElevenLabs)
 - `POST /api/voice/handsfree` (audio -> STT -> copilot -> TTS)
 
