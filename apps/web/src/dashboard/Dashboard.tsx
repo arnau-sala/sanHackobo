@@ -1,56 +1,61 @@
 /**
  * Dashboard — flujo real del conductor Damm.
  *
- * FASE "driving":  pantalla completa con mapa + camión animado hacia zona P.
- *                  Sin sidebars. Sin panels de supervisor.
- * FASE "parked":   pantalla completa con DeliveryView (3D + artículos + confirm).
- *                  Sin sidebars. Sin panels de supervisor.
+ * FASE "loading":  pantalla completa instrucciones de carga en almacén.
+ *                  El conductor confirma slot por slot antes de salir.
+ * FASE "driving":  mapa Mapbox con camión animado hacia zona P.
+ * FASE "parked":   DeliveryView (3D + artículos + confirm descarga).
  *
- * Modos Almacén / Supervisor recuperan el layout original con paneles.
+ * Rol "warehouse": layout original con paneles (almacenero).
+ * Rol "supervisor": SupervisorView con historial real de rutas.
  */
 import { useEffect, useMemo, useState } from "react";
 import type { CopilotResponse } from "@damm/copilot";
-import { RoutePanel } from "./RoutePanel";
-import { CopilotChat } from "./CopilotChat";
-import { WarningsPanel } from "./WarningsPanel";
-import { StrategyComparator } from "./StrategyComparator";
-import { TruckStage } from "./truck3d/TruckStage";
-import { DeliveryQueue } from "./truck3d/DeliveryQueue";
-import { RouteMap } from "./RouteMap";
-import { DeliveryView } from "./DeliveryView";
-import type { ViewMode } from "./truck3d/TruckView3D";
+import { RoutePanel }        from "./RoutePanel";
+import { CopilotChat }       from "./CopilotChat";
+import { WarningsPanel }     from "./WarningsPanel";
+import { StrategyComparator} from "./StrategyComparator";
+import { TruckStage }        from "./truck3d/TruckStage";
+import { DeliveryQueue }     from "./truck3d/DeliveryQueue";
+import { RouteMap }          from "./RouteMap";
+import { DeliveryView }      from "./DeliveryView";
+import { LoadingPhaseView }  from "./LoadingPhaseView";
+import { SupervisorView }    from "./SupervisorView";
+import type { ViewMode }     from "./truck3d/TruckView3D";
 import { buildHybrid, buildTraditional } from "../lib/pipeline";
-import { checkApiHealth } from "../lib/copilotClient";
+import { checkApiHealth }    from "../lib/copilotClient";
 import { parkingCoord, type LngLat } from "./parkingZones";
 import styles from "./Dashboard.module.css";
 
-type Mode = "driver" | "warehouse" | "supervisor";
-type DriverPhase = "driving" | "parked";
+type Mode        = "driver" | "warehouse" | "supervisor";
+type DriverPhase = "loading" | "driving" | "parked";
 
 const MODES: Array<{ id: Mode; label: string }> = [
-  { id: "driver",    label: "Conductor" },
-  { id: "warehouse", label: "Almacen"   },
-  { id: "supervisor",label: "Supervisor"},
+  { id: "driver",     label: "Conductor"  },
+  { id: "warehouse",  label: "Almacén"    },
+  { id: "supervisor", label: "Supervisor" },
 ];
+
+const R = "#E32819";
+const G = "#F5C842";
 
 export function Dashboard() {
   const hybrid      = useMemo(() => buildHybrid(), []);
   const traditional = useMemo(() => buildTraditional(), []);
 
-  // Parada inicial = la de sequence:1
-  const firstStop = useMemo(() => {
-    return [...hybrid.routePlan.stops].sort((a, b) => a.sequence - b.sequence)[0];
-  }, [hybrid]);
+  const firstStop = useMemo(
+    () => [...hybrid.routePlan.stops].sort((a, b) => a.sequence - b.sequence)[0],
+    [hybrid],
+  );
 
-  const [mode, setMode]           = useState<Mode>("driver");
-  const [apiUp, setApiUp]         = useState<boolean | null>(null);
-  const [currentStopId, setCurrentStopId] = useState<string>(firstStop?.stopId ?? "");
-  const [deliveredStopIds, setDeliveredStopIds] = useState<Set<string>>(() => new Set());
-  const [selectedSlotId, setSelectedSlotId]     = useState<string | null>(null);
-  const [truckViewMode, setTruckViewMode]        = useState<ViewMode>("general");
-  const [driverPhase, setDriverPhase]            = useState<DriverPhase>("driving");
-  // Posición real del camión (zona P de la última parada entregada)
-  const [truckCoord, setTruckCoord] = useState<LngLat | undefined>(undefined);
+  const [mode,             setMode]            = useState<Mode>("driver");
+  const [apiUp,            setApiUp]           = useState<boolean | null>(null);
+  const [currentStopId,    setCurrentStopId]   = useState(firstStop?.stopId ?? "");
+  const [deliveredStopIds, setDeliveredStopIds]= useState<Set<string>>(() => new Set());
+  const [selectedSlotId,   setSelectedSlotId]  = useState<string | null>(null);
+  const [truckViewMode,    setTruckViewMode]   = useState<ViewMode>("general");
+  const [driverPhase,      setDriverPhase]     = useState<DriverPhase>("loading");
+  const [truckCoord,       setTruckCoord]      = useState<LngLat | undefined>(undefined);
 
   useEffect(() => {
     void checkApiHealth().then(setApiUp);
@@ -69,40 +74,42 @@ export function Dashboard() {
   }
 
   function handleConfirmDelivery(stopId: string) {
-    // Guardar la zona P de esta parada como nueva posición del camión
-    const stop = hybrid.inputData.stops.find((s) => s.id === stopId);
+    const stop = hybrid.inputData.stops.find(s => s.id === stopId);
     if (stop?.lat && stop?.lng) {
       setTruckCoord(parkingCoord(stopId, stop.lat, stop.lng));
     }
-
     const updated = new Set(deliveredStopIds);
     updated.add(stopId);
     setDeliveredStopIds(updated);
 
     const sorted = [...hybrid.routePlan.stops].sort((a, b) => a.sequence - b.sequence);
-    const next   = sorted.find((s) => !updated.has(s.stopId));
+    const next   = sorted.find(s => !updated.has(s.stopId));
     if (next) setCurrentStopId(next.stopId);
 
-    // Volver al mapa para el siguiente tramo
     setTimeout(() => setDriverPhase("driving"), 300);
   }
 
-  /* ── Modo conductor: pantalla completa ─────────────────────────────────── */
+  /* ── Supervisor — pantalla completa ─────────────────────────────────── */
+  if (mode === "supervisor") {
+    return <SupervisorView onBack={() => setMode("driver")} />;
+  }
+
+  /* ── Conductor — pantalla completa ──────────────────────────────────── */
   if (mode === "driver") {
     return (
       <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", background: "#0d1117", overflow: "hidden" }}>
-        {/* Cabecera Damm */}
+
+        {/* Cabecera */}
         <header style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 24px", height: 52,
+          padding: "0 24px", height: 52, flexShrink: 0,
           background: "linear-gradient(90deg,#0D0000 0%,#1a0000 60%,#0D0000 100%)",
-          borderBottom: "1px solid rgba(227,40,25,.25)", flexShrink: 0,
+          borderBottom: "1px solid rgba(227,40,25,.25)",
           boxShadow: "0 2px 16px rgba(0,0,0,.6)",
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {/* Logo Damm */}
-            <div style={{ width: 36, height: 36, borderRadius: 10, background: "#E32819", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 12px rgba(227,40,25,.6)" }}>
-              <svg width="22" height="22" viewBox="0 0 22 22"><polygon points="11,1 13.5,8 21,8 15,13 17.5,20 11,15.5 4.5,20 7,13 1,8 8.5,8" fill="#F5C842"/></svg>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: R, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 12px rgba(227,40,25,.6)` }}>
+              <svg width="22" height="22" viewBox="0 0 22 22"><polygon points="11,1 13.5,8 21,8 15,13 17.5,20 11,15.5 4.5,20 7,13 1,8 8.5,8" fill={G}/></svg>
             </div>
             <div>
               <div style={{ color: "#fff", fontWeight: 800, fontSize: 14, letterSpacing: -.2 }}>Damm Smart Truck Copilot</div>
@@ -111,15 +118,31 @@ export function Dashboard() {
               </div>
             </div>
           </div>
+
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div style={{ padding: "4px 12px", borderRadius: 20, border: `1px solid ${driverPhase === "driving" ? "rgba(59,130,246,.5)" : "rgba(16,185,129,.5)"}`, background: driverPhase === "driving" ? "rgba(59,130,246,.1)" : "rgba(16,185,129,.1)", color: driverPhase === "driving" ? "#60a5fa" : "#10b981", fontSize: 11, fontWeight: 700 }}>
-              {driverPhase === "driving" ? "🚛 En ruta" : "🅿 Descargando"}
-            </div>
-            {MODES.map((m) => (
+            {/* Badge de fase */}
+            {driverPhase === "loading" && (
+              <div style={{ padding: "4px 12px", borderRadius: 20, border: "1px solid rgba(245,200,66,.4)", background: "rgba(245,200,66,.1)", color: G, fontSize: 11, fontWeight: 700 }}>
+                📦 Cargando camión
+              </div>
+            )}
+            {driverPhase === "driving" && (
+              <div style={{ padding: "4px 12px", borderRadius: 20, border: "1px solid rgba(59,130,246,.5)", background: "rgba(59,130,246,.1)", color: "#60a5fa", fontSize: 11, fontWeight: 700 }}>
+                🚛 En ruta
+              </div>
+            )}
+            {driverPhase === "parked" && (
+              <div style={{ padding: "4px 12px", borderRadius: 20, border: "1px solid rgba(16,185,129,.5)", background: "rgba(16,185,129,.1)", color: "#10b981", fontSize: 11, fontWeight: 700 }}>
+                🅿 Descargando
+              </div>
+            )}
+
+            {/* Switch de rol */}
+            {MODES.map(m => (
               <button key={m.id} onClick={() => setMode(m.id)} style={{
                 padding: "5px 14px", borderRadius: 8,
-                border: `1px solid ${mode === m.id ? "#E32819" : "rgba(255,255,255,.1)"}`,
-                background: mode === m.id ? "#E32819" : "transparent",
+                border: `1px solid ${mode === m.id ? R : "rgba(255,255,255,.1)"}`,
+                background: mode === m.id ? R : "transparent",
                 color: mode === m.id ? "#fff" : "rgba(255,255,255,.5)",
                 fontSize: 12, cursor: "pointer", fontWeight: 700, letterSpacing: .3,
               }}>{m.label}</button>
@@ -127,9 +150,17 @@ export function Dashboard() {
           </div>
         </header>
 
-        {/* Pantalla completa: mapa o descarga */}
+        {/* Pantalla completa por fase */}
         <div style={{ flex: 1, minHeight: 0 }}>
-          {driverPhase === "driving" ? (
+          {driverPhase === "loading" && (
+            <LoadingPhaseView
+              inputData={hybrid.inputData}
+              routePlan={hybrid.routePlan}
+              loadPlan={hybrid.loadPlan}
+              onStart={() => setDriverPhase("driving")}
+            />
+          )}
+          {driverPhase === "driving" && (
             <RouteMap
               routePlan={hybrid.routePlan}
               inputData={hybrid.inputData}
@@ -139,7 +170,8 @@ export function Dashboard() {
               onArrived={handleArrived}
               onSelectStop={setCurrentStopId}
             />
-          ) : (
+          )}
+          {driverPhase === "parked" && (
             <DeliveryView
               routePlan={hybrid.routePlan}
               inputData={hybrid.inputData}
@@ -154,7 +186,7 @@ export function Dashboard() {
     );
   }
 
-  /* ── Modo almacén / supervisor: layout original ─────────────────────────── */
+  /* ── Almacén — layout con paneles ───────────────────────────────────── */
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
@@ -164,13 +196,13 @@ export function Dashboard() {
             <h1>Damm Smart Truck Copilot</h1>
             <p>
               Reparto DR0027 · {hybrid.inputData.driver?.name ?? "(sin conductor)"} ·
-              vehiculo {hybrid.inputData.vehicle.id} ·{" "}
+              vehículo {hybrid.inputData.vehicle.id} ·{" "}
               {deliveredStopIds.size}/{hybrid.routePlan.stops.length} entregadas
             </p>
           </div>
         </div>
         <div className={styles.modes} role="tablist">
-          {MODES.map((m) => (
+          {MODES.map(m => (
             <button key={m.id} type="button" role="tab" className={styles.modeBtn}
               data-active={mode === m.id} onClick={() => setMode(m.id)}>
               {m.label}
@@ -179,7 +211,7 @@ export function Dashboard() {
         </div>
         <div className={styles.statusGroup}>
           <span className={styles.statusDot} data-ok={apiUp === true}
-            title={apiUp === true ? "API en :3001 disponible" : apiUp === false ? "API caida" : "comprobando..."}>
+            title={apiUp === true ? "API en :3001" : apiUp === false ? "API caida" : "comprobando..."}>
             API {apiUp === true ? "ON" : apiUp === false ? "OFF" : "…"}
           </span>
           <span className={styles.statusDot} data-ok={true}>optimizer-route</span>
@@ -197,7 +229,7 @@ export function Dashboard() {
             currentStopId={currentStopId}
             deliveredStopIds={deliveredStopIds}
             compact
-            onSelectStop={(stopId) => {
+            onSelectStop={stopId => {
               setCurrentStopId(stopId);
               if (truckViewMode === "general") setTruckViewMode("next-stop");
             }}
@@ -240,8 +272,8 @@ export function Dashboard() {
 }
 
 function filterByMode(mode: Mode, warnings: ReturnType<typeof buildHybrid>["loadPlan"]["warnings"]) {
-  if (mode === "warehouse") return warnings.filter((w) => ["heavy_item","stacking","missing_data","capacity"].includes(w.type));
-  if (mode === "driver")    return warnings.filter((w) => ["access","returnables","capacity"].includes(w.type));
+  if (mode === "warehouse") return warnings.filter(w => ["heavy_item","stacking","missing_data","capacity"].includes(w.type));
+  if (mode === "driver")    return warnings.filter(w => ["access","returnables","capacity"].includes(w.type));
   return warnings;
 }
 

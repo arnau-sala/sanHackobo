@@ -11,6 +11,8 @@ import { optimizeLoadHandler, pipelineRunHandler } from "./routes/optimize-load"
 import { optimizeRouteHandler } from "./routes/optimize-route";
 import { voiceHandsfreeRoute } from "./routes/voice-handsfree";
 import { voiceQueryRoute } from "./routes/voice-query";
+import { historyHandler } from "./routes/history";
+import { optimizeRealHandler } from "./routes/optimize-real";
 
 function loadEnvFromRoot(): void {
   const envPath = path.resolve(__dirname, "../../../.env");
@@ -180,6 +182,44 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // ── History endpoints ──────────────────────────────────────────────────
+  if (method === "GET" && (pathname === "/api/history" || pathname === "/api/history/drivers" || pathname === "/api/history/routes" || pathname.startsWith("/api/history/route/"))) {
+    const query: Record<string, string> = {};
+    try {
+      const u = new URL(url, "http://127.0.0.1");
+      u.searchParams.forEach((v, k) => { query[k] = v; });
+    } catch { /* ignore */ }
+    const pathParam = pathname.startsWith("/api/history/route/") ? pathname.replace("/api/history/route/", "") : undefined;
+    const result = await historyHandler(method, pathname, query, pathParam);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    sendJson(res, result.status, result.body);
+    return;
+  }
+
+  // ── Optimize real ──────────────────────────────────────────────────────
+  if (method === "POST" && pathname === "/api/optimize/real") {
+    try {
+      const body = await readJsonBody(req);
+      const result = await optimizeRealHandler(body);
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      sendJson(res, result.status, result.body);
+      return;
+    } catch {
+      sendJson(res, 400, { error: "JSON invalido en el body" });
+      return;
+    }
+  }
+
+  // OPTIONS preflight CORS
+  if (method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
+
   sendJson(res, 404, {
     error: "Ruta no encontrada",
     available: [
@@ -192,6 +232,11 @@ const server = http.createServer(async (req, res) => {
       "GET /api/pipeline/run",
       "POST /api/voice/query",
       "POST /api/voice/handsfree",
+      "GET /api/history",
+      "GET /api/history/drivers",
+      "GET /api/history/routes?driverId=&date=&route=",
+      "GET /api/history/route/:transportId",
+      "POST /api/optimize/real",
     ],
   });
 });

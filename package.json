@@ -16,7 +16,9 @@
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run build -w @damm/optimizer-route && tsc --noEmit -p tsconfig.json",
     "lint": "npm run typecheck",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "etl": "npx tsx scripts/etl.ts",
+    "geocode": "npx tsx scripts/geocode.ts"
   },
   "repository": {
     "type": "git",
