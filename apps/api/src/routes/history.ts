@@ -5,10 +5,13 @@
  * GET /api/history/route/:id    — transporte específico por transportId
  */
 import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import type { HandlerResult } from "./optimize-load.js";
 
-const PROCESSED = resolve(process.cwd(), "data/processed");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+// apps/api/src/routes → ../../../../data/processed
+const PROCESSED = resolve(__dirname, "../../../../data/processed");
 
 let _routesCache: any[] | null = null;
 let _driversCache: any[] | null = null;

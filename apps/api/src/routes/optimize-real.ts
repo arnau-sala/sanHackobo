@@ -7,7 +7,8 @@
  * con optimizer-route, ejecuta optimizeRoute() y devuelve el plan completo.
  */
 import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import { optimizeRoute } from "@damm/optimizer-route";
 import { optimizeLoad } from "@damm/optimizer-load";
 import type { HandlerResult } from "./optimize-load.js";
@@ -18,7 +19,8 @@ import type {
   OrderItem,
 } from "@damm/optimizer-route";
 
-const PROCESSED = resolve(process.cwd(), "data/processed");
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PROCESSED = resolve(__dirname, "../../../../data/processed");
 
 let _routesCache: any[] | null = null;
 let _materialsCache: any[] | null = null;
