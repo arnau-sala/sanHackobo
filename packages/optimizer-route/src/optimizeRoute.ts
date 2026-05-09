@@ -9,6 +9,7 @@ import { checkCapacity, totalPalletUnits } from "./constraints/capacityConstrain
 import { checkDriverCompliance } from "./constraints/driverHoursConstraint";
 import { scoreStop, DEFAULT_WEIGHTS } from "./scoring/scorer";
 import { generateReasoning } from "./scoring/reasoning";
+import { parkingPointsCached } from "./data/geocoder";
 
 const SERVICE_MIN_BASE   = 10; // minutos base por parada
 const SERVICE_MIN_BARREL =  5; // minutos extra por cada barril
@@ -29,11 +30,12 @@ function enrichStop(stop: Stop, orderMap: Map<string, Order>): EnrichedStop {
   const warehouseLocations: string[] = [];
 
   for (const order of orders) {
+    // Envases vacíos a recoger (no ocupan espacio de salida, se recogen in situ)
+    returnablesCount += order.emptyContainersToPickup ?? 0;
     for (const item of order.items) {
       totalPalletUnitsVal += item.palletUnitsTotal;
       totalWeightKg       += item.weight_kg * item.quantity;
       totalVolumeL        += item.volume_L  * item.quantity;
-      if (item.returnable)        returnablesCount += item.quantity;
       if (item.handlingType === "barrel") barrelCount += item.quantity;
       else if (item.handlingType === "crate") crateCount += item.quantity;
       if (!warehouseLocations.includes(item.warehouseLocation)) {
@@ -101,6 +103,21 @@ export function optimizeRoute(input: InputPayload, weights: ScoringWeights = DEF
   // Clustering
   const { clusters, stopToCluster } = clusterStops(enrichedStops);
 
+  // Enriquecer nombres de parking desde caché (resueltos por geocodeTransporte)
+  const parkingNames = parkingPointsCached(
+    clusters.map((c) => ({
+      id: c.id,
+      centroidLat: c.centroidLat,
+      centroidLng: c.centroidLng,
+      stopCount: c.stopIds.length,
+      city: enrichedStops.find((e) => e.stop.id === c.stopIds[0])?.stop.city ?? "",
+    }))
+  );
+  for (const c of clusters) {
+    const resolved = parkingNames.get(c.id);
+    if (resolved) c.parkingPointName = resolved;
+  }
+
   // Capacidad del vehículo
   const maxPalletUnits = totalPalletUnits(vehicle.palletSlots);
 
@@ -124,7 +141,7 @@ export function optimizeRoute(input: InputPayload, weights: ScoringWeights = DEF
     lastBreakAtMin: 0,
   };
 
-  const START_MIN = timeToMin(depot.address ? "07:00" : "07:00");
+  const START_MIN = timeToMin(driver.shiftStartTime ?? "07:00");
   const maxDistance = Math.max(
     ...enrichedStops.map((es) => haversineDistance(depot.lat, depot.lng, es.stop.lat, es.stop.lng))
   ) * 1.5 || 1;
@@ -272,8 +289,8 @@ export function optimizeRoute(input: InputPayload, weights: ScoringWeights = DEF
       driveMinutes: Math.round(winner.projectedDriveMin),
       parkingPoint: {
         name: cluster.parkingPointName,
-        lat: es.stop.lat,
-        lng: es.stop.lng,
+        lat: cluster.centroidLat,
+        lng: cluster.centroidLng,
         walkingMeters: Math.round(cluster.walkingMeters),
       },
       orders: plannedOrders,

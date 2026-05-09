@@ -1,4 +1,5 @@
-import { timeToMin } from "../geo/haversine";
+import { timeToMin, haversineDistance } from "../geo/haversine";
+import { estimateTravelMinutes } from "../geo/travelTime";
 import { ScoringContext, ScoringWeights, ScoreBreakdown, EnrichedStop } from "../types/internal.types";
 
 export const DEFAULT_WEIGHTS: ScoringWeights = {
@@ -15,9 +16,6 @@ export function scoreStop(
   ctx: ScoringContext,
   weights: ScoringWeights = DEFAULT_WEIGHTS
 ): { totalScore: number; breakdown: ScoreBreakdown; projectedArrivalMin: number; projectedDistM: number; projectedDriveMin: number } {
-  const { haversineDistance } = require("../geo/haversine");
-  const { estimateTravelMinutes } = require("../geo/travelTime");
-
   const distM: number = haversineDistance(ctx.currentLat, ctx.currentLng, candidate.stop.lat, candidate.stop.lng);
   const driveMin: number = estimateTravelMinutes(distM, ctx.currentTimeMinutes, "rural");
   const projectedArrivalMin = ctx.currentTimeMinutes + driveMin;

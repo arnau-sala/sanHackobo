@@ -5,8 +5,22 @@ import { RoutePlan } from "../../types/output.types";
 
 const router = Router();
 
-// Cachea el último plan calculado para el endpoint GET /maps
-let lastPlan: RoutePlan | null = null;
+const PLAN_CACHE_TTL_MS = 30 * 60 * 1000; // 30 min
+const planCache = new Map<string, { plan: RoutePlan; at: number }>();
+
+function getLastPlan(): RoutePlan | null {
+  const now = Date.now();
+  // Purge stale entries
+  for (const [key, entry] of planCache) {
+    if (now - entry.at > PLAN_CACHE_TTL_MS) planCache.delete(key);
+  }
+  // Return most recent
+  let newest: { plan: RoutePlan; at: number } | null = null;
+  for (const entry of planCache.values()) {
+    if (!newest || entry.at > newest.at) newest = entry;
+  }
+  return newest?.plan ?? null;
+}
 
 // POST /api/v1/optimize — recibe input.json, devuelve routePlan completo
 router.post("/optimize", (req: Request, res: Response) => {
@@ -19,7 +33,7 @@ router.post("/optimize", (req: Request, res: Response) => {
 
   try {
     const plan = optimizeRoute(validation.data);
-    lastPlan = plan;
+    planCache.set(plan.id, { plan, at: Date.now() });
     return res.json({ routePlan: plan, meta: { elapsedMs: Date.now() - t0 } });
   } catch (e: any) {
     return res.status(500).json({ error: e.message });
@@ -29,11 +43,10 @@ router.post("/optimize", (req: Request, res: Response) => {
 // GET /api/v1/optimize/maps — devuelve waypoints listos para Google Maps Directions API
 // Persona 5 llama esto y construye la URL de Google Maps directamente
 router.get("/optimize/maps", (_req: Request, res: Response) => {
-  if (!lastPlan) {
+  const plan = getLastPlan();
+  if (!plan) {
     return res.status(404).json({ error: "No hay ruta calculada. Llama primero a POST /optimize" });
   }
-
-  const plan = lastPlan;
 
   // Origin y destination: el depósito
   const origin = `${plan.depot.lat},${plan.depot.lng}`;
@@ -85,8 +98,9 @@ router.get("/optimize/maps", (_req: Request, res: Response) => {
 
   // URL de Google Maps con todos los waypoints (máx 25 en API gratuita)
   // Persona 5 puede usar esta URL directamente en un <a> o en el SDK de Maps
+  const GMAPS_MAX_WAYPOINTS = 23; // 25 total - origin - destination
   const waypointParam = waypoints
-    .slice(0, -1) // todos menos el último (destination)
+    .slice(0, Math.min(waypoints.length - 1, GMAPS_MAX_WAYPOINTS))
     .map((w) => `via:${w.parkingPoint.googleMapsLatLng}`)
     .join("|");
 

@@ -59,7 +59,9 @@ console.log(`   Optimizado: ${result.comparison.optimized.km} km | ${result.comp
 const savingsKm  = result.comparison.savings.km;
 const savingsMin = result.comparison.savings.minutes;
 const savingsPct = result.comparison.savings.percentage;
-console.log(`   Ahorro:     ${savingsKm > 0 ? "-" : "+"}${Math.abs(savingsKm)} km | ${savingsMin > 0 ? "-" : "+"}${Math.abs(savingsMin)} min | ${savingsPct}%`);
+const kmTag  = savingsKm  >= 0 ? `\x1b[32m-${savingsKm} km\x1b[0m`  : `\x1b[31m+${Math.abs(savingsKm)} km\x1b[0m`;
+const minTag = savingsMin >= 0 ? `\x1b[32m-${savingsMin} min\x1b[0m` : `\x1b[31m+${Math.abs(savingsMin)} min\x1b[0m`;
+console.log(`   Ahorro:     ${kmTag} | ${minTag} | ${savingsPct}%`);
 
 console.log(`\n📍 Orden de paradas:`);
 for (const s of result.stops) {
@@ -83,7 +85,8 @@ if (result.driverBreaks.length > 0) {
 
 console.log(`\n🚚 Orden carga LIFO (primero en subir = último en entregar):`);
 for (const li of result.loadingOrder) {
-  console.log(`  Pos ${String(li.loadingPosition).padStart(2)}: ${li.clientName.padEnd(35)} ${li.palletUnits}pu | ${li.warehouseLocations.join(", ")}`);
+  const name = (li.clientName || `Cliente #${li.stopId}`).padEnd(35);
+  console.log(`  Pos ${String(li.loadingPosition).padStart(2)}: ${name} ${li.palletUnits}pu | ${li.warehouseLocations.join(", ")}`);
   if (li.barrels > 0) console.log(`        ↑ ${li.barrels} barril(es) — al fondo, usar transpaleta`);
 }
 
