@@ -19,6 +19,7 @@ const stops: Stop[] = [
     address: "Avinguda Sant Llorenç s/n, Sant Julià de Vilatorta",
     zone: "Sant Julià",
     route: "DR0027",
+    lat: 41.928787, lng: 2.323396,
     timeWindow: { from: "08:30", to: "11:00" },
     historicalConfidence: 0.9,
     orders: ["order-01"],
@@ -30,6 +31,7 @@ const stops: Stop[] = [
     address: "Avinguda Nostra Senyora de Mont, Sant Julià de Vilatorta",
     zone: "Sant Julià",
     route: "DR0027",
+    lat: 41.922867, lng: 2.323356,
     historicalConfidence: 0.85,
     orders: ["order-02"],
   },
@@ -40,6 +42,7 @@ const stops: Stop[] = [
     address: "Avinguda de Sant Llorenç 68, Sant Julià de Vilatorta",
     zone: "Sant Julià",
     route: "DR0027",
+    lat: 41.925619, lng: 2.326073,
     orders: ["order-03"],
   },
   {
@@ -49,6 +52,7 @@ const stops: Stop[] = [
     address: "Carrer Núria 27, Sant Julià de Vilatorta",
     zone: "Sant Julià",
     route: "DR0027",
+    lat: 41.923399, lng: 2.323428,
     orders: ["order-04"],
   },
   {
@@ -58,6 +62,7 @@ const stops: Stop[] = [
     address: "Carrer de Puig-l'agulla s/n, Sant Julià de Vilatorta",
     zone: "Sant Julià",
     route: "DR0027",
+    lat: 41.921131, lng: 2.318692,
     orders: ["order-05"],
   },
   {
@@ -67,6 +72,7 @@ const stops: Stop[] = [
     address: "Avinguda Pau Casals 22, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.925884, lng: 2.286005,
     orders: ["order-06"],
   },
   {
@@ -76,6 +82,7 @@ const stops: Stop[] = [
     address: "Carrer Gran 1, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.925271, lng: 2.283881,
     orders: ["order-07"],
   },
   {
@@ -85,6 +92,7 @@ const stops: Stop[] = [
     address: "Carrer Gran 9, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.925392, lng: 2.283332,
     orders: ["order-08"],
   },
   {
@@ -94,6 +102,7 @@ const stops: Stop[] = [
     address: "Carretera N-141 D s/n, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.927215, lng: 2.288143,
     orders: ["order-09"],
   },
   {
@@ -103,6 +112,7 @@ const stops: Stop[] = [
     address: "Carretera N-141 D s/n, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.927315, lng: 2.288243,
     orders: ["order-10"],
   },
   {
@@ -112,6 +122,7 @@ const stops: Stop[] = [
     address: "Carrer Gran 20, Calldetenes",
     zone: "Calldetenes",
     route: "DR0027",
+    lat: 41.925361, lng: 2.282775,
     orders: ["order-11"],
   },
   {
@@ -121,6 +132,7 @@ const stops: Stop[] = [
     address: "Carrer Major 12, Folgueroles",
     zone: "Folgueroles",
     route: "DR0027",
+    lat: 41.938176, lng: 2.316116,
     orders: ["order-12"],
   },
   {
@@ -130,6 +142,7 @@ const stops: Stop[] = [
     address: "Carrer Rec d'Acumulada 9, Folgueroles",
     zone: "Folgueroles",
     route: "DR0027",
+    lat: 41.937500, lng: 2.315200,
     orders: ["order-13"],
   },
   {
@@ -139,6 +152,7 @@ const stops: Stop[] = [
     address: "Carrer Camí Vell de Vic 16, Folgueroles",
     zone: "Folgueroles",
     route: "DR0027",
+    lat: 41.937776, lng: 2.310084,
     orders: ["order-14"],
   },
 ];
