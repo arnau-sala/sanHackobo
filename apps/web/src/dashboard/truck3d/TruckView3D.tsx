@@ -1,28 +1,38 @@
 /**
- * Visualizacion 3D isometrica del camion + 8 palets.
+ * Visualizacion 3D isometrica del camion + 8 palets, port directo del
+ * export del Figma (`interfaz_camion`).
  *
- * Layout fijo (4×2): col 0 = bloque A (cab), col 3 = bloque D (rear),
- * row 0 = lateral derecho (visible), row 1 = lateral izquierdo (interior).
+ * Layout fijo (4 filas × 2 columnas) en coordenadas mundo:
+ *   - Cabina:  y ∈ [-3.5, -0.2], la pintamos detras del trailer.
+ *   - Trailer: TW=8 ancho, TD=12 fondo, TH=4.5 alto.
+ *   - Palets: P1..P4 en columna izquierda (x ∈ 0.15..2.75),
+ *             P5..P8 en columna derecha   (x ∈ 5.25..7.85);
+ *             4 filas de y=0.3..2.7, 3.0..5.4, 5.7..8.1, 8.4..10.8.
  *
  * Modos:
  *   - viewMode="general"     todos los palets visibles
- *   - viewMode="next-stop"   solo el palet activo en color, el resto en
- *                            blanco translucido
+ *   - viewMode="next-stop"   los palets que NO contienen la entrega
+ *                            activa quedan atenuados; los activos
+ *                            llevan halo amber + callout "Recoger aqui"
  *
- * El componente es totalmente controlado: recibe `selectedSlotId` y
- * `currentStopId` y emite eventos `onSelectSlot`. El estado de "items
- * entregados" se calcula a partir de `deliveredStopIds`.
+ * El componente es controlado: recibe `selectedSlotId`, `currentStopId`,
+ * `viewMode` y emite `onSelectSlot`. El "vaciado" del camion lo calcula
+ * `palletRenderModel` a partir de `deliveredStopIds`.
  */
 import { useMemo } from "react";
 import type { LoadPlan, PalletSlot } from "@damm/optimizer-load";
 import { Pallet3D } from "./Pallet3D";
-import { DEFAULT_GEOMETRY } from "./palletGeometry";
+import { PalletPopup } from "./PalletPopup";
 import { TruckShell } from "./TruckShell";
 import { buildPalletStack } from "./buildPalletStack";
-import { depthKey, project, type World } from "./projection";
+import { buildRenderPallet, slotBox, type RenderPallet } from "./palletRenderModel";
+import { iso } from "./projection";
 import styles from "./TruckView3D.module.css";
 
 export type ViewMode = "general" | "next-stop";
+
+const VIEWBOX_W = 680;
+const VIEWBOX_H = 400;
 
 export type TruckView3DProps = {
   loadPlan: LoadPlan;
@@ -36,27 +46,11 @@ export type TruckView3DProps = {
   viewMode?: ViewMode;
 };
 
-/**
- * Mapeo slotId → posicion en grid (col, row). Esto matchea el mockup del
- * usuario: P1..P4 lateral derecho (row 0), P5..P8 lateral izquierdo
- * (row 1), y dentro de cada lateral van de cabina a trasera.
- *
- * Se cae con gracia: si llega un slotId raro, va al final.
- */
-const SLOT_GRID: Record<string, { col: number; row: number }> = {
-  P1: { col: 0, row: 0 },
-  P2: { col: 1, row: 0 },
-  P3: { col: 2, row: 0 },
-  P4: { col: 3, row: 0 },
-  P5: { col: 0, row: 1 },
-  P6: { col: 1, row: 1 },
-  P7: { col: 2, row: 1 },
-  P8: { col: 3, row: 1 },
+type PlacedPallet = {
+  slot: PalletSlot;
+  render: RenderPallet;
+  bbox: { x0: number; x1: number; y0: number; y1: number };
 };
-
-const PALLET_GAP_X = 12; // separacion horizontal entre palets
-const PALLET_GAP_Y = 8;
-const TRUCK_PADDING = 16;
 
 export function TruckView3D({
   loadPlan,
@@ -66,134 +60,158 @@ export function TruckView3D({
   onSelectSlot,
   viewMode = "general",
 }: TruckView3DProps) {
-  // 1. Calcular boxes por palet (filtrando entregas ya hechas).
-  const palletData = useMemo(() => {
-    return loadPlan.palletSlots.map((slot) => {
-      const remainingItems = slot.items.filter(
-        (it) => !deliveredStopIds.has(it.stopId),
-      );
-      const stack = buildPalletStack(remainingItems, {
-        reservedForReturnables: slot.accessPriority === "returnables",
-      });
-      return { slot, stack };
+  // 1. Render data por palet (figma) + bbox en coords mundo.
+  const placed: PlacedPallet[] = useMemo(() => {
+    return loadPlan.palletSlots.slice(0, 8).map((slot, index) => {
+      const render = buildRenderPallet(slot, { index, deliveredStopIds });
+      const bbox = slotBox(render.pos.col, render.pos.row);
+      return { slot, render, bbox };
     });
   }, [loadPlan, deliveredStopIds]);
 
-  // 2. Calcular qué palets contienen la entrega activa (highlightedSlots).
+  // 2. Slots que contienen la entrega activa (highlight).
   const highlightedSlotIds = useMemo(() => {
-    if (!currentStopId) return new Set<string>();
     const set = new Set<string>();
-    for (const { slot } of palletData) {
-      if (slot.items.some((it) => it.stopId === currentStopId)) {
+    if (!currentStopId || viewMode !== "next-stop") return set;
+    for (const { slot } of placed) {
+      if (
+        slot.items.some(
+          (it) =>
+            it.stopId === currentStopId && !deliveredStopIds.has(it.stopId),
+        )
+      ) {
         set.add(slot.slotId);
       }
     }
     return set;
-  }, [palletData, currentStopId]);
+  }, [placed, currentStopId, deliveredStopIds, viewMode]);
 
-  // 3. Geometria global: 4×2 palets con padding.
-  const geo = DEFAULT_GEOMETRY;
-  const cargoOrigin: World = { x: 0, y: 0, z: 0 };
-  const cargoWidth = 4 * geo.width + 3 * PALLET_GAP_X + TRUCK_PADDING * 2;
-  const cargoDepth = 2 * geo.depth + PALLET_GAP_Y + TRUCK_PADDING * 2;
-  const cargoHeight = geo.baseHeight + 4 * geo.boxHeight + 18;
+  // 3. Orden de pintado: back-to-front (mas alejado primero).
+  const sorted = useMemo(
+    () => [...placed].sort((a, b) => a.bbox.x0 + a.bbox.y0 - (b.bbox.x0 + b.bbox.y0)),
+    [placed],
+  );
 
-  // Posicion de cada palet.
-  const placedPallets = palletData
-    .map(({ slot, stack }) => {
-      const grid = SLOT_GRID[slot.slotId] ?? { col: 0, row: 0 };
-      const origin: World = {
-        x: TRUCK_PADDING + grid.col * (geo.width + PALLET_GAP_X),
-        y: TRUCK_PADDING + grid.row * (geo.depth + PALLET_GAP_Y),
-        z: 0,
-      };
-      return { slot, stack, origin };
-    })
-    // ordenar por depthKey: pintamos los de atras (mayor y) primero.
-    // Truco: usamos la esquina mas alejada del viewer.
-    .sort((a, b) => {
-      const da = depthKey({
-        x: a.origin.x,
-        y: a.origin.y + geo.depth,
-        z: 0,
-      });
-      const db = depthKey({
-        x: b.origin.x,
-        y: b.origin.y + geo.depth,
-        z: 0,
-      });
-      return da - db;
-    });
+  // 4. Datos del popup (si hay slot seleccionado).
+  const selected = selectedSlotId
+    ? placed.find((p) => p.slot.slotId === selectedSlotId)
+    : null;
 
-  // 4. Calcular viewBox proyectando esquinas extremas. Tomamos las 8
-  //    esquinas del bounding box (cargo + cabina) + un margen extra en
-  //    arriba/derecha para que la bandera "Recoger aqui" no se corte.
-  const totalW = cargoWidth + 90; // + cabina
-  const corners: World[] = [
-    { x: 0, y: 0, z: 0 },
-    { x: totalW, y: 0, z: 0 },
-    { x: 0, y: cargoDepth, z: 0 },
-    { x: totalW, y: cargoDepth, z: 0 },
-    { x: 0, y: 0, z: cargoHeight },
-    { x: totalW, y: 0, z: cargoHeight },
-    { x: 0, y: cargoDepth, z: cargoHeight },
-    { x: totalW, y: cargoDepth, z: cargoHeight },
-  ];
-  const projected = corners.map(project);
-  const minX = Math.min(...projected.map((p) => p.x)) - 30;
-  const maxX = Math.max(...projected.map((p) => p.x)) + 130; // banderita
-  const minY = Math.min(...projected.map((p) => p.y)) - 60; // texto bandera
-  const maxY = Math.max(...projected.map((p) => p.y)) + 30;
-  const vbW = maxX - minX;
-  const vbH = maxY - minY;
+  // 5. Callout "↓ Recoger aqui" sobre el palet activo si solo hay uno.
+  const calloutSlot =
+    viewMode === "next-stop" && highlightedSlotIds.size > 0
+      ? placed.find((p) => highlightedSlotIds.has(p.slot.slotId))
+      : null;
 
   return (
     <svg
       className={styles.svg}
-      viewBox={`${minX} ${minY} ${vbW} ${vbH}`}
+      viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
       preserveAspectRatio="xMidYMid meet"
-      style={{ aspectRatio: `${vbW} / ${vbH}` }}
+      style={{ aspectRatio: `${VIEWBOX_W} / ${VIEWBOX_H}` }}
+      xmlns="http://www.w3.org/2000/svg"
       onClick={() => onSelectSlot?.(null)}
     >
       <defs>
-        <filter id="truck-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.18" />
-        </filter>
+        <marker id="truck-arrow" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+          <polygon points="0 0, 7 2.5, 0 5" fill="#F59E0B" />
+        </marker>
       </defs>
 
-      <g filter="url(#truck-shadow)">
-        <TruckShell
-          origin={cargoOrigin}
-          width={cargoWidth}
-          depth={cargoDepth}
-          height={cargoHeight}
-        />
+      <TruckShell />
 
-        {placedPallets.map(({ slot, stack, origin }) => {
-          const isHighlighted =
-            viewMode === "next-stop" && highlightedSlotIds.has(slot.slotId);
-          const isGhosted =
-            viewMode === "next-stop" && !highlightedSlotIds.has(slot.slotId);
-          return (
-            <Pallet3D
-              key={slot.slotId}
-              origin={origin}
-              boxes={stack.boxes}
-              slotId={slot.slotId}
-              selected={selectedSlotId === slot.slotId}
-              highlighted={isHighlighted}
-              ghosted={isGhosted}
-              highlightStopId={
-                viewMode === "next-stop" ? currentStopId ?? null : null
-              }
-              onSelect={(slotId) => {
-                onSelectSlot?.(slotId);
-              }}
-            />
-          );
-        })}
-      </g>
+      {sorted.map(({ slot, render, bbox }) => {
+        const isHighlighted = highlightedSlotIds.has(slot.slotId);
+        const isDimmed = viewMode === "next-stop" && !isHighlighted;
+        const isSelected = selectedSlotId === slot.slotId;
+        return (
+          <Pallet3D
+            key={slot.slotId}
+            pallet={render}
+            bbox={bbox}
+            highlighted={isHighlighted}
+            dimmed={isDimmed}
+            selected={isSelected}
+            onSelect={(id) => onSelectSlot?.(id)}
+          />
+        );
+      })}
+
+      {calloutSlot && (
+        <Callout
+          x0={calloutSlot.bbox.x0}
+          x1={calloutSlot.bbox.x1}
+          y0={calloutSlot.bbox.y0}
+          y1={calloutSlot.bbox.y1}
+        />
+      )}
+
+      {selected && (
+        <PalletPopup
+          slot={selected.slot}
+          stack={buildPalletStack(
+            selected.slot.items.filter(
+              (it) => !deliveredStopIds.has(it.stopId),
+            ),
+            { reservedForReturnables: selected.slot.accessPriority === "returnables" },
+          )}
+          render={selected.render}
+          bbox={selected.bbox}
+          onClose={() => onSelectSlot?.(null)}
+        />
+      )}
     </svg>
+  );
+}
+
+function Callout({
+  x0,
+  x1,
+  y0,
+  y1,
+}: {
+  x0: number;
+  x1: number;
+  y0: number;
+  y1: number;
+}) {
+  const Z1 = 1.42;
+  const [px, py] = iso((x0 + x1) / 2, (y0 + y1) / 2, Z1 + 0.9);
+  const cbx = px + 58;
+  const cby = py - 36;
+  return (
+    <g style={{ pointerEvents: "none" }}>
+      <line
+        x1={cbx + 2}
+        y1={cby + 18}
+        x2={px + 2}
+        y2={py + 2}
+        stroke="#F59E0B"
+        strokeWidth="1.5"
+        markerEnd="url(#truck-arrow)"
+      />
+      <rect
+        x={cbx - 4}
+        y={cby - 11}
+        width={88}
+        height={26}
+        rx={6}
+        fill="#0B1622"
+        stroke="#F59E0B"
+        strokeWidth="1.5"
+      />
+      <text
+        x={cbx + 40}
+        y={cby + 4}
+        textAnchor="middle"
+        fill="#F59E0B"
+        fontSize="9.5"
+        fontWeight="800"
+        fontFamily="system-ui, sans-serif"
+      >
+        ↓ Recoger aqui
+      </text>
+    </g>
   );
 }
 

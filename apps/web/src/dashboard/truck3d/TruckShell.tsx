@@ -1,155 +1,219 @@
 /**
- * Caja del camion (chasis + cabina) en isometrico.
+ * Caja del camion (suelo + paredes + cabina) en isometrico.
  *
- * Se compone de:
- *   - Suelo gris claro (rectangulo proyectado).
- *   - Pared trasera (fondo, lateral izquierdo) blanca con linea sup roja.
- *   - Tope rojo (techo) inclinado.
- *   - Cabina al fondo-derecha (cubo rojo).
+ * Port directo del export del Figma (`interfaz_camion`). Usa coordenadas
+ * mundo absolutas (TW=8, TD=12, TH=4.5) y, gracias a la proyeccion fija
+ * en `projection.ts`, encaja siempre en el viewBox 680x400.
  *
- * El lateral derecho y la trasera quedan abiertos para que se vean los
- * palets desde fuera.
+ * Composicion:
+ *   - Cabina (delante del trailer, en y negativa): chasis + cabina
+ *     bicolor + ventanas, parrilla, faros, deflector y rueda delantera.
+ *   - Pared frontal del trailer (y=0) en blanco con costillas verticales.
+ *   - Suelo (z=0) gris claro con linea central de pasillo.
  */
-import {
-  cuboidBackFace,
-  cuboidLeftFace,
-  cuboidTopFace,
-  polygonPoints,
-  type World,
-} from "./projection";
+import { iso, pts } from "./projection";
 
-export type TruckShellProps = {
-  /** Esquina inferior-trasera-izquierda del CARGO box. */
-  origin: World;
-  /** Dimensiones del box de carga. */
-  width: number;
-  depth: number;
-  height: number;
-  /** Tamaño de la cabina (en unidades de mundo). */
-  cabLength?: number;
-};
+export const TW = 8;
+export const TD = 12;
+export const TH = 4.5;
 
-const FLOOR_FILL = "#f1f5f9";
-const FLOOR_LINE = "#cbd5e1";
-const WALL_BACK = "#ffffff";
-const WALL_LEFT = "#f8fafc";
-const ROOF = "#e10600";
-const ROOF_DARK = "#b00500";
-const CAB = "#e10600";
-const CAB_DARK = "#a00400";
-const CAB_GLASS = "#1f2a44";
-
-export function TruckShell({
-  origin,
-  width: w,
-  depth: d,
-  height: h,
-  cabLength = 90,
-}: TruckShellProps) {
-  // Suelo: cara superior del cuboide a z=0.
-  const floor = cuboidTopFace(origin, w, d, 0);
-  // Pared trasera (mas alejada en y).
-  const back = cuboidBackFace(origin, w, d, h);
-  // Pared izquierda (eje x = origin.x).
-  const left = cuboidLeftFace(origin, w, d, h);
-  // Techo: cara superior del cuboide a z=h.
-  const roof = cuboidTopFace(origin, w, d, h);
-
-  // Cabina: a +x del cargo box, mas baja.
-  const cabOrigin: World = { x: origin.x + w, y: origin.y, z: origin.z };
-  const cabH = h * 0.85;
-  const cabFront = [
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y, z: cabOrigin.z },
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y + d, z: cabOrigin.z },
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y + d, z: cabOrigin.z + cabH },
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y, z: cabOrigin.z + cabH },
-  ];
-  const cabRight = [
-    { x: cabOrigin.x, y: cabOrigin.y, z: cabOrigin.z },
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y, z: cabOrigin.z },
-    { x: cabOrigin.x + cabLength, y: cabOrigin.y, z: cabOrigin.z + cabH },
-    { x: cabOrigin.x, y: cabOrigin.y, z: cabOrigin.z + cabH },
-  ];
-  const cabTop = cuboidTopFace(cabOrigin, cabLength, d, cabH);
-
-  // "Cristal" del lateral de la cabina.
-  const glassWidth = cabLength * 0.55;
-  const glassHeight = cabH * 0.45;
-  const glass = [
-    { x: cabOrigin.x + cabLength * 0.25, y: cabOrigin.y, z: cabOrigin.z + cabH * 0.3 },
-    { x: cabOrigin.x + cabLength * 0.25 + glassWidth, y: cabOrigin.y, z: cabOrigin.z + cabH * 0.3 },
-    { x: cabOrigin.x + cabLength * 0.25 + glassWidth, y: cabOrigin.y, z: cabOrigin.z + cabH * 0.3 + glassHeight },
-    { x: cabOrigin.x + cabLength * 0.25, y: cabOrigin.y, z: cabOrigin.z + cabH * 0.3 + glassHeight },
-  ];
-
+export function TruckShell() {
   return (
     <g data-truck-shell>
-      {/* Suelo */}
+      <TruckCabin />
+
+      {/* Pared frontal del trailer (detras de los palets) */}
       <polygon
-        points={polygonPoints(floor)}
-        fill={FLOOR_FILL}
-        stroke={FLOOR_LINE}
-        strokeWidth={0.6}
+        points={pts([iso(0, 0, 0), iso(TW, 0, 0), iso(TW, 0, TH), iso(0, 0, TH)])}
+        fill="#F3F4F6"
+        stroke="#D1D5DB"
+        strokeWidth="1"
       />
-      {/* Pared izquierda */}
+      {[1, 2, 3, 4, 5, 6, 7].map((x) => (
+        <line
+          key={`fw${x}`}
+          x1={iso(x, 0, 0)[0]}
+          y1={iso(x, 0, 0)[1]}
+          x2={iso(x, 0, TH)[0]}
+          y2={iso(x, 0, TH)[1]}
+          stroke="#E5E7EB"
+          strokeWidth="1"
+        />
+      ))}
+
+      {/* Halo gris bajo el remolque */}
       <polygon
-        points={polygonPoints(left)}
-        fill={WALL_LEFT}
-        stroke="#cbd5e144"
-        strokeWidth={0.4}
-      />
-      {/* Pared trasera */}
-      <polygon
-        points={polygonPoints(back)}
-        fill={WALL_BACK}
-        stroke="#cbd5e144"
-        strokeWidth={0.4}
-      />
-      {/* Techo */}
-      <polygon
-        points={polygonPoints(roof)}
-        fill={ROOF}
-        stroke={ROOF_DARK}
-        strokeWidth={0.6}
+        points={pts([
+          iso(-0.1, -0.1, -0.1),
+          iso(TW + 0.1, -0.1, -0.1),
+          iso(TW + 0.1, TD + 0.1, -0.1),
+          iso(-0.1, TD + 0.1, -0.1),
+        ])}
+        fill="#D1D5DB"
       />
 
-      {/* Cabina */}
+      {/* Suelo del trailer */}
       <polygon
-        points={polygonPoints(cabRight)}
-        fill={CAB_DARK}
-        stroke="#0f172a33"
-        strokeWidth={0.6}
-      />
-      <polygon
-        points={polygonPoints(cabFront)}
-        fill={CAB}
-        stroke="#0f172a33"
-        strokeWidth={0.6}
-      />
-      <polygon
-        points={polygonPoints(cabTop)}
-        fill={ROOF_DARK}
-        stroke="#0f172a33"
-        strokeWidth={0.6}
-      />
-      <polygon
-        points={polygonPoints(glass)}
-        fill={CAB_GLASS}
-        stroke="#0f172a55"
-        strokeWidth={0.4}
+        points={pts([iso(0, 0, 0), iso(TW, 0, 0), iso(TW, TD, 0), iso(0, TD, 0)])}
+        fill="#F9FAFB"
       />
 
-      {/* Marcas en suelo: lineas guia entre filas y columnas */}
-      <polygon
-        points={polygonPoints(cuboidTopFace(
-          { x: origin.x, y: origin.y + d * 0.5 - 0.4, z: origin.z + 0.05 },
-          w,
-          0.8,
-          0,
-        ))}
-        fill={FLOOR_LINE}
-        opacity={0.6}
+      {/* Linea central a rayas (pasillo) */}
+      <line
+        x1={iso(4, 0, 0.02)[0]}
+        y1={iso(4, 0, 0.02)[1]}
+        x2={iso(4, TD, 0.02)[0]}
+        y2={iso(4, TD, 0.02)[1]}
+        stroke="#E5E7EB"
+        strokeWidth="1.1"
+        strokeDasharray="5,5"
       />
+    </g>
+  );
+}
+
+function TruckCabin() {
+  const cx0 = 0.5;
+  const cx1 = 7.5;
+  const cy0 = -3.5;
+  const cy1 = -0.2;
+  const cz1 = 3.2;
+  const czChassis = 0.5;
+
+  return (
+    <g className="truck-cabin">
+      {/* Chasis - cara derecha + frontal */}
+      <polygon
+        points={pts([
+          iso(cx1, cy0, 0),
+          iso(cx1, cy1, 0),
+          iso(cx1, cy1, czChassis),
+          iso(cx1, cy0, czChassis),
+        ])}
+        fill="#1F2937"
+      />
+      <polygon
+        points={pts([
+          iso(cx0, cy0, 0),
+          iso(cx1, cy0, 0),
+          iso(cx1, cy0, czChassis),
+          iso(cx0, cy0, czChassis),
+        ])}
+        fill="#030712"
+      />
+
+      {/* Cabina rojo - cara derecha + frontal */}
+      <polygon
+        points={pts([
+          iso(cx1, cy0, czChassis),
+          iso(cx1, cy1, czChassis),
+          iso(cx1, cy1, cz1),
+          iso(cx1, cy0, cz1),
+        ])}
+        fill="#A30D1B"
+      />
+      <polygon
+        points={pts([
+          iso(cx0, cy0, czChassis),
+          iso(cx1, cy0, czChassis),
+          iso(cx1, cy0, cz1),
+          iso(cx0, cy0, cz1),
+        ])}
+        fill="#CC1122"
+      />
+
+      {/* Parabrisas */}
+      <polygon
+        points={pts([
+          iso(cx0 + 0.5, cy0, czChassis + 1.0),
+          iso(cx1 - 0.5, cy0, czChassis + 1.0),
+          iso(cx1 - 0.5, cy0, cz1 - 0.4),
+          iso(cx0 + 0.5, cy0, cz1 - 0.4),
+        ])}
+        fill="#1E3A8A"
+        opacity={0.8}
+      />
+      {/* Ventana lateral */}
+      <polygon
+        points={pts([
+          iso(cx1, cy0 + 0.4, czChassis + 1.0),
+          iso(cx1, cy1 - 0.6, czChassis + 1.0),
+          iso(cx1, cy1 - 0.6, cz1 - 0.4),
+          iso(cx1, cy0 + 0.4, cz1 - 0.4),
+        ])}
+        fill="#1E3A8A"
+        opacity={0.8}
+      />
+
+      {/* Parrilla */}
+      <polygon
+        points={pts([
+          iso(cx0 + 2.5, cy0, czChassis + 0.1),
+          iso(cx1 - 2.5, cy0, czChassis + 0.1),
+          iso(cx1 - 2.5, cy0, czChassis + 0.8),
+          iso(cx0 + 2.5, cy0, czChassis + 0.8),
+        ])}
+        fill="#000000"
+      />
+      {/* Faros */}
+      <polygon
+        points={pts([
+          iso(cx0 + 0.8, cy0, czChassis + 0.3),
+          iso(cx0 + 1.8, cy0, czChassis + 0.3),
+          iso(cx0 + 1.8, cy0, czChassis + 0.6),
+          iso(cx0 + 0.8, cy0, czChassis + 0.6),
+        ])}
+        fill="#FDF08B"
+      />
+      <polygon
+        points={pts([
+          iso(cx1 - 1.8, cy0, czChassis + 0.3),
+          iso(cx1 - 0.8, cy0, czChassis + 0.3),
+          iso(cx1 - 0.8, cy0, czChassis + 0.6),
+          iso(cx1 - 1.8, cy0, czChassis + 0.6),
+        ])}
+        fill="#FDF08B"
+      />
+
+      {/* Deflector del techo */}
+      <polygon
+        points={pts([
+          iso(cx0, cy0, cz1),
+          iso(cx1, cy0, cz1),
+          iso(cx1, cy1, cz1 + 1.3),
+          iso(cx0, cy1, cz1 + 1.3),
+        ])}
+        fill="#E61527"
+      />
+      <polygon
+        points={pts([
+          iso(cx1, cy0, cz1),
+          iso(cx1, cy1, cz1),
+          iso(cx1, cy1, cz1 + 1.3),
+        ])}
+        fill="#8A0B17"
+      />
+
+      {/* Rueda delantera derecha */}
+      <polygon
+        points={pts([
+          iso(cx1, cy0 + 0.6, 0.4),
+          iso(cx1, cy0 + 1.6, 0.4),
+          iso(cx1, cy0 + 1.6, -0.6),
+          iso(cx1, cy0 + 0.6, -0.6),
+        ])}
+        fill="#111827"
+      />
+      <polygon
+        points={pts([
+          iso(cx1, cy0 + 0.9, 0.1),
+          iso(cx1, cy0 + 1.3, 0.1),
+          iso(cx1, cy0 + 1.3, -0.3),
+          iso(cx1, cy0 + 0.9, -0.3),
+        ])}
+        fill="#9CA3AF"
+      />
+
     </g>
   );
 }

@@ -1,61 +1,205 @@
 /**
- * Paleta de colores por tipo de producto Damm.
+ * Paleta de colores por producto / familia de marca.
  *
- * El usuario pidio: Estrella roja, agua azul, cacaolat marron. Usamos los
- * prefijos de productId del catalogo (ED, VO, FD, EC, DL, ID, VE, AG, LT,
- * RF, AM, LM, CF, LI...) para asignar un color base + sombras.
+ * Tonos top / front / side simulan iluminación isométrica (superior más
+ * clara, lateral más oscura). Los hex se aproximan a packaging y
+ * identidad visual pública de cada marca (no son oficiales PMS).
  *
- * Cada paleta tiene 3 tonos: top (clarito), front (medio), side (oscuro)
- * para dar el efecto de iluminacion isometrica en las 3 caras visibles.
+ * Prefijos `productId` siguen el catálogo mock (ED, VO, FD, FDT, EC, DL,
+ * ID, TU, VE, 0AG Vichy/Font d'Or, 0LT Letona/Cacaolat, etc.).
  */
 
 export type Palette = {
   top: string;
   front: string;
   side: string;
-  /** Color hex sencillo para chips/leyenda. */
   swatch: string;
   label: string;
 };
 
 const PRODUCT_PALETTES: Record<string, Palette> = {
-  // Cervezas Damm — rojos calidos y ocres
-  estrella: { top: "#ef2922", front: "#cc1812", side: "#8b0d0a", swatch: "#e10600", label: "Estrella Damm" },
-  voll: { top: "#7d1a1a", front: "#5b0f0f", side: "#3a0606", swatch: "#5b0f0f", label: "Voll-Damm" },
-  free: { top: "#f7d774", front: "#e2bb4d", side: "#a8841c", swatch: "#e2bb4d", label: "Free Damm" },
-  freetostada: { top: "#c8956a", front: "#9c6a3f", side: "#5e3e21", swatch: "#9c6a3f", label: "Free Damm Tostada" },
-  daura: { top: "#5fb872", front: "#3a8a4a", side: "#1f5128", swatch: "#3a8a4a", label: "Daura Damm" },
-  damm_lemon: { top: "#fce14e", front: "#e7c613", side: "#9b8607", swatch: "#e7c613", label: "Damm Lemon" },
-  inedit: { top: "#9b1f3c", front: "#6e1228", side: "#420916", swatch: "#6e1228", label: "Inedit" },
-  turia: { top: "#cf5a1a", front: "#9c4111", side: "#5e2806", swatch: "#9c4111", label: "Turia" },
-  // Aguas — azules
-  agua_veri: { top: "#5fb8ff", front: "#1e88e5", side: "#0d47a1", swatch: "#1e88e5", label: "Agua Veri" },
-  vichy: { top: "#34d3e2", front: "#0fb6c5", side: "#066c75", swatch: "#0fb6c5", label: "Vichy / Font d'Or" },
-  // Refrescos
-  cocacola: { top: "#a51f17", front: "#7a120c", side: "#440805", swatch: "#7a120c", label: "Coca-Cola" },
-  cacaolat: { top: "#a06a3a", front: "#754820", side: "#3d260f", swatch: "#754820", label: "Cacaolat" },
-  letona: { top: "#caa988", front: "#9a7a55", side: "#5b4530", swatch: "#9a7a55", label: "Letona" },
-  // Vinos / licores
-  vino: { top: "#722454", front: "#4d1538", side: "#260a1c", swatch: "#4d1538", label: "Vino" },
-  licor: { top: "#c89358", front: "#9c6a31", side: "#583b18", swatch: "#9c6a31", label: "Licores" },
-  // Otros
-  snacks: { top: "#fda64a", front: "#e0801b", side: "#8a4d09", swatch: "#e0801b", label: "Snacks" },
-  cafe: { top: "#6d3b1a", front: "#48230d", side: "#22110a", swatch: "#48230d", label: "Cafe" },
-  limpieza: { top: "#a4b1c7", front: "#76869f", side: "#3f4a5c", swatch: "#76869f", label: "Limpieza" },
-  unidad: { top: "#cdd5e0", front: "#94a3b8", side: "#475569", swatch: "#94a3b8", label: "Material" },
-  default: { top: "#a1a1aa", front: "#71717a", side: "#3f3f46", swatch: "#71717a", label: "Otros" },
+  // --- Cervezas Damm ---
+  /** Estrella Damm — rojo corporativo (~PMS 485 C). */
+  estrella: {
+    top: "#FF5A52",
+    front: "#E30613",
+    side: "#9A0A14",
+    swatch: "#E30613",
+    label: "Estrella Damm",
+  },
+  /** Voll-Damm — negro / grafito (etiqueta negra, rojo en logo). */
+  voll: {
+    top: "#4A4A4A",
+    front: "#1A1A1A",
+    side: "#0D0D0D",
+    swatch: "#1A1A1A",
+    label: "Voll-Damm",
+  },
+  /** Free Damm 0,0% — verde packaging “sin alcohol”. */
+  free: {
+    top: "#4ADE80",
+    front: "#16A34A",
+    side: "#14532D",
+    swatch: "#16A34A",
+    label: "Free Damm",
+  },
+  /** Free Damm Tostada — ámbar / caramelo (lager tostada). */
+  freetostada: {
+    top: "#D4A574",
+    front: "#A67C52",
+    side: "#6B4E32",
+    swatch: "#A67C52",
+    label: "Free Damm Tostada",
+  },
+  /** Daura — verde medalla / botella (gluten-free). */
+  daura: {
+    top: "#9CCC65",
+    front: "#689F38",
+    side: "#33691E",
+    swatch: "#689F38",
+    label: "Daura Damm",
+  },
+  /** Damm Lemon — amarillo limón vivo. */
+  damm_lemon: {
+    top: "#FFEE58",
+    front: "#FDD835",
+    side: "#C6A700",
+    swatch: "#FDD835",
+    label: "Damm Lemon",
+  },
+  /** Inedit — azul / violeta (carta artesanal). */
+  inedit: {
+    top: "#7E8CE0",
+    front: "#3F51B5",
+    side: "#1A237E",
+    swatch: "#3F51B5",
+    label: "Inedit",
+  },
+  /** Turia — naranja valenciano. */
+  turia: {
+    top: "#FFAB40",
+    front: "#F57C00",
+    side: "#BF360C",
+    swatch: "#F57C00",
+    label: "Turia",
+  },
+  /** Xibeca — verde intenso (marca regional). */
+  xibeca: {
+    top: "#43A047",
+    front: "#2E7D32",
+    side: "#1B5E20",
+    swatch: "#2E7D32",
+    label: "Xibeca",
+  },
+
+  // --- Aguas y refrescos distribuidos ---
+  agua_veri: {
+    top: "#4DD0E1",
+    front: "#00ACC1",
+    side: "#006064",
+    swatch: "#00ACC1",
+    label: "Agua Veri",
+  },
+  /** Vichy Catalan — verde botella característico. */
+  vichy: {
+    top: "#8BC34A",
+    front: "#689F38",
+    side: "#33691E",
+    swatch: "#689F38",
+    label: "Vichy Catalan",
+  },
+  /** Font d'Or / Maximum — azul agua mineral. */
+  font_dor: {
+    top: "#64B5F6",
+    front: "#1E88E5",
+    side: "#0D47A1",
+    swatch: "#1E88E5",
+    label: "Font d'Or",
+  },
+  cocacola: {
+    top: "#FF5C4D",
+    front: "#E4002B",
+    side: "#A3001E",
+    swatch: "#E4002B",
+    label: "Coca-Cola",
+  },
+  /** Cacaolat — amarillo + marrón chocolate. */
+  cacaolat: {
+    top: "#FFEB3B",
+    front: "#C9A227",
+    side: "#5D4037",
+    swatch: "#C9A227",
+    label: "Cacaolat",
+  },
+  /** Letona — dorado / crema (batido). */
+  letona: {
+    top: "#F0E6C8",
+    front: "#C9B37E",
+    side: "#8D7B52",
+    swatch: "#C9B37E",
+    label: "Letona",
+  },
+
+  vino: {
+    top: "#8E4585",
+    front: "#5D1E4A",
+    side: "#2D0F24",
+    swatch: "#5D1E4A",
+    label: "Vino",
+  },
+  licor: {
+    top: "#D4A574",
+    front: "#A67C52",
+    side: "#5D4037",
+    swatch: "#A67C52",
+    label: "Licores",
+  },
+
+  snacks: {
+    top: "#FFCA28",
+    front: "#FF8F00",
+    side: "#E65100",
+    swatch: "#FF8F00",
+    label: "Snacks",
+  },
+  cafe: {
+    top: "#6D4C41",
+    front: "#4E342E",
+    side: "#3E2723",
+    swatch: "#4E342E",
+    label: "Cafe",
+  },
+  limpieza: {
+    top: "#B0BEC5",
+    front: "#78909C",
+    side: "#455A64",
+    swatch: "#78909C",
+    label: "Limpieza",
+  },
+  unidad: {
+    top: "#CFD8DC",
+    front: "#90A4AE",
+    side: "#546E7A",
+    swatch: "#90A4AE",
+    label: "Material",
+  },
+  default: {
+    top: "#B0BEC5",
+    front: "#78909C",
+    side: "#455A64",
+    swatch: "#78909C",
+    label: "Otros",
+  },
 };
 
-/**
- * Familia visual de un producto. Se infiere por prefijo del codigo, con
- * fallback al nombre. Sirve para colorear y para etiquetar el palet
- * (Cajas / Mixto / Barriles / Retornables).
- */
-export function familyOf(productId: string, name?: string): keyof typeof PRODUCT_PALETTES {
+export function familyOf(
+  productId: string,
+  name?: string,
+): keyof typeof PRODUCT_PALETTES {
   const id = productId.toUpperCase();
   const n = (name ?? "").toUpperCase();
 
-  // Cervezas Damm
+  if (id.startsWith("XI") || n.includes("XIBECA")) return "xibeca";
   if (id.startsWith("ED")) return "estrella";
   if (id.startsWith("VO")) return "voll";
   if (id.startsWith("FDT")) return "freetostada";
@@ -65,23 +209,26 @@ export function familyOf(productId: string, name?: string): keyof typeof PRODUCT
   if (id.startsWith("ID")) return "inedit";
   if (id.startsWith("TU")) return "turia";
 
-  // Aguas
   if (id.startsWith("VE") || n.includes("VERI")) return "agua_veri";
-  if (id.includes("AG0") || n.includes("VICHY") || n.includes("FONT D")) return "vichy";
 
-  // Refrescos
+  if (n.includes("FONT D") || n.includes("FONT D'OR") || n.includes("MAXIMUM NATURAL")) {
+    return "font_dor";
+  }
+  if (id.includes("AG0") || n.includes("VICHY")) return "vichy";
+
   if (n.includes("COCA")) return "cocacola";
   if (n.includes("CACAOLAT")) return "cacaolat";
-  if (id.startsWith("0LT") || n.includes("LETONA") || n.includes("CACAOLAT")) {
+  if (id.startsWith("0LT") || n.includes("LETONA")) {
     if (n.includes("CACAOLAT")) return "cacaolat";
-    return "letona";
+    if (n.includes("LETONA")) return "letona";
+    return "cacaolat";
   }
 
-  // Vinos / licores
   if (id.includes("VE0") && n.includes("VINO")) return "vino";
-  if (id.startsWith("0LI") || n.includes("BRANDY") || n.includes("GIN") || n.includes("RATAFIA")) return "licor";
+  if (id.startsWith("0LI") || n.includes("BRANDY") || n.includes("GIN") || n.includes("RATAFIA")) {
+    return "licor";
+  }
 
-  // Otros
   if (id.startsWith("0AM")) return "snacks";
   if (id.startsWith("0CF") || n.includes("BONKA")) return "cafe";
   if (id.startsWith("0LM")) return "limpieza";
@@ -94,7 +241,6 @@ export function paletteFor(productId: string, name?: string): Palette {
   return PRODUCT_PALETTES[familyOf(productId, name)] ?? PRODUCT_PALETTES.default;
 }
 
-/** Lista compacta de paletas para una leyenda. */
 export function uniquePalettes(
   items: Array<{ productId: string; name?: string }>,
 ): Array<{ key: string; palette: Palette }> {

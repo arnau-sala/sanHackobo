@@ -1,11 +1,15 @@
 /**
- * TruckStage = solo la zona del camion 3D (vista + resumen P1–P8).
- * Comandas y copiloto viven en la columna izquierda del Dashboard.
+ * TruckStage = panel del camion 3D + strip de resumen P1..P8.
+ *
+ * El popup vive ahora DENTRO del SVG (`<foreignObject>` en TruckView3D),
+ * asi cuando el SVG se redimensiona el popup sigue pegado al palet sin
+ * tener que sincronizar coordenadas DOM ↔ SVG.
+ *
+ * Comandas y copilot viven en la columna izquierda del Dashboard.
  */
 import { useMemo } from "react";
 import type { LoadPlan } from "@damm/optimizer-load";
 import { TruckView3D, type ViewMode } from "./TruckView3D";
-import { PalletPopup } from "./PalletPopup";
 import { PalletSummaryRow } from "./PalletSummaryRow";
 import { buildPalletStack, type PalletStackInfo } from "./buildPalletStack";
 import styles from "./TruckView3D.module.css";
@@ -31,8 +35,8 @@ export function TruckStage(props: TruckStageProps) {
     onChangeMode,
   } = props;
 
-  // Stacks por palet — ya filtrados por entregas hechas. Se calculan una
-  // vez y se comparten entre la SVG, el popup y el summary row.
+  // Stacks por palet (filtrados por entregas hechas) — los reutiliza el
+  // resumen P1..P8 inferior y el popup.
   const stacks = useMemo(() => {
     const map = new Map<string, PalletStackInfo>();
     for (const slot of loadPlan.palletSlots) {
@@ -54,17 +58,17 @@ export function TruckStage(props: TruckStageProps) {
     const set = new Set<string>();
     if (!currentStopId) return set;
     for (const slot of loadPlan.palletSlots) {
-      if (slot.items.some((it) => it.stopId === currentStopId)) {
+      if (
+        slot.items.some(
+          (it) =>
+            it.stopId === currentStopId && !deliveredStopIds.has(it.stopId),
+        )
+      ) {
         set.add(slot.slotId);
       }
     }
     return set;
-  }, [loadPlan, currentStopId]);
-
-  const selectedSlot = loadPlan.palletSlots.find(
-    (s) => s.slotId === selectedSlotId,
-  );
-  const selectedStack = selectedSlotId ? stacks.get(selectedSlotId) : undefined;
+  }, [loadPlan, currentStopId, deliveredStopIds]);
 
   return (
     <div className={styles.truckOnlyRoot}>
@@ -72,29 +76,34 @@ export function TruckStage(props: TruckStageProps) {
         <div className={styles.stage}>
           <div className={styles.stageHeader}>
             <div className={styles.stageHeaderText}>
+              <span className={styles.stageBadge} />
               <h3>Carga del camion</h3>
-              <p>
-                {loadPlan.palletSlots.length} palets · vehiculo {loadPlan.vehicleId} ·
-                toca un palet para ver contenido
-              </p>
+              <span className={styles.stagePill}>
+                {loadPlan.palletSlots.length} palets · {loadPlan.vehicleId}
+              </span>
             </div>
-            <div className={styles.modeTabs} role="tablist">
-              <button
-                type="button"
-                className={styles.modeTab}
-                data-active={viewMode === "general"}
-                onClick={() => onChangeMode("general")}
-              >
-                ① Vista general
-              </button>
-              <button
-                type="button"
-                className={styles.modeTab}
-                data-active={viewMode === "next-stop"}
-                onClick={() => onChangeMode("next-stop")}
-              >
-                ② Proxima parada
-              </button>
+            <div className={styles.stageHints}>
+              <span className={styles.stageHint}>
+                ⓘ Toca un palet para ver contenido
+              </span>
+              <div className={styles.modeTabs} role="tablist">
+                <button
+                  type="button"
+                  className={styles.modeTab}
+                  data-active={viewMode === "general"}
+                  onClick={() => onChangeMode("general")}
+                >
+                  ① Vista general
+                </button>
+                <button
+                  type="button"
+                  className={styles.modeTab}
+                  data-active={viewMode === "next-stop"}
+                  onClick={() => onChangeMode("next-stop")}
+                >
+                  ② Proxima parada
+                </button>
+              </div>
             </div>
           </div>
 
@@ -107,14 +116,6 @@ export function TruckStage(props: TruckStageProps) {
               onSelectSlot={onSelectSlot}
               viewMode={viewMode}
             />
-
-            {selectedSlot && selectedStack && (
-              <PalletPopup
-                slot={selectedSlot}
-                stack={selectedStack}
-                onClose={() => onSelectSlot(null)}
-              />
-            )}
           </div>
 
           <PalletSummaryRow

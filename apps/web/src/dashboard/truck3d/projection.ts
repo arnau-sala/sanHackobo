@@ -1,33 +1,52 @@
 /**
- * Proyeccion isometrica simple en coordenadas SVG.
+ * Proyeccion isometrica adoptada del export del Figma (interfaz_camion).
  *
  * Sistema de mundo:
- *   +x  → derecha del camion (de cabina hacia trasera)
- *   +y  → fondo del camion   (lateral derecho hacia lateral izquierdo)
+ *   +x  → derecha del camion (lateral izquierdo de la carga)
+ *   +y  → fondo del camion   (de cabina hacia trasera)
  *   +z  → arriba             (suelo hacia techo)
  *
- * Camara: angulo isometrico clasico (30°).
- *   screenX = (x - y) * cos30
- *   screenY = (x + y) * sin30 - z
+ * Camara: angulo isometrico clasico (30°), con escala fija para que las
+ * coordenadas caigan dentro del viewBox 680x400 sin recalcular nada.
  *
- * Resultado: el viewer ve el camion desde el frente-superior-derecho, con la
- * cabina al fondo y el lateral derecho/trasera abiertos hacia nosotros.
+ *   screenX = OX + (x - y) * SCALE * cos30
+ *   screenY = OY + (x + y) * SCALE * sin30 - z * SCALE
+ *
+ * Mantenemos los nombres `project`, `polygonPoints`, etc. por
+ * compatibilidad con el resto del codigo del demo.
  */
 
 const COS30 = Math.cos(Math.PI / 6); // ≈ 0.8660
-const SIN30 = Math.sin(Math.PI / 6); // 0.5
+const SIN30 = 0.5;
+
+export const SCALE = 17;
+export const OX = 370;
+export const OY = 158;
 
 export type World = { x: number; y: number; z: number };
 export type Screen = { x: number; y: number };
 
 export function project({ x, y, z }: World): Screen {
   return {
-    x: (x - y) * COS30,
-    y: (x + y) * SIN30 - z,
+    x: OX + (x - y) * SCALE * COS30,
+    y: OY + (x + y) * SCALE * SIN30 - z * SCALE,
   };
 }
 
-/** Convierte una lista de puntos del mundo en un atributo `points` de polygon. */
+/** Atajo estilo Figma export: `iso(x,y,z)` → `[screenX, screenY]`. */
+export function iso(x: number, y: number, z: number): [number, number] {
+  return [
+    OX + (x - y) * SCALE * COS30,
+    OY + (x + y) * SCALE * SIN30 - z * SCALE,
+  ];
+}
+
+/** Forma `points` para un `<polygon>` SVG a partir de tuplas (sx,sy). */
+export function pts(points: Array<[number, number]>): string {
+  return points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+}
+
+/** Variante con World[]: util para el codigo legacy. */
 export function polygonPoints(corners: World[]): string {
   return corners.map((c) => screenString(project(c))).join(" ");
 }
@@ -36,10 +55,7 @@ export function screenString({ x, y }: Screen): string {
   return `${x.toFixed(2)},${y.toFixed(2)}`;
 }
 
-/**
- * Devuelve los 4 vertices superiores de un cuboide axis-aligned.
- *   origin = esquina inferior-trasera-izquierda
- */
+/** Devuelve los 4 vertices superiores de un cuboide axis-aligned. */
 export function cuboidTopFace(
   origin: World,
   w: number,
@@ -55,7 +71,6 @@ export function cuboidTopFace(
   ];
 }
 
-/** Cara frontal del cuboide (la que mira hacia y mas pequena). */
 export function cuboidFrontFace(
   origin: World,
   w: number,
@@ -70,7 +85,6 @@ export function cuboidFrontFace(
   ];
 }
 
-/** Cara lateral derecha del cuboide (x = origin.x + w). */
 export function cuboidRightFace(
   origin: World,
   w: number,
@@ -85,7 +99,6 @@ export function cuboidRightFace(
   ];
 }
 
-/** Cara lateral izquierda del cuboide (x = origin.x). */
 export function cuboidLeftFace(
   origin: World,
   _w: number,
@@ -100,7 +113,6 @@ export function cuboidLeftFace(
   ];
 }
 
-/** Cara trasera del cuboide (y = origin.y + d). */
 export function cuboidBackFace(
   origin: World,
   w: number,
@@ -115,11 +127,6 @@ export function cuboidBackFace(
   ];
 }
 
-/**
- * Para ordenar polygons por profundidad: cuanto mayor sea (x + y + z) en
- * el centro del polygon, mas cerca esta del viewer y mas tarde se debe
- * pintar. Devuelve la "depth key".
- */
 export function depthKey(p: World): number {
   return p.x + p.y - p.z * 0.4;
 }
