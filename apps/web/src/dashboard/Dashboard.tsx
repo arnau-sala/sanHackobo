@@ -170,10 +170,28 @@ export function Dashboard() {
   const [truckViewMode,    setTruckViewMode]  = useState<ViewMode>("general");
   const [driverPhase,      setDriverPhase]    = useState<DriverPhase>("truck");
   const [warehousePhase,   setWarehousePhase] = useState<WarehousePhase>("loading");
-  const [truckCoord,       setTruckCoord]     = useState<LngLat|undefined>(undefined);
+  // Inicializa la posición del camión en el depot (Mollet).
+  // Así la primera ruta sale de la fábrica → primer cliente.
+  const [truckCoord,       setTruckCoord]     = useState<LngLat|undefined>(() => {
+    const d = hybrid.inputData.depot;
+    return d?.lat && d?.lng ? [d.lng, d.lat] : undefined;
+  });
   const [detailTab,        setDetailTab]      = useState<"palets" | "deliveries">("palets");
   const [detailItem,       setDetailItem]     = useState<string|null>(null);
+  const [expandedStopId,   setExpandedStopId] = useState<string|null>(null);
+  const [skippedStopIds,   setSkippedStopIds] = useState<Set<string>>(() => new Set());
   const clock = useClock();
+
+  function reportIncidence(stopId: string) {
+    const stop = hybrid.inputData.stops.find(s => s.id === stopId);
+    const reason = window.prompt(`Incidencia en ${stop?.clientName ?? "parada"}:\n\n1) Cliente cerrado\n2) Falta producto\n3) Otro\n\nDescribe brevemente:`);
+    if (!reason) return;
+    const updated = new Set(skippedStopIds);
+    updated.add(stopId);
+    setSkippedStopIds(updated);
+    const next = sortedStops.find(s => !deliveredStopIds.has(s.stopId) && !updated.has(s.stopId));
+    if (next) setCurrentStopId(next.stopId);
+  }
 
   useEffect(() => {
     void checkApiHealth().then(setApiUp);
@@ -181,10 +199,33 @@ export function Dashboard() {
     return () => clearInterval(id);
   }, []);
 
+  // Sync vista del camión 3D con la fase del conductor:
+  //  - delivery → modo "next-stop" (atenúa palets no relevantes, resalta los de la parada actual)
+  //  - delivery → tab "Entregas" (lista de paradas en panel derecho)
+  //  - truck   → modo general
+  useEffect(() => {
+    if (driverPhase === "delivery") {
+      setTruckViewMode("next-stop");
+      setDetailTab("deliveries");
+    } else if (driverPhase === "truck") {
+      setTruckViewMode("general");
+    }
+  }, [driverPhase]);
+
   const totalStops     = hybrid.routePlan.stops.length;
   const deliveredCount = deliveredStopIds.size;
+  const skippedCount   = skippedStopIds.size;
+  const closedCount    = deliveredCount + skippedCount;
   const progressPct    = totalStops > 0 ? (deliveredCount / totalStops) * 100 : 0;
-  const routeDone      = deliveredCount === totalStops && totalStops > 0;
+  const routeDone      = closedCount === totalStops && totalStops > 0;
+  const routeStarted   = closedCount > 0;
+
+  // ETA fin de ruta: última parada pendiente con ETA conocida
+  const routeEndEta = useMemo(() => {
+    const pending = sortedStops.filter(s => !deliveredStopIds.has(s.stopId));
+    const last = pending[pending.length - 1] ?? sortedStops[sortedStops.length - 1];
+    return last?.arrivalEta ?? null;
+  }, [sortedStops, deliveredStopIds]);
 
   const currentStop = useMemo(() => {
     const rs     = hybrid.routePlan.stops.find(s => s.stopId === currentStopId);
@@ -207,9 +248,12 @@ export function Dashboard() {
     setDeliveredStopIds(updated);
     const next = sortedStops.find(s => !updated.has(s.stopId));
     if (next) setCurrentStopId(next.stopId);
-    // Volver a ver el camión antes de la siguiente ruta
-    setDriverPhase("truck");
     setTruckViewMode("next-stop");
+    // P0: tras confirmar entrega volvemos AL MAPA (siguiente parada),
+    // no a la vista de camión. El conductor solo vuelve al camión
+    // explícitamente. Si la ruta acabó, mostramos el camión.
+    const allDone = (updated.size + skippedStopIds.size) >= sortedStops.length;
+    setDriverPhase(allDone ? "truck" : "map");
   }
 
   // ── Supervisor ──────────────────────────────────────────────────────────────
@@ -244,7 +288,14 @@ export function Dashboard() {
         <div className={styles.progressBlock}>
           <div className={styles.progressInfo}>
             <span className={styles.progressLabel}>🚛 {deliveredCount}/{totalStops} entregas</span>
-            <span className={styles.progressPct}>{Math.round(progressPct)}%</span>
+            <span className={styles.progressPct}>
+              {Math.round(progressPct)}%
+              {routeEndEta && !routeDone && (
+                <span style={{ marginLeft:8, fontWeight:600, color:"var(--t3,#6b7280)", fontSize:10 }}>
+                  · fin {routeEndEta}
+                </span>
+              )}
+            </span>
           </div>
           <div className={styles.progressBar}>
             <div className={styles.progressFill} style={{ width:`${progressPct}%` }}/>
@@ -307,48 +358,225 @@ export function Dashboard() {
     return (
       <div className={styles.shell}>
         {header}
-        <div style={{ flex:1, minHeight:0, position:"relative", overflow:"hidden", borderRadius:10, border:"1px solid var(--border,#2a313d)" }}>
-          <RouteMap
-            routePlan={hybrid.routePlan} inputData={hybrid.inputData}
-            currentStopId={currentStopId} deliveredStopIds={deliveredStopIds}
-            startCoord={truckCoord}
-            onArrived={() => setDriverPhase("delivery")}
-            onSelectStop={setCurrentStopId}
-          />
+        <div style={{ flex:1, minHeight:0, display:"flex", gap:6, overflow:"hidden" }}>
 
-          {/* Progreso flotante */}
-          <div className={styles.mapProgressFloat}>
-            <span className={styles.mapProgressNum}>{deliveredCount}/{totalStops}</span>
-            <span className={styles.mapProgressText}>paradas completadas</span>
+          {/* ── Columna izquierda: orb + paradas ─────────────────────── */}
+          <div style={{
+            width:272, flexShrink:0,
+            background:"var(--bg1,#fff)",
+            border:"1px solid var(--border,#e5e7eb)",
+            borderRadius:10,
+            display:"flex", flexDirection:"column",
+            overflow:"hidden",
+          }}>
+            {/* Orb de voz */}
+            <div style={{ flexShrink:0 }}>
+              <CopilotChat
+                routePlan={hybrid.routePlan} inputData={hybrid.inputData}
+                loadPlan={hybrid.loadPlan} currentStopId={currentStopId}
+                onAction={handleCopilotAction}
+              />
+            </div>
+
+            {/* Progreso compacto */}
+            <div style={{
+              flexShrink:0, padding:"6px 12px",
+              borderTop:"1px solid var(--border,#e5e7eb)",
+              borderBottom:"1px solid var(--border,#e5e7eb)",
+              display:"flex", alignItems:"center", justifyContent:"space-between",
+            }}>
+              <span style={{ color:"var(--t3,#6b7280)", fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:.5 }}>
+                Paradas
+              </span>
+              <span style={{ color:"var(--t2,#4b5563)", fontSize:10, fontWeight:800 }}>
+                {deliveredCount}/{totalStops}
+              </span>
+            </div>
+
+            {/* Lista de paradas */}
+            <div style={{ flex:1, overflowY:"auto", padding:"6px 8px 10px" }}>
+              {(() => {
+                // Primera pendiente (no entregada ni saltada) = orden óptimo
+                const firstPending = sortedStops.find(s => !deliveredStopIds.has(s.stopId) && !skippedStopIds.has(s.stopId));
+                const outOfSequence = !!firstPending && currentStopId !== firstPending.stopId && !deliveredStopIds.has(currentStopId);
+                return outOfSequence ? (
+                  <div
+                    onClick={() => setCurrentStopId(firstPending.stopId)}
+                    style={{
+                      margin:"0 0 6px", padding:"6px 8px", borderRadius:7, cursor:"pointer",
+                      background:"rgba(245,158,11,.1)", border:"1px solid rgba(245,158,11,.3)",
+                      color:"#b45309", fontSize:9, fontWeight:700,
+                    }}
+                  >
+                    ⚠ Fuera del orden óptimo · Toca para volver a {firstPending.clientName.slice(0,18)}
+                  </div>
+                ) : null;
+              })()}
+              {sortedStops.map((rs, idx) => {
+                const isDone    = deliveredStopIds.has(rs.stopId);
+                const isSkipped = skippedStopIds.has(rs.stopId);
+                const isCur     = rs.stopId === currentStopId && !isDone && !isSkipped;
+                const isExpanded = isCur || expandedStopId === rs.stopId;
+                const inputStop = hybrid.inputData.stops.find(s => s.id === rs.stopId);
+                const orders    = hybrid.inputData.orders.filter(o => o.stopId === rs.stopId);
+                const items     = orders.flatMap(o => o.items);
+                const totalQty  = items.reduce((s,i) => s + i.quantity, 0);
+
+                const bg     = isCur ? "rgba(225,6,0,.07)"
+                            : isDone ? "rgba(34,197,94,.05)"
+                            : isSkipped ? "rgba(245,158,11,.06)"
+                            : "transparent";
+                const border = isCur ? "rgba(225,6,0,.22)"
+                            : isDone ? "rgba(34,197,94,.18)"
+                            : isSkipped ? "rgba(245,158,11,.22)"
+                            : "transparent";
+                const dotBg  = isDone ? "rgba(34,197,94,.2)"
+                            : isSkipped ? "rgba(245,158,11,.2)"
+                            : isCur ? "#e10600" : "#f3f4f6";
+                const dotFg  = isDone ? "#16a34a"
+                            : isSkipped ? "#b45309"
+                            : isCur ? "#fff" : "var(--t3,#6b7280)";
+                const dotIco = isDone ? "✓" : isSkipped ? "!" : String(idx + 1);
+
+                return (
+                  <div
+                    key={rs.stopId}
+                    style={{
+                      marginBottom:4, borderRadius:9,
+                      padding:"8px 10px",
+                      background: bg,
+                      border:`1px solid ${border}`,
+                      opacity: (isDone || isSkipped) && !isCur ? 0.6 : 1,
+                      transition:"background .15s",
+                    }}
+                  >
+                    {/* Cabecera parada (clic = seleccionar / toggle expand si es la actual) */}
+                    <div
+                      onClick={() => {
+                        if (isCur) {
+                          setExpandedStopId(expandedStopId === rs.stopId ? "__force_collapsed__" : rs.stopId);
+                        } else {
+                          setCurrentStopId(rs.stopId);
+                          setExpandedStopId(null);
+                        }
+                      }}
+                      style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", marginBottom: isExpanded && items.length > 0 ? 6 : 0 }}
+                    >
+                      <div style={{
+                        width:18, height:18, borderRadius:"50%", flexShrink:0,
+                        background: dotBg,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        color: dotFg, fontSize:8, fontWeight:900,
+                      }}>
+                        {dotIco}
+                      </div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{
+                          color: isCur ? "#111827" : "var(--t2,#4b5563)",
+                          fontWeight: isCur ? 800 : 500,
+                          fontSize:10, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                        }}>
+                          {rs.clientName}
+                          {isSkipped && <span style={{ marginLeft:4, color:"#b45309", fontSize:8, fontWeight:700 }}>· incidencia</span>}
+                        </div>
+                        <div style={{ color:"var(--t3,#6b7280)", fontSize:8.5, marginTop:1 }}>
+                          {[inputStop?.address ?? inputStop?.zone, totalQty > 0 ? `${totalQty} uds` : null, rs.arrivalEta ? `ETA ${rs.arrivalEta}` : null].filter(Boolean).join(" · ")}
+                        </div>
+                      </div>
+                      {items.length > 0 && (
+                        <span style={{ color:"var(--t3,#6b7280)", fontSize:9, flexShrink:0 }}>
+                          {isExpanded ? "▾" : "▸"}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Productos (visibles solo si expandido) */}
+                    {isExpanded && items.length > 0 && (
+                      <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
+                        {items.map((item, ii) => (
+                          <div key={ii} style={{
+                            display:"flex", justifyContent:"space-between", alignItems:"center",
+                            padding:"3px 6px", borderRadius:5,
+                            background:"rgba(225,6,0,.04)",
+                            border:"1px solid rgba(225,6,0,.1)",
+                          }}>
+                            <span style={{ color:"var(--t2,#4b5563)", fontSize:8.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:130 }}>
+                              {item.name}
+                            </span>
+                            <span style={{ color:"#e10600", fontWeight:800, fontSize:8.5, flexShrink:0, marginLeft:4 }}>
+                              {item.quantity} {item.unit}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Botones pie */}
+            <div style={{ flexShrink:0, padding:"8px 10px", borderTop:"1px solid var(--border,#e5e7eb)", display:"flex", flexDirection:"column", gap:6 }}>
+              <button
+                className={styles.mapArrivedBtn}
+                onClick={() => setDriverPhase("delivery")}
+              >
+                ✅ He llegado
+              </button>
+              <div style={{ display:"flex", gap:6 }}>
+                <button
+                  onClick={() => reportIncidence(currentStopId)}
+                  disabled={!currentStopId || deliveredStopIds.has(currentStopId)}
+                  style={{
+                    flex:1, padding:"7px 10px", borderRadius:9,
+                    border:"1px solid rgba(245,158,11,.35)",
+                    background:"rgba(245,158,11,.08)",
+                    color:"#b45309", fontSize:10, fontWeight:700, cursor:"pointer",
+                  }}>
+                  ⚠ Incidencia
+                </button>
+                <button onClick={() => setDriverPhase("truck")} style={{
+                  flex:1, padding:"7px 10px", borderRadius:9,
+                  border:"1px solid var(--border,#e5e7eb)",
+                  background:"transparent",
+                  color:"var(--t2,#4b5563)", fontSize:10, fontWeight:700, cursor:"pointer",
+                }}>
+                  ← Camión
+                </button>
+              </div>
+            </div>
           </div>
 
-          {/* Card próxima parada */}
-          <div className={styles.mapNextStop}>
-            <span className={styles.mapNextStopLabel}>📍 Próxima parada</span>
-            <div className={styles.mapNextStopName}>
-              {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
-            </div>
-            <div className={styles.mapNextStopMeta}>
-              {[
-                currentStop.stop?.address ?? currentStop.stop?.zone,
-                currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
-                currentStop.rs?.arrivalEta ? `ETA ${currentStop.rs.arrivalEta}` : null,
-              ].filter(Boolean).join(" · ")}
-            </div>
-            <button className={styles.mapArrivedBtn}
-              onClick={() => setDriverPhase("delivery")}>
-              ✅ He llegado
-            </button>
-          </div>
+          {/* ── Mapa ─────────────────────────────────────────────────── */}
+          <div style={{ flex:1, minWidth:0, position:"relative", borderRadius:10, overflow:"hidden", border:"1px solid var(--border,#2a313d)" }}>
+            <RouteMap
+              routePlan={hybrid.routePlan} inputData={hybrid.inputData}
+              currentStopId={currentStopId} deliveredStopIds={deliveredStopIds}
+              startCoord={truckCoord}
+              onArrived={() => setDriverPhase("delivery")}
+              onSelectStop={setCurrentStopId}
+            />
 
-          {/* Botón volver */}
-          <div style={{ position:"absolute", top:16, right:16, zIndex:10 }}>
-            <button onClick={() => setDriverPhase("truck")} style={{
-              padding:"7px 14px", borderRadius:9, border:"1px solid rgba(255,255,255,.12)",
-              background:"rgba(255,255,255,.95)", backdropFilter:"blur(8px)",
-              color:"#111827", fontSize:11, fontWeight:700, cursor:"pointer",
-              boxShadow:"0 8px 18px rgba(17,24,39,.06)",
-            }}>← Ver camión</button>
+            {/* Progreso flotante */}
+            <div className={styles.mapProgressFloat}>
+              <span className={styles.mapProgressNum}>{deliveredCount}/{totalStops}</span>
+              <span className={styles.mapProgressText}>paradas completadas</span>
+            </div>
+
+            {/* Card próxima parada */}
+            <div className={styles.mapNextStop}>
+              <span className={styles.mapNextStopLabel}>📍 Próxima parada</span>
+              <div className={styles.mapNextStopName}>
+                {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
+              </div>
+              <div className={styles.mapNextStopMeta}>
+                {[
+                  currentStop.stop?.address ?? currentStop.stop?.zone,
+                  currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
+                  currentStop.rs?.arrivalEta ? `ETA ${currentStop.rs.arrivalEta}` : null,
+                ].filter(Boolean).join(" · ")}
+              </div>
+            </div>
           </div>
 
         </div>
@@ -377,25 +605,52 @@ export function Dashboard() {
             {!routeDone && (
               <div style={{
                 background:"rgba(255,255,255,.96)", backdropFilter:"blur(10px)",
-                border:"1px solid var(--border,#2a313d)", borderRadius:12,
-                padding:"10px 16px",
-                boxShadow:"0 10px 24px rgba(17,24,39,.06)",
+                border:`1px solid ${driverPhase === "delivery" ? "rgba(225,6,0,.35)" : "var(--border,#2a313d)"}`,
+                borderRadius:12,
+                padding:"10px 14px",
+                boxShadow: driverPhase === "delivery" ? "0 10px 24px rgba(225,6,0,.12)" : "0 10px 24px rgba(17,24,39,.06)",
+                maxHeight: driverPhase === "delivery" ? 220 : "auto",
+                display:"flex", flexDirection:"column", overflow:"hidden",
               }}>
                 <div style={{ color:"#e10600", fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:.6, marginBottom:4 }}>
-                  {driverPhase === "truck" ? "📍 Siguiente destino" : "📍 Entregando en"}
+                  {driverPhase === "truck" ? "📍 Siguiente destino" : "🅿 Entregando en"}
                 </div>
-                <div style={{ color:"#111827", fontWeight:800, fontSize:14, marginBottom:3 }}>
+                <div style={{ color:"#111827", fontWeight:800, fontSize:13, marginBottom:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                   {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
                 </div>
-                <div style={{ color:"#6b7280", fontSize:11 }}>
+                <div style={{ color:"#6b7280", fontSize:10, marginBottom: driverPhase === "delivery" ? 6 : 0 }}>
                   {[
                     currentStop.stop?.address ?? currentStop.stop?.zone,
                     currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
                   ].filter(Boolean).join(" · ")}
                 </div>
+
+                {/* Lista de productos a descargar (solo en delivery) */}
+                {driverPhase === "delivery" && currentStop.orders.length > 0 && (
+                  <div style={{ flex:1, overflowY:"auto", marginTop:2, paddingRight:2 }}>
+                    <div style={{ color:"var(--t3,#6b7280)", fontSize:8, fontWeight:800, textTransform:"uppercase", letterSpacing:.5, marginBottom:4 }}>
+                      📦 A descargar
+                    </div>
+                    {currentStop.orders.flatMap(o => o.items).map((item, ii) => (
+                      <div key={ii} style={{
+                        display:"flex", justifyContent:"space-between", alignItems:"center", gap:6,
+                        padding:"4px 7px", borderRadius:6, marginBottom:3,
+                        background:"rgba(225,6,0,.05)",
+                        border:"1px solid rgba(225,6,0,.12)",
+                      }}>
+                        <span style={{ color:"#111827", fontSize:9.5, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1, minWidth:0 }}>
+                          {item.name}
+                        </span>
+                        <span style={{ color:"#e10600", fontWeight:900, fontSize:10, flexShrink:0 }}>
+                          {item.quantity} {item.unit}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
-            
+
             {driverPhase === "truck" && (
               <button
                 onClick={() => setDriverPhase("map")}
@@ -408,20 +663,49 @@ export function Dashboard() {
                   letterSpacing:.3, transition:"all .15s",
                   opacity: routeDone ? 0.5 : 1,
                 }}>
-                {routeDone ? "✅ Ruta completada" : "🚛 Iniciar ruta →"}
+                {routeDone ? "✅ Ruta completada" : routeStarted ? "🚛 Continuar ruta →" : "🚛 Iniciar ruta →"}
               </button>
             )}
-            
+
             {driverPhase === "delivery" && (
-              <button onClick={() => setDriverPhase("map")} style={{
-                padding:"10px 20px", borderRadius:10,
-                border:"1px solid var(--border,#2a313d)",
-                background:"rgba(255,255,255,.95)", backdropFilter:"blur(8px)",
-                color:"#111827", fontSize:12, fontWeight:700, cursor:"pointer",
-                boxShadow:"0 8px 18px rgba(17,24,39,.06)",
-              }}>
-                ← Volver al mapa
-              </button>
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <button
+                  onClick={() => handleConfirmDelivery(currentStopId)}
+                  disabled={!currentStopId || deliveredStopIds.has(currentStopId)}
+                  style={{
+                    padding:"14px 24px", borderRadius:12, border:"none",
+                    background: "linear-gradient(135deg,#16a34a 0%,#15803d 100%)",
+                    color:"#fff", fontSize:14, fontWeight:900, cursor:"pointer",
+                    boxShadow:"0 6px 22px rgba(22,163,74,.32)",
+                    letterSpacing:.4, transition:"transform .1s",
+                  }}
+                  onMouseDown={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(.97)"; }}
+                  onMouseUp={e => { (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)"; }}
+                >
+                  ✅ He entregado
+                </button>
+                <div style={{ display:"flex", gap:6 }}>
+                  <button
+                    onClick={() => reportIncidence(currentStopId)}
+                    disabled={!currentStopId || deliveredStopIds.has(currentStopId)}
+                    style={{
+                      flex:1, padding:"7px 10px", borderRadius:9,
+                      border:"1px solid rgba(245,158,11,.35)",
+                      background:"rgba(245,158,11,.08)",
+                      color:"#b45309", fontSize:10, fontWeight:700, cursor:"pointer",
+                    }}>
+                    ⚠ Incidencia
+                  </button>
+                  <button onClick={() => setDriverPhase("map")} style={{
+                    flex:1, padding:"7px 10px", borderRadius:9,
+                    border:"1px solid var(--border,#e5e7eb)",
+                    background:"transparent",
+                    color:"var(--t2,#4b5563)", fontSize:10, fontWeight:700, cursor:"pointer",
+                  }}>
+                    ← Mapa
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
