@@ -184,6 +184,7 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
   const [speed, setSpeed]     = useState(3);
   const [ready, setReady]     = useState(false);
   const [arriving, setArriving] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
 
   // Sincronizar ref con state para que el loop de animación siempre lea el valor correcto
   useEffect(() => { speedRef.current = speed; }, [speed]);
@@ -196,6 +197,10 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
   /* ── Init mapa ── */
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    if (!mapboxgl.accessToken) {
+      setMapError("Falta VITE_MAPBOX_TOKEN. Añade la clave de Mapbox en apps/web/.env para ver la ruta.");
+      return;
+    }
     mapRef.current = new mapboxgl.Map({
       container: containerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
@@ -399,6 +404,29 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", minHeight: 500, fontFamily: "'Inter',system-ui,sans-serif" }}>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+
+      {mapError && (
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 25,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgba(255,255,255,.92)",
+          padding: 20,
+        }}>
+          <div style={{
+            maxWidth: 420,
+            background: "#fff",
+            border: "1px solid #e5e7eb",
+            borderRadius: 16,
+            boxShadow: "0 20px 40px rgba(17,24,39,.08)",
+            padding: "18px 20px",
+            textAlign: "center",
+          }}>
+            <div style={{ fontSize: 30, marginBottom: 8 }}>🗺️</div>
+            <div style={{ fontWeight: 800, color: "#111827", marginBottom: 6 }}>No se puede mostrar la ruta</div>
+            <div style={{ color: "#4b5563", fontSize: 13, lineHeight: 1.5 }}>{mapError}</div>
+          </div>
+        </div>
+      )}
 
       {/* ── Barra navegación superior (marca Damm) ── */}
       <div style={{

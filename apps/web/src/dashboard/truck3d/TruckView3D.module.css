@@ -41,7 +41,7 @@
   min-width: 0;
   max-width: 100%;
   width: 100%;
-  padding: 14px 14px 8px;
+  padding: 6px 12px 8px 12px;
   color: #0f172a;
   box-sizing: border-box;
   overflow-x: clip;
@@ -53,7 +53,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   flex-wrap: wrap;
   min-width: 0;
 }
@@ -142,17 +142,17 @@
 .truckDetailSplit {
   --truck-detail-gap: 12px;
   /* Misma logica que .palletDetailColumn: ancho reservado para el panel */
-  --detail-col-w: max(180px, min(220px, 34vw));
+  --detail-col-w: max(220px, min(280px, 34vw));
   display: flex;
   flex-direction: row;
   align-items: stretch;
   justify-content: flex-start;
   gap: var(--truck-detail-gap);
   flex: 1 1 auto;
-  min-height: 220px;
+  min-height: 0;
   min-width: 0;
   width: 100%;
-  margin: 4px 0 8px;
+  margin: 0;
   box-sizing: border-box;
 }
 
@@ -171,13 +171,29 @@
 .palletDetailColumn {
   flex: 0 0 var(--detail-col-w);
   width: var(--detail-col-w);
-  max-width: 240px;
-  min-width: 180px;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
-  padding-top: 4px;
+  padding: 0;
   box-sizing: border-box;
+}
+
+.palletDetailColumn > * {
+  width: 100%;
+}
+
+.detailPanel {
+  flex: 0 0 var(--detail-col-w);
+  width: var(--detail-col-w);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.detailPanel > * {
+  width: 100%;
 }
 
 @media (max-width: 720px) {
@@ -217,7 +233,7 @@
   background: #ffffff;
   border-radius: 12px;
   border: 1px solid #f3f4f6;
-  padding: 4px;
+  padding: 0;
   box-sizing: border-box;
   overflow: hidden;
 }

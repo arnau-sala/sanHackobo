@@ -30,8 +30,8 @@ import styles from "./TruckView3D.module.css";
 
 export type ViewMode = "general" | "next-stop";
 
-const VIEWBOX_W = 680;
-const VIEWBOX_H = 400;
+const VIEWBOX_W = 380;
+const VIEWBOX_H = 220;
 
 export type TruckView3DProps = {
   loadPlan: LoadPlan;
@@ -100,7 +100,7 @@ export function TruckView3D({
   return (
     <svg
       className={styles.svg}
-      viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`}
+      viewBox={`170 90 ${VIEWBOX_W} ${VIEWBOX_H}`}
       preserveAspectRatio="xMidYMid meet"
       xmlns="http://www.w3.org/2000/svg"
       onClick={() => onSelectSlot?.(null)}

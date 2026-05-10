@@ -1,29 +1,11 @@
-/**
- * Chat con el copiloto del conductor.
- *
- *   - Texto: usa POST /api/copilot (con fallback al motor in-browser).
- *   - Voz salida: POST /api/voice/query devuelve audio TTS de ElevenLabs.
- *   - Voz entrada: SpeechRecognition del navegador (Chrome/Edge).
- *
- * Sample questions estan disenadas para activar cada categoria del motor:
- *   - "donde / descargar / mercancia" -> `answerUnloadQuestion`
- *   - "por que / primero"             -> `answerReasoningQuestion`
- *   - "retornable / recoger"          -> `answerReturnablesQuestion`
- *   - "cambio + numeros"              -> `answerSwapQuestion`
- */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { InputData, LoadPlan, RoutePlan } from "@damm/optimizer-load";
 import type { CopilotResponse } from "@damm/copilot";
 import { askCopilot } from "../lib/copilotClient";
+import { VoicePoweredOrb } from "../components/ui/voice-powered-orb";
 import styles from "./Dashboard.module.css";
 
-type ChatMessage = {
-  id: string;
-  role: "user" | "bot";
-  text: string;
-  source?: "api" | "local";
-  actions?: CopilotResponse["actions"];
-};
+type HandsfreeState = "idle" | "listening" | "thinking" | "speaking";
 
 interface CopilotChatProps {
   className?: string;
@@ -34,13 +16,6 @@ interface CopilotChatProps {
   onAction?: (action: CopilotResponse["actions"][number]) => void;
 }
 
-const SAMPLE_QUESTIONS = [
-  "Donde tengo que descargar?",
-  "Por que vamos primero aqui?",
-  "Que retornables recogemos?",
-  "Cambio la parada 4 por la 9?",
-];
-
 export function CopilotChat({
   className,
   currentStopId,
@@ -49,223 +24,164 @@ export function CopilotChat({
   inputData,
   onAction,
 }: CopilotChatProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "intro",
-      role: "bot",
-      text:
-        "Hola, soy el copiloto. Pregunta por la descarga, la ruta, retornables o " +
-        "simulaciones. Selecciona una parada en la izquierda para que las " +
-        "respuestas tengan contexto.",
-    },
-  ]);
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [voiceOn, setVoiceOn] = useState(false);
-  const [listening, setListening] = useState(false);
+  const [handsfreeOn, setHandsfreeOn] = useState(false);
+  const [state, setState] = useState<HandsfreeState>("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const runIdRef = useRef(0);
 
   useEffect(() => {
-    bodyRef.current?.scrollTo({
-      top: bodyRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
+    return () => {
+      recognitionRef.current?.stop();
+      audioRef.current?.pause();
+      runIdRef.current += 1;
+    };
+  }, []);
 
-  async function send(question: string) {
-    const trimmed = question.trim();
-    if (!trimmed || busy) return;
-    setText("");
-    setBusy(true);
-    setMessages((prev) => [
-      ...prev,
-      { id: `u-${Date.now()}`, role: "user", text: trimmed },
-    ]);
-
-    try {
-      const result = await askCopilot(
-        {
-          currentStopId,
-          question: trimmed,
-          routePlan,
-          loadPlan,
-          inputData,
-        },
-        { withVoice: voiceOn },
-      );
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `b-${Date.now()}`,
-          role: "bot",
-          text: result.response.answer,
-          source: result.source,
-          actions: result.response.actions,
-        },
-      ]);
-      result.response.actions?.forEach((a) => onAction?.(a));
-
-      if (result.ttsAudioBase64 && result.ttsMimeType) {
-        const audio = new Audio(
-          `data:${result.ttsMimeType};base64,${result.ttsAudioBase64}`,
-        );
-        audioRef.current = audio;
-        await audio.play().catch(() => undefined);
-      }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `e-${Date.now()}`,
-          role: "bot",
-          text: `Fallo al consultar al copiloto: ${
-            err instanceof Error ? err.message : String(err)
-          }`,
-        },
-      ]);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  function startListening() {
-    const SR =
-      window.SpeechRecognition ?? window.webkitSpeechRecognition;
-    if (!SR) {
-      alert("Tu navegador no soporta SpeechRecognition (usa Chrome o Edge).");
+  useEffect(() => {
+    if (!handsfreeOn) {
+      recognitionRef.current?.stop();
+      audioRef.current?.pause();
+      setState("idle");
       return;
     }
-    const rec = new SR();
-    rec.lang = "es-ES";
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = event.results[0]?.[0]?.transcript ?? "";
-      if (transcript) void send(transcript);
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    rec.start();
-    recognitionRef.current = rec;
-    setListening(true);
+
+    const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
+    if (!SR) {
+      alert("Tu navegador no soporta SpeechRecognition (usa Chrome o Edge).");
+      setHandsfreeOn(false);
+      return;
+    }
+    const SpeechRec = SR;
+
+    runIdRef.current += 1;
+    const runId = runIdRef.current;
+
+    async function listenOnce(): Promise<string | null> {
+      return await new Promise((resolve) => {
+        let finished = false;
+        const finish = (value: string | null) => {
+          if (finished) return;
+          finished = true;
+          resolve(value);
+        };
+
+        const rec = new SpeechRec();
+        recognitionRef.current = rec;
+        rec.lang = "es-ES";
+        rec.continuous = false;
+        rec.interimResults = false;
+        rec.onresult = (event: SpeechRecognitionEvent) => {
+          finish((event.results[0]?.[0]?.transcript ?? "").trim() || null);
+        };
+        rec.onerror = () => finish(null);
+        rec.onend = () => finish(null);
+
+        setState("listening");
+        rec.start();
+      });
+    }
+
+    async function playAudio(base64: string, mimeType: string): Promise<void> {
+      await new Promise((resolve) => {
+        const audio = new Audio(`data:${mimeType};base64,${base64}`);
+        audioRef.current = audio;
+        audio.onended = () => resolve(undefined);
+        audio.onerror = () => resolve(undefined);
+        void audio.play().catch(() => resolve(undefined));
+      });
+    }
+
+    async function runHandsfreeLoop() {
+      while (handsfreeOn && runIdRef.current === runId) {
+        const heard = await listenOnce();
+        if (!handsfreeOn || runIdRef.current !== runId) return;
+        if (!heard) continue;
+
+        setState("thinking");
+        try {
+          const result = await askCopilot(
+            {
+              currentStopId,
+              question: heard,
+              routePlan,
+              loadPlan,
+              inputData,
+            },
+            { withVoice: true },
+          );
+
+          result.response.actions?.forEach((a) => onAction?.(a));
+
+          if (result.ttsAudioBase64 && result.ttsMimeType) {
+            setState("speaking");
+            await playAudio(result.ttsAudioBase64, result.ttsMimeType);
+          }
+        } catch {
+          // Ignora fallos puntuales para mantener el flujo manos libres.
+        }
+      }
+    }
+
+    void runHandsfreeLoop();
+  }, [handsfreeOn, currentStopId, routePlan, loadPlan, inputData, onAction]);
+
+  function toggleHandsfree() {
+    if (handsfreeOn) {
+      recognitionRef.current?.stop();
+      audioRef.current?.pause();
+      runIdRef.current += 1;
+      setHandsfreeOn(false);
+      setState("idle");
+      return;
+    }
+    setHandsfreeOn(true);
   }
 
-  function stopListening() {
-    recognitionRef.current?.stop();
-    setListening(false);
-  }
+  const title = useMemo(() => {
+    if (!handsfreeOn) return "Iniciar manos libres";
+    if (state === "listening") return "Escuchando";
+    if (state === "thinking") return "Procesando";
+    if (state === "speaking") return "Respondiendo";
+    return "Detener manos libres";
+  }, [handsfreeOn, state]);
+
+  const orbIntensity = useMemo(() => {
+    if (!handsfreeOn) return 0;
+    if (state === "listening") return 0.9;
+    if (state === "thinking") return 0.55;
+    if (state === "speaking") return 1;
+    return 0.4;
+  }, [handsfreeOn, state]);
 
   return (
-    <div className={[styles.panel, className].filter(Boolean).join(" ")}>
-      <div className={styles.panelHeader}>
-        <h3>Copiloto IA</h3>
-        <span>{voiceOn ? "voz: ON" : "voz: OFF"}</span>
-      </div>
-
-      <div className={styles.chatBody} ref={bodyRef}>
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className={`${styles.bubble} ${
-              m.role === "user" ? styles.bubbleUser : styles.bubbleBot
-            }`}
-          >
-            {m.text}
-            {m.role === "bot" && m.source && (
-              <div className={styles.bubbleMeta}>
-                fuente: {m.source === "api" ? "/api/copilot" : "in-browser"}
-              </div>
-            )}
-            {m.actions && m.actions.length > 0 && (
-              <div className={styles.bubbleActions}>
-                {m.actions.map((a, i) => (
-                  <span key={i} className={styles.actionChip}>
-                    {actionLabel(a)}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        {busy && (
-          <div className={`${styles.bubble} ${styles.bubbleBot}`}>
-            <em>pensando…</em>
-          </div>
-        )}
-      </div>
-
-      <div className={styles.suggestRow}>
-        {SAMPLE_QUESTIONS.map((q) => (
-          <button
-            key={q}
-            type="button"
-            className={styles.suggestChip}
-            onClick={() => void send(q)}
-            disabled={busy}
-          >
-            {q}
-          </button>
-        ))}
-      </div>
-
-      <div className={styles.voiceRow}>
-        <label>
-          <input
-            type="checkbox"
-            checked={voiceOn}
-            onChange={(e) => setVoiceOn(e.target.checked)}
-          />{" "}
-          TTS ElevenLabs
-        </label>
-        <span>·</span>
-        <span>
-          Stop activo: <strong>{currentStopId}</strong>
-        </span>
-      </div>
-
-      <div className={styles.composer}>
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Escribe tu pregunta…"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") void send(text);
-          }}
-          disabled={busy}
+    <div
+      className={[styles.handsfreePanel, className].filter(Boolean).join(" ")}
+      role="button"
+      tabIndex={0}
+      onClick={toggleHandsfree}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleHandsfree();
+        }
+      }}
+      title={title}
+      aria-label={title}
+      aria-pressed={handsfreeOn}
+    >
+      <div
+        className={styles.handsfreeOrbWrap}
+        data-active={handsfreeOn ? "true" : "false"}
+      >
+        <VoicePoweredOrb
+          className={styles.handsfreeOrb}
+          hue={-10}
+          active={handsfreeOn}
+          intensity={orbIntensity}
         />
-        <button
-          type="button"
-          className={styles.btnSecondary}
-          onClick={listening ? stopListening : startListening}
-          title="Hablar"
-        >
-          {listening ? "■" : "●"}
-        </button>
-        <button
-          type="button"
-          className={styles.btnPrimary}
-          onClick={() => void send(text)}
-          disabled={busy || !text.trim()}
-        >
-          Enviar
-        </button>
       </div>
+      <p className={styles.handsfreeHint}>Toca para hablar</p>
     </div>
   );
-}
-
-function actionLabel(action: CopilotResponse["actions"][number]): string {
-  switch (action.type) {
-    case "highlight_truck_slot":
-      return `palet ${action.slotId}`;
-    case "highlight_stop":
-      return `parada ${action.stopId}`;
-    case "show_reasoning":
-      return `motivos ${action.stopId}`;
-    default:
-      return "accion";
-  }
 }

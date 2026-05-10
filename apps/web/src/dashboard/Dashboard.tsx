@@ -18,7 +18,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CopilotResponse } from "@damm/copilot";
 import { TruckStage }       from "./truck3d/TruckStage";
-import { DeliveryQueue }    from "./truck3d/DeliveryQueue";
 import { RouteMap }         from "./RouteMap";
 import { LoadingPhaseView } from "./LoadingPhaseView";
 import { SupervisorView }   from "./SupervisorView";
@@ -84,37 +83,38 @@ function WarehouseInventoryView({
     <div style={{ flex:1, minHeight:0, display:"flex", overflow:"hidden" }}>
       <div style={{ flex:1, minWidth:0 }}>
         <TruckStage
-          loadPlan={loadPlan} currentStopId={currentStopId}
-          deliveredStopIds={deliveredStopIds} selectedSlotId={selectedSlotId}
-          viewMode={truckViewMode} onSelectSlot={onSelectSlot} onChangeMode={onChangeMode}
+          loadPlan={loadPlan} routePlan={routePlan} inputData={inputData}
+          currentStopId={currentStopId} deliveredStopIds={deliveredStopIds}
+          selectedSlotId={selectedSlotId} viewMode={truckViewMode}
+          onSelectSlot={onSelectSlot} onChangeMode={onChangeMode}
         />
       </div>
       <div style={{
-        width:270, flexShrink:0, background:"var(--bg3, #171b22)",
-        borderLeft:"1px solid var(--border, #2a313d)",
+        width:270, flexShrink:0, background:"rgba(255,255,255,.96)",
+        borderLeft:"1px solid var(--border, #e5e7eb)",
         display:"flex", flexDirection:"column", overflow:"hidden",
         fontFamily:"inherit",
       }}>
-        <div style={{ padding:"10px 12px", borderBottom:"1px solid var(--border, #2a313d)", flexShrink:0 }}>
+        <div style={{ padding:"10px 12px", borderBottom:"1px solid var(--border, #e5e7eb)", flexShrink:0 }}>
           <div style={{ color:"var(--t3,#6b7280)", fontSize:9, fontWeight:800, letterSpacing:.7, textTransform:"uppercase", marginBottom:8 }}>
             Estado del camión
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
             {[
-              { l:"Entregadas",    v:`${done}/${total}`,                        c:"#22c55e", i:"✅" },
-              { l:"Palets carga",  v:`${remaining.length}/${totalSlots}`,        c:"#e8ebf0", i:"📦" },
-              { l:"Retornables",   v:returnables,                               c:"#14b8a6", i:"♻"  },
-              { l:"Huecos libres", v:emptySlots, c:emptySlots>2?"#22c55e":"#f59e0b",         i:"🔲" },
+              { l:"Entregadas",    v:`${done}/${total}`,                        c:"#16a34a", i:"✅" },
+              { l:"Palets carga",  v:`${remaining.length}/${totalSlots}`,        c:"#111827", i:"📦" },
+              { l:"Retornables",   v:returnables,                               c:"#e10600", i:"♻"  },
+              { l:"Huecos libres", v:emptySlots, c:emptySlots>2?"#16a34a":"#e10600",         i:"🔲" },
             ].map(k => (
-              <div key={k.l} style={{ background:"var(--bg4,#1f242d)", borderRadius:8, padding:"8px 9px", border:"1px solid var(--border,#2a313d)" }}>
+              <div key={k.l} style={{ background:"#fff", borderRadius:8, padding:"8px 9px", border:"1px solid var(--border,#e5e7eb)", boxShadow:"0 6px 16px rgba(17,24,39,.04)" }}>
                 <div style={{ color:"var(--t3,#6b7280)", fontSize:8, fontWeight:700, textTransform:"uppercase", letterSpacing:.4 }}>{k.i} {k.l}</div>
                 <div style={{ color:k.c, fontWeight:900, fontSize:18, lineHeight:1, marginTop:3, fontVariantNumeric:"tabular-nums" }}>{k.v}</div>
               </div>
             ))}
           </div>
           {returnables > 0 && (
-            <div style={{ marginTop:8, padding:"7px 9px", borderRadius:8, background:"rgba(20,184,166,.08)", border:"1px solid rgba(20,184,166,.2)" }}>
-              <div style={{ color:"#14b8a6", fontSize:10, fontWeight:700 }}>♻ {returnables} retornables cargados</div>
+            <div style={{ marginTop:8, padding:"7px 9px", borderRadius:8, background:"rgba(225,6,0,.06)", border:"1px solid rgba(225,6,0,.15)" }}>
+              <div style={{ color:"#e10600", fontSize:10, fontWeight:700 }}>♻ {returnables} retornables cargados</div>
               <div style={{ color:"var(--t3,#6b7280)", fontSize:9, marginTop:2 }}>{emptySlots>0?`${emptySlots} huecos disponibles`:"Camión completo"}</div>
             </div>
           )}
@@ -130,17 +130,17 @@ function WarehouseInventoryView({
               <div key={stop.stopId} onClick={() => onSelectStop(stop.stopId)} style={{
                 display:"flex", gap:7, marginBottom:3, cursor:"pointer",
                 padding:"7px 8px", borderRadius:8,
-                background:isCur?"rgba(225,6,0,.1)":isDone?"rgba(34,197,94,.05)":"transparent",
-                border:`1px solid ${isCur?"rgba(225,6,0,.3)":isDone?"rgba(34,197,94,.18)":"transparent"}`,
+                background:isCur?"rgba(225,6,0,.08)":isDone?"rgba(225,6,0,.04)":"transparent",
+                border:`1px solid ${isCur?"rgba(225,6,0,.22)":isDone?"rgba(225,6,0,.1)":"transparent"}`,
                 opacity:isDone&&!isCur?0.5:1,
               }}>
                 <div style={{ width:20, height:20, borderRadius:"50%", flexShrink:0,
-                  background:isDone?"rgba(34,197,94,.2)":isCur?"#e10600":"var(--bg4,#1f242d)",
+                  background:isDone?"rgba(225,6,0,.14)":isCur?"#e10600":"#f3f4f6",
                   display:"flex", alignItems:"center", justifyContent:"center",
-                  color:isDone?"#22c55e":isCur?"#fff":"var(--t3,#6b7280)", fontSize:8, fontWeight:900 }}>
+                  color:isDone?"#e10600":isCur?"#fff":"var(--t3,#6b7280)", fontSize:8, fontWeight:900 }}>
                   {isDone?"✓":idx+1}
                 </div>
-                <div style={{ color:isCur?"#e8ebf0":"#a9b0bd", fontWeight:isCur?700:500, fontSize:10, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1, minWidth:0 }}>
+                <div style={{ color:isCur?"#111827":"#4b5563", fontWeight:isCur?700:500, fontSize:10, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1, minWidth:0 }}>
                   {stop.clientName}
                 </div>
               </div>
@@ -171,6 +171,8 @@ export function Dashboard() {
   const [driverPhase,      setDriverPhase]    = useState<DriverPhase>("truck");
   const [warehousePhase,   setWarehousePhase] = useState<WarehousePhase>("loading");
   const [truckCoord,       setTruckCoord]     = useState<LngLat|undefined>(undefined);
+  const [detailTab,        setDetailTab]      = useState<"palets" | "deliveries">("palets");
+  const [detailItem,       setDetailItem]     = useState<string|null>(null);
   const clock = useClock();
 
   useEffect(() => {
@@ -343,19 +345,12 @@ export function Dashboard() {
           <div style={{ position:"absolute", top:16, right:16, zIndex:10 }}>
             <button onClick={() => setDriverPhase("truck")} style={{
               padding:"7px 14px", borderRadius:9, border:"1px solid rgba(255,255,255,.12)",
-              background:"rgba(10,12,16,.85)", backdropFilter:"blur(8px)",
-              color:"#a9b0bd", fontSize:11, fontWeight:700, cursor:"pointer",
+              background:"rgba(255,255,255,.95)", backdropFilter:"blur(8px)",
+              color:"#111827", fontSize:11, fontWeight:700, cursor:"pointer",
+              boxShadow:"0 8px 18px rgba(17,24,39,.06)",
             }}>← Ver camión</button>
           </div>
 
-          {/* Copiloto */}
-          <div className={styles.copilotFloating}>
-            <CopilotChat
-              currentStopId={currentStopId} routePlan={hybrid.routePlan}
-              loadPlan={hybrid.loadPlan} inputData={hybrid.inputData}
-              onAction={handleCopilotAction}
-            />
-          </div>
         </div>
       </div>
     );
@@ -367,54 +362,32 @@ export function Dashboard() {
       {header}
 
       <section className={styles.mainTruck}>
-        {/* ── Izq: Comandas ─────────────────────────────────────────── */}
+        {/* ── Izq: IA manos libres ──────────────────────────────────── */}
         <div className={styles.driverLeft}>
-          <DeliveryQueue
-            routePlan={hybrid.routePlan} inputData={hybrid.inputData}
-            loadPlan={hybrid.loadPlan} currentStopId={currentStopId}
-            deliveredStopIds={deliveredStopIds} compact
-            onSelectStop={stopId => { setCurrentStopId(stopId); setTruckViewMode("next-stop"); }}
-            onConfirmDelivery={handleConfirmDelivery}
-          />
-        </div>
-
-        {/* ── Der: Camión 3D + controles ────────────────────────────── */}
-        <div className={styles.truckMain}>
-          <TruckStage
-            loadPlan={hybrid.loadPlan} currentStopId={currentStopId}
-            deliveredStopIds={deliveredStopIds} selectedSlotId={selectedSlotId}
-            viewMode={truckViewMode} onSelectSlot={setSelectedSlotId}
-            onChangeMode={setTruckViewMode}
-          />
-
-          {/* Copiloto flotante */}
-          <div className={styles.copilotFloating}>
+          <div className={styles.copilotChatWrapper}>
             <CopilotChat
-              currentStopId={currentStopId} routePlan={hybrid.routePlan}
-              loadPlan={hybrid.loadPlan} inputData={hybrid.inputData}
+              routePlan={hybrid.routePlan} inputData={hybrid.inputData}
+              loadPlan={hybrid.loadPlan} currentStopId={currentStopId}
               onAction={handleCopilotAction}
             />
           </div>
-
-          {/* Controles de fase */}
-          <div style={{
-            position:"absolute", bottom:20, right:20, zIndex:20,
-            display:"flex", flexDirection:"column", gap:8, alignItems:"flex-end",
-          }}>
-            {/* Info próxima parada */}
+          
+          {/* Info próxima parada y botones */}
+          <div className={styles.driverLeftFooter}>
             {!routeDone && (
               <div style={{
-                background:"rgba(10,12,16,.92)", backdropFilter:"blur(10px)",
+                background:"rgba(255,255,255,.96)", backdropFilter:"blur(10px)",
                 border:"1px solid var(--border,#2a313d)", borderRadius:12,
-                padding:"10px 16px", maxWidth:290,
+                padding:"10px 16px",
+                boxShadow:"0 10px 24px rgba(17,24,39,.06)",
               }}>
                 <div style={{ color:"#e10600", fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:.6, marginBottom:4 }}>
                   {driverPhase === "truck" ? "📍 Siguiente destino" : "📍 Entregando en"}
                 </div>
-                <div style={{ color:"#e8ebf0", fontWeight:800, fontSize:14, marginBottom:3 }}>
+                <div style={{ color:"#111827", fontWeight:800, fontSize:14, marginBottom:3 }}>
                   {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
                 </div>
-                <div style={{ color:"#a9b0bd", fontSize:11 }}>
+                <div style={{ color:"#6b7280", fontSize:11 }}>
                   {[
                     currentStop.stop?.address ?? currentStop.stop?.zone,
                     currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
@@ -422,35 +395,50 @@ export function Dashboard() {
                 </div>
               </div>
             )}
-
-            {/* Botón principal */}
+            
             {driverPhase === "truck" && (
               <button
                 onClick={() => setDriverPhase("map")}
                 disabled={routeDone}
                 style={{
                   padding:"13px 28px", borderRadius:12, border:"none",
-                  background: routeDone ? "var(--bg4,#1f242d)" : "#e10600",
+                  background: routeDone ? "#f3f4f6" : "#e10600",
                   color:"#fff", fontSize:14, fontWeight:800, cursor: routeDone ? "default" : "pointer",
-                  boxShadow: routeDone ? "none" : "0 4px 20px rgba(225,6,0,.45)",
+                  boxShadow: routeDone ? "none" : "0 4px 20px rgba(225,6,0,.28)",
                   letterSpacing:.3, transition:"all .15s",
                   opacity: routeDone ? 0.5 : 1,
                 }}>
                 {routeDone ? "✅ Ruta completada" : "🚛 Iniciar ruta →"}
               </button>
             )}
-
+            
             {driverPhase === "delivery" && (
               <button onClick={() => setDriverPhase("map")} style={{
                 padding:"10px 20px", borderRadius:10,
                 border:"1px solid var(--border,#2a313d)",
-                background:"rgba(10,12,16,.9)", backdropFilter:"blur(8px)",
-                color:"#a9b0bd", fontSize:12, fontWeight:700, cursor:"pointer",
+                background:"rgba(255,255,255,.95)", backdropFilter:"blur(8px)",
+                color:"#111827", fontSize:12, fontWeight:700, cursor:"pointer",
+                boxShadow:"0 8px 18px rgba(17,24,39,.06)",
               }}>
                 ← Volver al mapa
               </button>
             )}
           </div>
+        </div>
+
+        {/* ── Der: Camión 3D + controles ────────────────────────────── */}
+        <div className={styles.truckMain}>
+          <TruckStage
+            loadPlan={hybrid.loadPlan} routePlan={hybrid.routePlan}
+            inputData={hybrid.inputData} currentStopId={currentStopId}
+            deliveredStopIds={deliveredStopIds} selectedSlotId={selectedSlotId}
+            viewMode={truckViewMode} onSelectSlot={setSelectedSlotId}
+            onChangeMode={setTruckViewMode}
+            detailTab={detailTab} detailItem={detailItem}
+            onDetailTabChange={setDetailTab} onDetailItemChange={setDetailItem}
+          />
+
+
         </div>
       </section>
     </div>

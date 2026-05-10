@@ -7,34 +7,61 @@
  * Comandas y copilot viven en la columna izquierda del Dashboard.
  */
 import { useMemo } from "react";
-import type { LoadPlan } from "@damm/optimizer-load";
+import type { InputData, LoadPlan, RoutePlan } from "@damm/optimizer-load";
 import { TruckView3D, type ViewMode } from "./TruckView3D";
-import { PalletDetailPanel } from "./PalletPopup";
-import { PalletSummaryRow } from "./PalletSummaryRow";
+import { TruckDetailTabs } from "./TruckDetailTabs";
 import { buildPalletStack, type PalletStackInfo } from "./buildPalletStack";
 import { buildRenderPallet } from "./palletRenderModel";
 import styles from "./TruckView3D.module.css";
 
 export type TruckStageProps = {
   loadPlan: LoadPlan;
+  routePlan: RoutePlan;
+  inputData: InputData;
   currentStopId: string | null;
   deliveredStopIds: Set<string>;
   selectedSlotId: string | null;
   viewMode: ViewMode;
   onSelectSlot: (slotId: string | null) => void;
   onChangeMode: (mode: ViewMode) => void;
+  detailTab?: "palets" | "deliveries";
+  detailItem?: string | null;
+  onDetailTabChange?: (tab: "palets" | "deliveries") => void;
+  onDetailItemChange?: (item: string | null) => void;
 };
 
 export function TruckStage(props: TruckStageProps) {
   const {
     loadPlan,
+    routePlan,
+    inputData,
     currentStopId,
     deliveredStopIds,
     selectedSlotId,
     viewMode,
     onSelectSlot,
-    onChangeMode,
+    detailTab = "palets",
+    detailItem = null,
+    onDetailTabChange,
+    onDetailItemChange,
   } = props;
+
+  function handleDetailItemSelect(item: string | null) {
+    if (!item) {
+      onSelectSlot(null);
+      onDetailItemChange?.(null);
+      return;
+    }
+
+    if (detailTab === "palets") {
+      onSelectSlot(item);
+      onDetailTabChange?.("palets");
+    } else {
+      onSelectSlot(null);
+    }
+
+    onDetailItemChange?.(item);
+  }
 
   // Stacks por palet (filtrados por entregas hechas) — los reutiliza el
   // resumen P1..P8 inferior y el popup.
@@ -85,6 +112,17 @@ export function TruckStage(props: TruckStageProps) {
     return buildRenderPallet(selectedSlot, { index: idx, deliveredStopIds });
   }, [selectedSlot, loadPlan, deliveredStopIds]);
 
+  // Compute renders map for all slots
+  const renders = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof buildRenderPallet>>();
+    for (let i = 0; i < Math.min(loadPlan.palletSlots.length, 8); i++) {
+      const slot = loadPlan.palletSlots[i];
+      const render = buildRenderPallet(slot, { index: i, deliveredStopIds });
+      map.set(slot.slotId, render);
+    }
+    return map;
+  }, [loadPlan, deliveredStopIds]);
+
   const selectedStack =
     selectedSlotId != null ? stacks.get(selectedSlotId) : undefined;
 
@@ -92,39 +130,6 @@ export function TruckStage(props: TruckStageProps) {
     <div className={styles.truckOnlyRoot}>
       <div className={styles.truckColumn}>
         <div className={styles.stage}>
-          <div className={styles.stageHeader}>
-            <div className={styles.stageHeaderText}>
-              <span className={styles.stageBadge} />
-              <h3>Carga del camion</h3>
-              <span className={styles.stagePill}>
-                {loadPlan.palletSlots.length} palets · {loadPlan.vehicleId}
-              </span>
-            </div>
-            <div className={styles.stageHints}>
-              <span className={styles.stageHint}>
-                ⓘ Toca un palet para ver contenido
-              </span>
-              <div className={styles.modeTabs} role="tablist">
-                <button
-                  type="button"
-                  className={styles.modeTab}
-                  data-active={viewMode === "general"}
-                  onClick={() => onChangeMode("general")}
-                >
-                  ① Vista general
-                </button>
-                <button
-                  type="button"
-                  className={styles.modeTab}
-                  data-active={viewMode === "next-stop"}
-                  onClick={() => onChangeMode("next-stop")}
-                >
-                  ② Proxima parada
-                </button>
-              </div>
-            </div>
-          </div>
-
           <div className={styles.truckDetailSplit}>
             <div className={styles.truckSvgZone}>
               <div className={styles.svgWrap}>
@@ -133,33 +138,32 @@ export function TruckStage(props: TruckStageProps) {
                   deliveredStopIds={deliveredStopIds}
                   currentStopId={currentStopId}
                   selectedSlotId={selectedSlotId}
-                  onSelectSlot={onSelectSlot}
+                  onSelectSlot={(slotId) => {
+                    onSelectSlot(slotId);
+                    if (slotId && onDetailItemChange && onDetailTabChange) {
+                      onDetailTabChange("palets");
+                      onDetailItemChange(slotId);
+                    }
+                  }}
                   viewMode={viewMode}
                 />
               </div>
             </div>
-            {selectedSlot && selectedRender && selectedStack && (
-              <aside
-                className={styles.palletDetailColumn}
-                aria-label="Detalle del palet"
-              >
-                <PalletDetailPanel
-                  slot={selectedSlot}
-                  stack={selectedStack}
-                  render={selectedRender}
-                  onClose={() => onSelectSlot(null)}
-                />
-              </aside>
-            )}
+            <div className={styles.detailPanel}>
+              <TruckDetailTabs
+                tab={detailTab}
+                selectedItem={detailItem}
+                loadPlan={loadPlan}
+                routePlan={routePlan}
+                inputData={inputData}
+                deliveredStopIds={deliveredStopIds}
+                stacks={stacks}
+                renders={renders}
+                onTabChange={onDetailTabChange || (() => {})}
+                onItemSelect={handleDetailItemSelect}
+              />
+            </div>
           </div>
-
-          <PalletSummaryRow
-            loadPlan={loadPlan}
-            stacks={stacks}
-            selectedSlotId={selectedSlotId}
-            highlightedSlotIds={highlightedSlotIds}
-            onSelect={onSelectSlot}
-          />
         </div>
       </div>
     </div>
