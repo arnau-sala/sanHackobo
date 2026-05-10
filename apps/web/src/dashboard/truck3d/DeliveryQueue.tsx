@@ -136,14 +136,19 @@ export function DeliveryQueue({
                   </ul>
 
                   <div className={styles.queueFoot}>
-                    <span className={styles.queueLoc}>
-                      Ubicacion:
-                      {slots.map((s) => (
-                        <em key={s} className={styles.queueSlotChip}>
-                          {s}
-                        </em>
-                      ))}
-                    </span>
+                    <div className={styles.queueFootTop}>
+                      <span className={styles.queueLoc}>
+                        Ubicacion:
+                        {slots.map((s) => (
+                          <em key={s} className={styles.queueSlotChip}>
+                            {s}
+                          </em>
+                        ))}
+                      </span>
+                      <div className={styles.queueQuickActions}>
+                        <button type="button" className={styles.btnQuickCall} onClick={(e) => { e.stopPropagation(); alert("Llamando al cliente..."); }}>📞 Llamar</button>
+                      </div>
+                    </div>
                     <button
                       type="button"
                       className={styles.queueStart}
@@ -152,7 +157,7 @@ export function DeliveryQueue({
                         onConfirmDelivery(rs.stopId);
                       }}
                     >
-                      ▶ Iniciar
+                      ▶ INICIAR ENTREGA
                     </button>
                   </div>
                 </>

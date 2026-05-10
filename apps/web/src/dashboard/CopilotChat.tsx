@@ -175,79 +175,35 @@ export function CopilotChat({
   const state = stateConfig[copilotState];
 
   return (
-    <div className={[styles.panel, className].filter(Boolean).join(" ")}>
-      <div className={styles.panelHeader}>
-        <h3>🤖 Copiloto IA</h3>
-        <span style={{ color: state.color, fontWeight: 600 }}>
-          {state.label}
+    <div className={`${styles.copilotFloating} ${className ?? ""}`}>
+      <button
+        type="button"
+        className={styles.voiceBtnFloating}
+        data-listening={copilotState === "listening"}
+        data-state={copilotState}
+        onClick={handleMicClick}
+        disabled={copilotState === "thinking" || copilotState === "speaking"}
+        title={state.label}
+        style={
+          copilotState === "speaking"
+            ? { borderColor: "var(--ok)", boxShadow: "0 0 20px var(--ok)" }
+            : copilotState === "thinking"
+              ? { borderColor: "var(--warn)", boxShadow: "0 0 20px var(--warn)" }
+              : undefined
+        }
+      >
+        <span className={styles.voiceIconFloating}>{state.icon}</span>
+        <span className={styles.voicePromptText}>
+          {copilotState === "idle" ? "¿Cómo te puedo ayudar?" : state.label}
         </span>
-      </div>
+      </button>
 
-      {/* Minimal chat history — driver doesn't need to read this */}
-      <div className={styles.chatBody} ref={bodyRef}>
-        {messages.slice(-3).map((m) => (
-          <div
-            key={m.id}
-            className={`${styles.bubble} ${
-              m.role === "user" ? styles.bubbleUser : styles.bubbleBot
-            }`}
-          >
-            {m.text}
-            {m.actions && m.actions.length > 0 && (
-              <div className={styles.bubbleActions}>
-                {m.actions.map((a, i) => (
-                  <span key={i} className={styles.actionChip}>
-                    {actionLabel(a)}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-        {copilotState === "thinking" && (
-          <div className={`${styles.bubble} ${styles.bubbleBot}`}>
-            <em>pensando…</em>
-          </div>
-        )}
-      </div>
-
-      {/* Quick action chips — large touch targets */}
-      <div className={styles.suggestRow}>
-        {QUICK_ACTIONS.map((qa) => (
-          <button
-            key={qa.question}
-            type="button"
-            className={styles.suggestChip}
-            onClick={() => void send(qa.question)}
-            disabled={copilotState !== "idle"}
-            title={qa.question}
-          >
-            {qa.emoji} {qa.label}
-          </button>
-        ))}
-      </div>
-
-      {/* BIG mic button — main interaction */}
-      <div className={styles.voiceComposer}>
-        <button
-          type="button"
-          className={styles.voiceBtnLarge}
-          data-listening={copilotState === "listening"}
-          data-state={copilotState}
-          onClick={handleMicClick}
-          disabled={copilotState === "thinking" || copilotState === "speaking"}
-          title={state.label}
-          style={
-            copilotState === "speaking"
-              ? { borderColor: "var(--ok)", background: "rgba(34,197,94,0.15)" }
-              : copilotState === "thinking"
-                ? { borderColor: "var(--warn)", background: "rgba(245,158,11,0.1)" }
-                : undefined
-          }
-        >
-          {state.icon}
-        </button>
-      </div>
+      {messages.length > 1 && (
+        <div className={styles.copilotBubble}>
+          {messages[messages.length - 1].text}
+          {copilotState === "thinking" && " ..."}
+        </div>
+      )}
     </div>
   );
 }

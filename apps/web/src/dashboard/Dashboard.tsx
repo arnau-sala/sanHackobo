@@ -43,10 +43,15 @@ export function Dashboard() {
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [truckViewMode, setTruckViewMode] = useState<ViewMode>("general");
   const [clock, setClock] = useState(() => formatClock());
+  
+  // Novedades de conductor experto
+  const [highContrast, setHighContrast] = useState(false);
 
   // Live clock
   useEffect(() => {
-    const id = setInterval(() => setClock(formatClock()), 1000);
+    const id = setInterval(() => {
+      setClock(formatClock());
+    }, 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -62,6 +67,7 @@ export function Dashboard() {
   const currentStop = useMemo(() => {
     const rs = hybrid.routePlan.stops.find((s) => s.stopId === currentStopId);
     const stop = hybrid.inputData.stops.find((s) => s.id === currentStopId);
+    
     return { rs, stop };
   }, [hybrid, currentStopId]);
 
@@ -97,7 +103,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} data-theme={highContrast ? "high-contrast" : "dark"}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <div className={styles.brand}>
@@ -127,20 +133,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Next stop mini-banner */}
-        {currentStop.rs && (
-          <div className={styles.nextStopBanner}>
-            <span className={styles.nextStopLabel}>▶ PRÓXIMA</span>
-            <strong className={styles.nextStopName}>
-              {currentStop.rs.clientName ?? currentStop.stop?.clientName ?? currentStopId}
-            </strong>
-            {currentStop.rs.arrivalEta && (
-              <span className={styles.nextStopEta}>
-                🕓 {currentStop.rs.arrivalEta}
-              </span>
-            )}
-          </div>
-        )}
+
 
         <div className={styles.headerRight}>
           <div className={styles.modes} role="tablist">
@@ -181,18 +174,26 @@ export function Dashboard() {
         </div>
       </header>
 
+
+
       <section className={styles.mainTruck}>
-        {/* LEFT: Route Panel */}
-        <div className={styles.routeLeft}>
-          <RoutePanel
+        {/* LEFT: Comandas */}
+        <div className={styles.driverLeft}>
+          <DeliveryQueue
             routePlan={hybrid.routePlan}
             inputData={hybrid.inputData}
+            loadPlan={hybrid.loadPlan}
             currentStopId={currentStopId}
-            onSelectStop={setCurrentStopId}
+            deliveredStopIds={deliveredStopIds}
+            onSelectStop={(stopId) => {
+              setCurrentStopId(stopId);
+              if (truckViewMode === "general") setTruckViewMode("next-stop");
+            }}
+            onConfirmDelivery={handleConfirmDelivery}
           />
         </div>
 
-        {/* CENTER: Truck 3D (biggest area) */}
+        {/* RIGHT: Truck 3D (biggest area) with Floating Copilot */}
         <div className={styles.truckMainColumn}>
           <TruckStage
             loadPlan={hybrid.loadPlan}
@@ -203,25 +204,7 @@ export function Dashboard() {
             onSelectSlot={setSelectedSlotId}
             onChangeMode={setTruckViewMode}
           />
-        </div>
-
-        {/* RIGHT: Comandas + Copilot */}
-        <div className={styles.driverRight}>
-          <DeliveryQueue
-            routePlan={hybrid.routePlan}
-            inputData={hybrid.inputData}
-            loadPlan={hybrid.loadPlan}
-            currentStopId={currentStopId}
-            deliveredStopIds={deliveredStopIds}
-            compact
-            onSelectStop={(stopId) => {
-              setCurrentStopId(stopId);
-              if (truckViewMode === "general") setTruckViewMode("next-stop");
-            }}
-            onConfirmDelivery={handleConfirmDelivery}
-          />
           <CopilotChat
-            className={styles.copilotSidebar}
             currentStopId={currentStopId}
             routePlan={hybrid.routePlan}
             loadPlan={hybrid.loadPlan}
