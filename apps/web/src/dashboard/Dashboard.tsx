@@ -176,7 +176,7 @@ export function Dashboard() {
     const d = hybrid.inputData.depot;
     return d?.lat && d?.lng ? [d.lng, d.lat] : undefined;
   });
-  const [detailTab,        setDetailTab]      = useState<"palets" | "deliveries">("palets");
+  const [detailTab,        setDetailTab]      = useState<"palets" | "deliveries">("deliveries");
   const [detailItem,       setDetailItem]     = useState<string|null>(null);
   const [expandedStopId,   setExpandedStopId] = useState<string|null>(null);
   const [skippedStopIds,   setSkippedStopIds] = useState<Set<string>>(() => new Set());
@@ -302,7 +302,6 @@ export function Dashboard() {
           </div>
         </div>
 
-        <span className={`${styles.phaseBadge} ${phaseBadgeClass}`}>{phaseBadgeText}</span>
       </div>
 
       <div className={styles.headerRight}>
@@ -315,12 +314,6 @@ export function Dashboard() {
           ))}
         </div>
         <span className={styles.clock}>{clock}</span>
-        <div className={styles.statusGroup}>
-          <span className={styles.statusDot} data-ok={apiUp === true}>
-            API {apiUp===true?"ON":apiUp===false?"OFF":"…"}
-          </span>
-          <span className={styles.statusDot} data-ok={true}>copilot</span>
-        </div>
       </div>
     </header>
   );
@@ -355,172 +348,258 @@ export function Dashboard() {
 
   // ── CONDUCTOR · fase MAP ─────────────────────────────────────────────────────
   if (driverPhase === "map") {
+    const pendingStops  = sortedStops.filter(s => !deliveredStopIds.has(s.stopId) && !skippedStopIds.has(s.stopId));
+    const firstPending  = pendingStops[0];
+    const outOfSequence = !!firstPending && currentStopId !== firstPending.stopId && !deliveredStopIds.has(currentStopId);
+
     return (
       <div className={styles.shell}>
         {header}
         <div style={{ flex:1, minHeight:0, display:"flex", gap:6, overflow:"hidden" }}>
 
-          {/* ── Columna izquierda: orb + paradas ─────────────────────── */}
+          {/* ══ Columna izquierda ══════════════════════════════════════════ */}
           <div style={{
-            width:272, flexShrink:0,
-            background:"var(--bg1,#fff)",
-            border:"1px solid var(--border,#e5e7eb)",
-            borderRadius:10,
+            width:300, flexShrink:0,
             display:"flex", flexDirection:"column",
-            overflow:"hidden",
+            overflow:"hidden", gap:6,
           }}>
-            {/* Orb de voz */}
-            <div style={{ flexShrink:0 }}>
+
+            {/* ── Copilot compacto ─────────────────────────────────────── */}
+            <div style={{
+              flexShrink:0,
+              background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+              border:"1px solid var(--border,#e7e2dd)",
+              borderRadius:12,
+              boxShadow:"0 1px 0 rgba(255,255,255,.6) inset, 0 6px 16px rgba(17,17,17,.05)",
+              overflow:"hidden",
+            }}>
               <CopilotChat
                 routePlan={hybrid.routePlan} inputData={hybrid.inputData}
                 loadPlan={hybrid.loadPlan} currentStopId={currentStopId}
-                onAction={handleCopilotAction}
+                onAction={() => {}}
               />
             </div>
 
-            {/* Progreso compacto */}
+            {/* ── Destino actual (card hero) ────────────────────────────── */}
             <div style={{
-              flexShrink:0, padding:"6px 12px",
-              borderTop:"1px solid var(--border,#e5e7eb)",
-              borderBottom:"1px solid var(--border,#e5e7eb)",
-              display:"flex", alignItems:"center", justifyContent:"space-between",
+              flexShrink:0, position:"relative", overflow:"hidden",
+              background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+              border:"1px solid rgba(225,6,0,.25)",
+              borderRadius:14,
+              boxShadow:"0 8px 24px rgba(225,6,0,.12), 0 1px 0 rgba(255,255,255,.6) inset",
+              padding:"13px 15px 12px 18px",
             }}>
-              <span style={{ color:"var(--t3,#6b7280)", fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:.5 }}>
-                Paradas
-              </span>
-              <span style={{ color:"var(--t2,#4b5563)", fontSize:10, fontWeight:800 }}>
-                {deliveredCount}/{totalStops}
-              </span>
+              {/* Barra lateral roja */}
+              <span style={{
+                position:"absolute", left:0, top:10, bottom:10, width:3,
+                background:"linear-gradient(180deg,#e10600,#b00500)", borderRadius:"0 3px 3px 0",
+              }}/>
+              {/* Hairline dorada */}
+              <span style={{
+                position:"absolute", left:14, right:14, top:0, height:1,
+                background:"linear-gradient(90deg,transparent,rgba(245,200,66,.55),transparent)",
+              }}/>
+
+              <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8, marginBottom:7 }}>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ color:"#e10600", fontSize:9, fontWeight:800, textTransform:"uppercase",
+                    letterSpacing:".1em", marginBottom:4, display:"flex", alignItems:"center", gap:5 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                      <circle cx="12" cy="9" r="2.5"/>
+                    </svg>
+                    Destino actual
+                  </div>
+                  <div style={{ color:"#0f1115", fontWeight:900, fontSize:15, lineHeight:1.2,
+                    letterSpacing:"-.02em", marginBottom:4 }}>
+                    {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
+                  </div>
+                  <div style={{ color:"#6b7280", fontSize:10, fontWeight:500 }}>
+                    {currentStop.stop?.address ?? currentStop.stop?.zone ?? ""}
+                  </div>
+                </div>
+                {currentStop.rs?.arrivalEta && (
+                  <div style={{
+                    flexShrink:0, textAlign:"center",
+                    background:"rgba(225,6,0,.07)", border:"1px solid rgba(225,6,0,.18)",
+                    borderRadius:10, padding:"6px 10px",
+                  }}>
+                    <div style={{ color:"#e10600", fontSize:16, fontWeight:900,
+                      fontVariantNumeric:"tabular-nums", lineHeight:1 }}>
+                      {currentStop.rs.arrivalEta}
+                    </div>
+                    <div style={{ color:"#9ca3af", fontSize:8, fontWeight:700,
+                      textTransform:"uppercase", letterSpacing:.5, marginTop:3 }}>ETA</div>
+                  </div>
+                )}
+              </div>
+
+              {/* Items a entregar */}
+              {currentStop.orders.length > 0 && (
+                <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
+                  {currentStop.orders.flatMap(o=>o.items).slice(0,4).map((item,ii) => (
+                    <div key={ii} style={{
+                      display:"flex", alignItems:"center", gap:4,
+                      padding:"3px 8px", borderRadius:20,
+                      background:"rgba(225,6,0,.06)", border:"1px solid rgba(225,6,0,.14)",
+                    }}>
+                      <span style={{ color:"#4b5563", fontSize:9, fontWeight:600,
+                        maxWidth:90, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                        {item.name}
+                      </span>
+                      <span style={{ color:"#e10600", fontSize:9, fontWeight:900, flexShrink:0 }}>
+                        {item.quantity}
+                      </span>
+                    </div>
+                  ))}
+                  {currentStop.totalItems > 4 && (
+                    <div style={{ padding:"3px 8px", borderRadius:20,
+                      background:"rgba(15,17,21,.05)", border:"1px solid var(--border,#e7e2dd)",
+                      color:"#6b7280", fontSize:9, fontWeight:600 }}>
+                      +{currentStop.totalItems - 4} más
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Lista de paradas */}
-            <div style={{ flex:1, overflowY:"auto", padding:"6px 8px 10px" }}>
-              {(() => {
-                // Primera pendiente (no entregada ni saltada) = orden óptimo
-                const firstPending = sortedStops.find(s => !deliveredStopIds.has(s.stopId) && !skippedStopIds.has(s.stopId));
-                const outOfSequence = !!firstPending && currentStopId !== firstPending.stopId && !deliveredStopIds.has(currentStopId);
-                return outOfSequence ? (
-                  <div
-                    onClick={() => setCurrentStopId(firstPending.stopId)}
-                    style={{
-                      margin:"0 0 6px", padding:"6px 8px", borderRadius:7, cursor:"pointer",
-                      background:"rgba(245,158,11,.1)", border:"1px solid rgba(245,158,11,.3)",
-                      color:"#b45309", fontSize:9, fontWeight:700,
-                    }}
-                  >
-                    ⚠ Fuera del orden óptimo · Toca para volver a {firstPending.clientName.slice(0,18)}
+            {/* ── Progress + lista de paradas ──────────────────────────── */}
+            <div style={{
+              flex:1, minHeight:0, display:"flex", flexDirection:"column",
+              background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+              border:"1px solid var(--border,#e7e2dd)",
+              borderRadius:12, overflow:"hidden",
+              boxShadow:"0 1px 0 rgba(255,255,255,.6) inset, 0 6px 16px rgba(17,17,17,.04)",
+            }}>
+              {/* Progress header */}
+              <div style={{
+                flexShrink:0, padding:"9px 13px 8px",
+                borderBottom:"1px solid var(--border2,#efeae3)",
+                display:"flex", alignItems:"center", gap:10,
+              }}>
+                <div style={{ flex:1 }}>
+                  <div style={{ display:"flex", justifyContent:"space-between", marginBottom:5 }}>
+                    <span style={{ color:"var(--t3,#6b7280)", fontSize:9, fontWeight:700,
+                      textTransform:"uppercase", letterSpacing:.5 }}>
+                      Ruta del día
+                    </span>
+                    <span style={{ color:"var(--t1,#0f1115)", fontSize:10, fontWeight:900,
+                      fontVariantNumeric:"tabular-nums" }}>
+                      {deliveredCount}<span style={{ color:"var(--t3,#6b7280)", fontWeight:400 }}>/{totalStops}</span>
+                    </span>
                   </div>
-                ) : null;
-              })()}
-              {sortedStops.map((rs, idx) => {
-                const isDone    = deliveredStopIds.has(rs.stopId);
-                const isSkipped = skippedStopIds.has(rs.stopId);
-                const isCur     = rs.stopId === currentStopId && !isDone && !isSkipped;
-                const isExpanded = isCur || expandedStopId === rs.stopId;
-                const inputStop = hybrid.inputData.stops.find(s => s.id === rs.stopId);
-                const orders    = hybrid.inputData.orders.filter(o => o.stopId === rs.stopId);
-                const items     = orders.flatMap(o => o.items);
-                const totalQty  = items.reduce((s,i) => s + i.quantity, 0);
+                  <div style={{ height:5, background:"var(--border2,#efeae3)", borderRadius:999, overflow:"hidden" }}>
+                    <div style={{ height:"100%", width:`${progressPct}%`,
+                      background:"linear-gradient(90deg,#b00500,#e10600,#ff3a28)",
+                      borderRadius:999, transition:"width .6s cubic-bezier(.4,0,.2,1)" }}/>
+                  </div>
+                </div>
+              </div>
 
-                const bg     = isCur ? "rgba(225,6,0,.07)"
-                            : isDone ? "rgba(34,197,94,.05)"
-                            : isSkipped ? "rgba(245,158,11,.06)"
-                            : "transparent";
-                const border = isCur ? "rgba(225,6,0,.22)"
-                            : isDone ? "rgba(34,197,94,.18)"
-                            : isSkipped ? "rgba(245,158,11,.22)"
-                            : "transparent";
-                const dotBg  = isDone ? "rgba(34,197,94,.2)"
-                            : isSkipped ? "rgba(245,158,11,.2)"
-                            : isCur ? "#e10600" : "#f3f4f6";
-                const dotFg  = isDone ? "#16a34a"
-                            : isSkipped ? "#b45309"
-                            : isCur ? "#fff" : "var(--t3,#6b7280)";
-                const dotIco = isDone ? "✓" : isSkipped ? "!" : String(idx + 1);
+              {/* Out-of-sequence warning */}
+              {outOfSequence && (
+                <div onClick={() => setCurrentStopId(firstPending.stopId)}
+                  style={{ flexShrink:0, margin:"6px 8px 0", padding:"6px 10px", borderRadius:8, cursor:"pointer",
+                    background:"rgba(245,158,11,.08)", border:"1px solid rgba(245,158,11,.28)",
+                    color:"#b45309", fontSize:9, fontWeight:700 }}>
+                  ⚠ Fuera de orden · Ir a {(firstPending.clientName ?? firstPending.stopId).slice(0,20)}
+                </div>
+              )}
 
-                return (
-                  <div
-                    key={rs.stopId}
-                    style={{
-                      marginBottom:4, borderRadius:9,
-                      padding:"8px 10px",
-                      background: bg,
-                      border:`1px solid ${border}`,
-                      opacity: (isDone || isSkipped) && !isCur ? 0.6 : 1,
-                      transition:"background .15s",
-                    }}
-                  >
-                    {/* Cabecera parada (clic = seleccionar / toggle expand si es la actual) */}
-                    <div
-                      onClick={() => {
-                        if (isCur) {
-                          setExpandedStopId(expandedStopId === rs.stopId ? "__force_collapsed__" : rs.stopId);
-                        } else {
-                          setCurrentStopId(rs.stopId);
-                          setExpandedStopId(null);
-                        }
+              {/* Lista */}
+              <div style={{ flex:1, overflowY:"auto", padding:"6px 8px 8px" }}>
+                {sortedStops.map((rs, idx) => {
+                  const isDone    = deliveredStopIds.has(rs.stopId);
+                  const isSkipped = skippedStopIds.has(rs.stopId);
+                  const isCur     = rs.stopId === currentStopId && !isDone && !isSkipped;
+                  const inputStop = hybrid.inputData.stops.find(s => s.id === rs.stopId);
+                  const orders    = hybrid.inputData.orders.filter(o => o.stopId === rs.stopId);
+                  const totalQty  = orders.flatMap(o=>o.items).reduce((s,i) => s+i.quantity, 0);
+
+                  if (isDone) return (
+                    <div key={rs.stopId} style={{
+                      display:"flex", alignItems:"center", gap:7,
+                      padding:"5px 8px", marginBottom:2, borderRadius:7, opacity:0.45,
+                    }}>
+                      <div style={{ width:18, height:18, borderRadius:"50%", flexShrink:0,
+                        background:"rgba(22,163,74,.15)",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        color:"#16a34a", fontSize:9, fontWeight:900 }}>✓</div>
+                      <span style={{ color:"var(--t3,#6b7280)", fontSize:10, fontWeight:500,
+                        overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1 }}>
+                        {rs.clientName}
+                      </span>
+                    </div>
+                  );
+
+                  if (isSkipped) return (
+                    <div key={rs.stopId} style={{
+                      display:"flex", alignItems:"center", gap:7,
+                      padding:"5px 8px", marginBottom:2, borderRadius:7, opacity:0.55,
+                    }}>
+                      <div style={{ width:18, height:18, borderRadius:"50%", flexShrink:0,
+                        background:"rgba(245,158,11,.15)",
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        color:"#b45309", fontSize:9, fontWeight:900 }}>!</div>
+                      <span style={{ color:"#b45309", fontSize:10, fontWeight:500,
+                        overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", flex:1 }}>
+                        {rs.clientName}
+                      </span>
+                    </div>
+                  );
+
+                  return (
+                    <div key={rs.stopId}
+                      onClick={() => { setCurrentStopId(rs.stopId); setExpandedStopId(null); }}
+                      style={{
+                        display:"flex", alignItems:"center", gap:8,
+                        padding:"7px 9px", marginBottom:3, borderRadius:9,
+                        cursor:"pointer",
+                        background: isCur ? "rgba(225,6,0,.06)" : "transparent",
+                        border: `1px solid ${isCur ? "rgba(225,6,0,.2)" : "transparent"}`,
+                        transition:"background .12s",
                       }}
-                      style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", marginBottom: isExpanded && items.length > 0 ? 6 : 0 }}
                     >
                       <div style={{
-                        width:18, height:18, borderRadius:"50%", flexShrink:0,
-                        background: dotBg,
+                        width:22, height:22, borderRadius:"50%", flexShrink:0,
+                        background: isCur ? "#e10600" : "var(--border2,#efeae3)",
                         display:"flex", alignItems:"center", justifyContent:"center",
-                        color: dotFg, fontSize:8, fontWeight:900,
+                        color: isCur ? "#fff" : "var(--t3,#6b7280)",
+                        fontSize:9, fontWeight:900,
+                        boxShadow: isCur ? "0 2px 8px rgba(225,6,0,.35)" : "none",
                       }}>
-                        {dotIco}
+                        {idx + 1}
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div style={{
-                          color: isCur ? "#111827" : "var(--t2,#4b5563)",
+                          color: isCur ? "#0f1115" : "var(--t2,#4b5563)",
                           fontWeight: isCur ? 800 : 500,
-                          fontSize:10, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                          fontSize:11, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                         }}>
                           {rs.clientName}
-                          {isSkipped && <span style={{ marginLeft:4, color:"#b45309", fontSize:8, fontWeight:700 }}>· incidencia</span>}
                         </div>
-                        <div style={{ color:"var(--t3,#6b7280)", fontSize:8.5, marginTop:1 }}>
-                          {[inputStop?.address ?? inputStop?.zone, totalQty > 0 ? `${totalQty} uds` : null, rs.arrivalEta ? `ETA ${rs.arrivalEta}` : null].filter(Boolean).join(" · ")}
+                        <div style={{ color:"var(--t3,#6b7280)", fontSize:9, marginTop:1 }}>
+                          {[inputStop?.address ?? inputStop?.zone,
+                            totalQty > 0 ? `${totalQty} uds` : null].filter(Boolean).join(" · ")}
                         </div>
                       </div>
-                      {items.length > 0 && (
-                        <span style={{ color:"var(--t3,#6b7280)", fontSize:9, flexShrink:0 }}>
-                          {isExpanded ? "▾" : "▸"}
-                        </span>
+                      {rs.arrivalEta && (
+                        <div style={{ flexShrink:0, textAlign:"right" }}>
+                          <div style={{ color: isCur ? "#e10600" : "var(--t3,#6b7280)",
+                            fontSize:10, fontWeight:800, fontVariantNumeric:"tabular-nums" }}>
+                            {rs.arrivalEta}
+                          </div>
+                        </div>
                       )}
                     </div>
-
-                    {/* Productos (visibles solo si expandido) */}
-                    {isExpanded && items.length > 0 && (
-                      <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
-                        {items.map((item, ii) => (
-                          <div key={ii} style={{
-                            display:"flex", justifyContent:"space-between", alignItems:"center",
-                            padding:"3px 6px", borderRadius:5,
-                            background:"rgba(225,6,0,.04)",
-                            border:"1px solid rgba(225,6,0,.1)",
-                          }}>
-                            <span style={{ color:"var(--t2,#4b5563)", fontSize:8.5, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:130 }}>
-                              {item.name}
-                            </span>
-                            <span style={{ color:"#e10600", fontWeight:800, fontSize:8.5, flexShrink:0, marginLeft:4 }}>
-                              {item.quantity} {item.unit}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Botones pie */}
-            <div style={{ flexShrink:0, padding:"8px 10px", borderTop:"1px solid var(--border,#e5e7eb)", display:"flex", flexDirection:"column", gap:6 }}>
-              <button
-                className={styles.mapArrivedBtn}
-                onClick={() => setDriverPhase("delivery")}
-              >
+            {/* ── Botones pie ───────────────────────────────────────────── */}
+            <div style={{ flexShrink:0, display:"flex", flexDirection:"column", gap:5 }}>
+              <button className={styles.mapArrivedBtn} onClick={() => setDriverPhase("delivery")}>
                 ✅ He llegado
               </button>
               <div style={{ display:"flex", gap:6 }}>
@@ -528,7 +607,7 @@ export function Dashboard() {
                   onClick={() => reportIncidence(currentStopId)}
                   disabled={!currentStopId || deliveredStopIds.has(currentStopId)}
                   style={{
-                    flex:1, padding:"7px 10px", borderRadius:9,
+                    flex:1, padding:"8px 10px", borderRadius:10,
                     border:"1px solid rgba(245,158,11,.35)",
                     background:"rgba(245,158,11,.08)",
                     color:"#b45309", fontSize:10, fontWeight:700, cursor:"pointer",
@@ -536,9 +615,9 @@ export function Dashboard() {
                   ⚠ Incidencia
                 </button>
                 <button onClick={() => setDriverPhase("truck")} style={{
-                  flex:1, padding:"7px 10px", borderRadius:9,
-                  border:"1px solid var(--border,#e5e7eb)",
-                  background:"transparent",
+                  flex:1, padding:"8px 10px", borderRadius:10,
+                  border:"1px solid var(--border,#e7e2dd)",
+                  background:"linear-gradient(180deg,#fff,#fbf9f6)",
                   color:"var(--t2,#4b5563)", fontSize:10, fontWeight:700, cursor:"pointer",
                 }}>
                   ← Camión
@@ -548,7 +627,9 @@ export function Dashboard() {
           </div>
 
           {/* ── Mapa ─────────────────────────────────────────────────── */}
-          <div style={{ flex:1, minWidth:0, position:"relative", borderRadius:10, overflow:"hidden", border:"1px solid var(--border,#2a313d)" }}>
+          <div style={{ flex:1, minWidth:0, position:"relative", borderRadius:10, overflow:"hidden",
+            border:"1px solid var(--border,#e7e2dd)",
+            boxShadow:"0 8px 22px rgba(17,17,17,.05)" }}>
             <RouteMap
               routePlan={hybrid.routePlan} inputData={hybrid.inputData}
               currentStopId={currentStopId} deliveredStopIds={deliveredStopIds}
@@ -563,20 +644,6 @@ export function Dashboard() {
               <span className={styles.mapProgressText}>paradas completadas</span>
             </div>
 
-            {/* Card próxima parada */}
-            <div className={styles.mapNextStop}>
-              <span className={styles.mapNextStopLabel}>📍 Próxima parada</span>
-              <div className={styles.mapNextStopName}>
-                {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
-              </div>
-              <div className={styles.mapNextStopMeta}>
-                {[
-                  currentStop.stop?.address ?? currentStop.stop?.zone,
-                  currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
-                  currentStop.rs?.arrivalEta ? `ETA ${currentStop.rs.arrivalEta}` : null,
-                ].filter(Boolean).join(" · ")}
-              </div>
-            </div>
           </div>
 
         </div>
@@ -599,26 +666,96 @@ export function Dashboard() {
               onAction={handleCopilotAction}
             />
           </div>
-          
+
+          {/* Resumen de jornada */}
+          {(() => {
+            const rp = hybrid.routePlan as any;
+            const km  = rp.estimatedKm   ? Math.round(rp.estimatedKm)   : null;
+            const lastStop = sortedStops[sortedStops.length - 1];
+            const etaFin   = lastStop?.arrivalEta ?? null;
+
+            const IcoCheck = <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
+            const IcoRoute = <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8.5 19h6a4 4 0 0 0 0-8h-5a4 4 0 0 1 0-8h6"/></svg>;
+            const IcoFlag  = <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22V4"/><path d="M4 4h12l-2 4 2 4H4"/></svg>;
+
+            const metrics = [
+              { ico:IcoCheck, value:`${deliveredCount}/${totalStops}`, label:"paradas" },
+              { ico:IcoRoute, value: km ? `${km} km` : "—",            label:"ruta total" },
+              { ico:IcoFlag,  value: etaFin ? `~${etaFin}` : "—",      label:"hora fin" },
+            ];
+            return (
+              <div style={{
+                flexShrink:0, margin:"0 0 4px",
+                display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
+                gap:6, padding:"0 1px",
+              }}>
+                {metrics.map(m => (
+                  <div key={m.label} style={{
+                    position:"relative",
+                    background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+                    border:"1px solid var(--border,#e7e2dd)",
+                    borderRadius:12, padding:"9px 6px 8px",
+                    textAlign:"center",
+                    boxShadow:"0 1px 0 rgba(255,255,255,.6) inset, 0 6px 16px rgba(17,17,17,.04)",
+                    overflow:"hidden",
+                  }}>
+                    <div style={{
+                      position:"absolute", left:10, right:10, top:0, height:1,
+                      background:"linear-gradient(90deg,transparent,rgba(245,200,66,.6),transparent)",
+                    }}/>
+                    <div style={{ color:"var(--red,#e10600)", display:"flex", justifyContent:"center", marginBottom:4, lineHeight:0 }}>{m.ico}</div>
+                    <div style={{ color:"#0f1115", fontWeight:900, fontSize:13, lineHeight:1, fontVariantNumeric:"tabular-nums", letterSpacing:"-.01em" }}>{m.value}</div>
+                    <div style={{ color:"var(--t3,#6b7280)", fontSize:8.5, marginTop:4, fontWeight:700, letterSpacing:".06em", textTransform:"uppercase" }}>{m.label}</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+
           {/* Info próxima parada y botones */}
           <div className={styles.driverLeftFooter}>
             {!routeDone && (
               <div style={{
-                background:"rgba(255,255,255,.96)", backdropFilter:"blur(10px)",
-                border:`1px solid ${driverPhase === "delivery" ? "rgba(225,6,0,.35)" : "var(--border,#2a313d)"}`,
-                borderRadius:12,
-                padding:"10px 14px",
-                boxShadow: driverPhase === "delivery" ? "0 10px 24px rgba(225,6,0,.12)" : "0 10px 24px rgba(17,24,39,.06)",
+                position:"relative",
+                background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+                border:`1px solid ${driverPhase === "delivery" ? "rgba(225,6,0,.35)" : "var(--border,#e7e2dd)"}`,
+                borderRadius:14,
+                padding:"12px 14px 11px 16px",
+                boxShadow: driverPhase === "delivery"
+                  ? "0 10px 28px rgba(225,6,0,.14), 0 1px 0 rgba(255,255,255,.6) inset"
+                  : "0 8px 22px rgba(17,17,17,.06), 0 1px 0 rgba(255,255,255,.6) inset",
                 maxHeight: driverPhase === "delivery" ? 220 : "auto",
                 display:"flex", flexDirection:"column", overflow:"hidden",
               }}>
-                <div style={{ color:"#e10600", fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:.6, marginBottom:4 }}>
-                  {driverPhase === "truck" ? "📍 Siguiente destino" : "🅿 Entregando en"}
+                {/* hairline gold + barra lateral roja */}
+                <span style={{
+                  position:"absolute", left:0, top:10, bottom:10, width:3,
+                  background:"linear-gradient(180deg,var(--red,#e10600),var(--red-lo,#b00500))",
+                  borderRadius:"0 3px 3px 0",
+                }}/>
+                <span style={{
+                  position:"absolute", left:14, right:14, top:0, height:1,
+                  background:"linear-gradient(90deg,transparent,rgba(245,200,66,.55),transparent)",
+                }}/>
+                <div style={{
+                  display:"flex", alignItems:"center", gap:6,
+                  color:"#e10600", fontSize:9.5, fontWeight:800,
+                  textTransform:"uppercase", letterSpacing:".1em", marginBottom:5,
+                }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    <circle cx="12" cy="9" r="2.5"/>
+                  </svg>
+                  {driverPhase === "truck" ? "Siguiente destino" : "Entregando en"}
                 </div>
-                <div style={{ color:"#111827", fontWeight:800, fontSize:13, marginBottom:2, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+                <div style={{
+                  color:"#0f1115", fontWeight:800, fontSize:14, marginBottom:3,
+                  overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                  letterSpacing:"-.01em",
+                }}>
                   {currentStop.stop?.clientName ?? currentStop.rs?.clientName ?? "—"}
                 </div>
-                <div style={{ color:"#6b7280", fontSize:10, marginBottom: driverPhase === "delivery" ? 6 : 0 }}>
+                <div style={{ color:"#6b7280", fontSize:10.5, fontWeight:500, marginBottom: driverPhase === "delivery" ? 6 : 0 }}>
                   {[
                     currentStop.stop?.address ?? currentStop.stop?.zone,
                     currentStop.totalItems > 0 ? `${currentStop.totalItems} uds` : null,
@@ -652,19 +789,164 @@ export function Dashboard() {
             )}
 
             {driverPhase === "truck" && (
-              <button
-                onClick={() => setDriverPhase("map")}
-                disabled={routeDone}
-                style={{
-                  padding:"13px 28px", borderRadius:12, border:"none",
-                  background: routeDone ? "#f3f4f6" : "#e10600",
-                  color:"#fff", fontSize:14, fontWeight:800, cursor: routeDone ? "default" : "pointer",
-                  boxShadow: routeDone ? "none" : "0 4px 20px rgba(225,6,0,.28)",
-                  letterSpacing:.3, transition:"all .15s",
-                  opacity: routeDone ? 0.5 : 1,
-                }}>
-                {routeDone ? "✅ Ruta completada" : routeStarted ? "🚛 Continuar ruta →" : "🚛 Iniciar ruta →"}
-              </button>
+              <>
+                <button
+                  onClick={() => setDriverPhase("map")}
+                  disabled={routeDone}
+                  style={{
+                    position:"relative",
+                    padding:"15px 28px", borderRadius:13, border:"none",
+                    background: routeDone
+                      ? "linear-gradient(180deg,#f3f4f6,#e9eaec)"
+                      : "linear-gradient(180deg,#ff3a28 0%,#e10600 50%,#b00500 100%)",
+                    color: routeDone ? "#9ca3af" : "#fff",
+                    fontSize:14, fontWeight:900,
+                    cursor: routeDone ? "default" : "pointer",
+                    boxShadow: routeDone ? "none"
+                      : "0 0 0 1px rgba(245,200,66,.4), 0 10px 24px rgba(225,6,0,.4), inset 0 1px 0 rgba(255,255,255,.32), inset 0 -2px 5px rgba(122,5,0,.5)",
+                    letterSpacing:".04em", textTransform:"uppercase",
+                    textShadow: routeDone ? "none" : "0 1px 1px rgba(0,0,0,.22)",
+                    transition:"transform .12s ease, box-shadow .2s ease",
+                    overflow:"hidden",
+                  }}
+                  onMouseDown={e => { if (!routeDone) (e.currentTarget as HTMLButtonElement).style.transform = "translateY(1px) scale(.99)"; }}
+                  onMouseUp={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0) scale(1)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0) scale(1)"; }}
+                >
+                  {routeDone ? "Ruta completada" : routeStarted ? "Continuar ruta →" : "Iniciar ruta →"}
+                </button>
+
+                {/* ── Briefing de jornada ── */}
+                {!routeDone && (() => {
+                  const rp = hybrid.routePlan as any;
+                  const ip = hybrid.inputData;
+                  const lp = hybrid.loadPlan;
+
+                  const totalUnits   = ip.orders.reduce((s:number,o:any)=>s+o.items.reduce((ss:number,i:any)=>ss+i.quantity,0),0);
+                  const totalBarrels = ip.orders.reduce((s:number,o:any)=>s+o.items.filter((i:any)=>i.unit==="Barril"||/barril|keg/i.test(i.name)).reduce((ss:number,i:any)=>ss+i.quantity,0),0);
+                  const totalRet     = ip.orders.reduce((s:number,o:any)=>s+o.items.filter((i:any)=>i.returnable).reduce((ss:number,i:any)=>ss+i.quantity,0),0);
+                  const usedSlots    = lp.palletSlots.filter((s:any)=>s.items?.length>0).length;
+                  const totalSlots   = lp.palletSlots.length;
+                  const contadoOrders= ip.orders.filter((o:any)=>o.paymentType==="CONTADO"||o.collectionAmount>0);
+                  const cashTotal    = contadoOrders.reduce((s:number,o:any)=>s+(o.collectionAmount??0),0);
+                  const mins         = rp.estimatedMinutes??0;
+                  const durStr       = mins>0?(Math.floor(mins/60)>0?`${Math.floor(mins/60)}h ${mins%60}min`:`${mins%60} min`):"—";
+                  const zones        = [...new Set(ip.stops.map((s:any)=>s.zone??s.route).filter(Boolean))];
+
+                  // SVG icons — Heroicons outline 16px
+                  const IcoPallet  = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="14" width="20" height="4" rx="1"/><rect x="5" y="10" width="14" height="4" rx="1"/><rect x="8" y="6"  width="8"  height="4" rx="1"/></svg>;
+                  const IcoBeer    = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2h12l-1 7H7L6 2z"/><rect x="5" y="9" width="14" height="13" rx="2"/><line x1="9" y1="13" x2="9" y2="18"/><line x1="12" y1="13" x2="12" y2="18"/><line x1="15" y1="13" x2="15" y2="18"/></svg>;
+                  const IcoReturn  = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.22-8.56"/><polyline points="21 3 21 9 15 9"/></svg>;
+                  const IcoCash    = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>;
+                  const IcoClock   = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+                  const IcoPin     = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>;
+                  const IcoBox     = <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>;
+
+                  const grid = [
+                    { ico:IcoPallet, label:"Palets",     value:`${usedSlots}/${totalSlots}`,                        color:"#e10600" },
+                    { ico:IcoBox,    label:"Unidades",   value:`${totalUnits}`,                                     color:"#111827" },
+                    { ico:IcoBeer,   label:"Barriles",   value: totalBarrels>0?`${totalBarrels}`:"0",               color:"#e10600" },
+                    { ico:IcoReturn, label:"Retornables",value: totalRet>0?`${totalRet} ud`:"Ninguno",              color: totalRet>0?"#b45309":"#6b7280" },
+                    { ico:IcoCash,   label:"Efectivo",   value: cashTotal>0?`${cashTotal.toLocaleString("es-ES")} €`:`${contadoOrders.length} cl.`, color:"#16a34a" },
+                    { ico:IcoClock,  label:"Duración",   value: durStr,                                             color:"#111827" },
+                  ];
+
+                  return (
+                    <div style={{
+                      position:"relative",
+                      background:"linear-gradient(180deg,#ffffff 0%,#fbf9f6 100%)",
+                      border:"1px solid var(--border,#e7e2dd)",
+                      borderRadius:14, overflow:"hidden",
+                      boxShadow:"0 1px 0 rgba(255,255,255,.6) inset, 0 8px 22px rgba(17,17,17,.05)",
+                    }}>
+                      {/* Hairline gold top */}
+                      <span style={{
+                        position:"absolute", left:14, right:14, top:0, height:1,
+                        background:"linear-gradient(90deg,transparent,rgba(245,200,66,.55),transparent)",
+                      }}/>
+
+                      {/* Header */}
+                      <div style={{
+                        padding:"10px 14px 9px",
+                        borderBottom:"1px solid var(--border,#e7e2dd)",
+                        display:"flex", alignItems:"center", justifyContent:"space-between",
+                        background:"linear-gradient(180deg,rgba(225,6,0,.025),transparent)",
+                      }}>
+                        <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                          {/* Estrella Damm mini */}
+                          <svg width="11" height="11" viewBox="-7 -7 14 14">
+                            <polygon points="0,-7 1.6,-2.2 6.7,-2.2 2.7,0.8 4.1,5.7 0,2.9 -4.1,5.7 -2.7,0.8 -6.7,-2.2 -1.6,-2.2"
+                                    fill="#f5c842" stroke="#c9a020" strokeWidth=".4"/>
+                          </svg>
+                          <span style={{ color:"#0f1115", fontSize:10, fontWeight:800, letterSpacing:".09em", textTransform:"uppercase" }}>
+                            Resumen de jornada
+                          </span>
+                        </div>
+                        <span style={{
+                          background:"linear-gradient(180deg,rgba(225,6,0,.1),rgba(225,6,0,.05))",
+                          color:"#e10600",
+                          fontSize:9, fontWeight:800, borderRadius:999, padding:"3px 9px",
+                          border:"1px solid rgba(225,6,0,.22)",
+                          letterSpacing:".05em", textTransform:"uppercase",
+                          boxShadow:"inset 0 1px 0 rgba(255,255,255,.5)",
+                        }}>
+                          {zones[0] ?? "Ruta del día"}
+                        </span>
+                      </div>
+
+                      {/* Grid 2×3 con separadores hairline */}
+                      <div style={{
+                        display:"grid", gridTemplateColumns:"1fr 1fr",
+                        backgroundImage:"linear-gradient(var(--border2,#efeae3),var(--border2,#efeae3)),linear-gradient(var(--border2,#efeae3),var(--border2,#efeae3))",
+                        backgroundSize:"1px 100%, 100% 1px",
+                        backgroundPosition:"50% 0, 0 33.33%, 0 66.66%",
+                        backgroundRepeat:"no-repeat, repeat-y",
+                      }}>
+                        {grid.map(cell => (
+                          <div key={cell.label} style={{
+                            padding:"11px 14px 10px",
+                            display:"flex", flexDirection:"column", gap:6,
+                            position:"relative",
+                          }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:7 }}>
+                              <span style={{
+                                color:"var(--red,#e10600)", lineHeight:0,
+                                background:"rgba(225,6,0,.07)",
+                                width:22, height:22, borderRadius:6,
+                                display:"flex", alignItems:"center", justifyContent:"center",
+                                border:"1px solid rgba(225,6,0,.12)",
+                              }}>{cell.ico}</span>
+                              <span style={{ color:"var(--t3,#6b7280)", fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:".08em" }}>{cell.label}</span>
+                            </div>
+                            <span style={{
+                              color: cell.color,
+                              fontSize:16, fontWeight:900,
+                              fontVariantNumeric:"tabular-nums",
+                              lineHeight:1, letterSpacing:"-.015em",
+                              paddingLeft:1,
+                            }}>{cell.value}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer: zona y pin */}
+                      {zones.length > 0 && (
+                        <div style={{
+                          padding:"9px 14px",
+                          borderTop:"1px solid var(--border2,#efeae3)",
+                          background:"linear-gradient(180deg,transparent,rgba(245,200,66,.04))",
+                          display:"flex", alignItems:"center", gap:8,
+                        }}>
+                          <span style={{ color:"var(--red,#e10600)", lineHeight:0 }}>{IcoPin}</span>
+                          <span style={{ color:"var(--t2,#4b5563)", fontSize:10, fontWeight:700, letterSpacing:".02em" }}>
+                            {zones.join(" · ")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </>
             )}
 
             {driverPhase === "delivery" && (

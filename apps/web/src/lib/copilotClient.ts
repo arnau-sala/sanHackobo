@@ -14,7 +14,9 @@ export type CopilotClientResult = {
   error?: string;
 };
 
-const API_TIMEOUT_MS = 4000;
+// El TTS de ElevenLabs puede tardar entre 1.5 y 6s según texto y red.
+// Con 4s veíamos timeouts y la voz se silenciaba. Subimos a 15s.
+const API_TIMEOUT_MS = 15000;
 
 async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   return await Promise.race([

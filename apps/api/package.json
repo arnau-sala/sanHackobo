@@ -10,6 +10,7 @@
     "typecheck": "tsc -p ../../tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.95.1",
     "@damm/copilot": "*",
     "@damm/optimizer-load": "*",
     "@damm/optimizer-route": "*"

@@ -12,7 +12,7 @@ export function buildStructuredPrompt(input: CopilotQuestionInput): StructuredPr
 
   return {
     system:
-      "Eres un copiloto logistico para reparto en Espana. Responde siempre en castellano natural, tono cercano y profesional. Nunca inventes datos y responde solo con informacion estructurada del contexto.",
+      "Eres el copiloto de voz a bordo del camión Damm. Asistes al repartidor mientras conduce o aparca. Habla en castellano peninsular natural, tono cercano y profesional, frases cortas (máximo 2). Nunca inventes datos: usa solo el contexto. Si falta información, dilo y propón qué preguntar. Pronuncia números y horas de forma natural (no leas códigos). Da la información más útil primero (qué hacer, dónde, cuánto).",
     user: input.question,
     context: {
       currentStopId: input.currentStopId,

@@ -471,7 +471,7 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
 
       {/* ── Card destino ── */}
       <div style={{
-        position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
+        position: "absolute", bottom: 20, left: "50%", transform: "translateX(-60%)",
         background: "rgba(8,0,0,.95)",
         border: `1.5px solid ${arriving ? "rgba(16,185,129,.7)" : "rgba(227,40,25,.7)"}`,
         borderRadius: 20, padding: "16px 22px",
@@ -494,6 +494,30 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
             {curStop?.address}
           </div>
         </div>
+        {/* Botón teléfono */}
+        {!arriving && (
+          <button
+            onClick={() => alert("📞 Llamando al cliente…")}
+            style={{
+              flexShrink: 0,
+              width: 46, height: 46, borderRadius: "50%",
+              border: "1.5px solid rgba(16,185,129,.5)",
+              background: "rgba(16,185,129,.12)",
+              color: "#10b981",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer",
+              transition: "all .15s ease",
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(16,185,129,.22)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(16,185,129,.12)"; }}
+            title="Llamar al cliente"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.65 3.37 2 2 0 0 1 3.64 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.18 6.18l.97-.97a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </button>
+        )}
+
         {curRS?.serviceMinutes && !arriving && (
           <div style={{ flexShrink: 0, textAlign: "center" }}>
             <div style={{ color: "#F5C842", fontWeight: 800, fontSize: 18 }}>{curRS.serviceMinutes}<span style={{ fontSize: 10, color: "#9ca3af" }}> min</span></div>
@@ -504,24 +528,23 @@ export function RouteMap({ routePlan, inputData, currentStopId, deliveredStopIds
 
       {/* ── Control velocidad — FUNCIONAL vía speedRef ── */}
       <div style={{
-        position: "absolute", bottom: 100, right: 14, zIndex: 20,
+        position: "absolute", bottom: 20, right: 14, zIndex: 20,
         background: "rgba(8,0,0,.9)", border: "1px solid rgba(227,40,25,.4)",
-        borderRadius: 12, padding: "10px 14px",
+        borderRadius: 12, padding: "8px 12px",
+        display: "flex", alignItems: "center", gap: 8,
       }}>
-        <div style={{ color: "#F5C842", fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>
-          Velocidad
-        </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          {[1, 3, 6, 15].map((v) => (
-            <button key={v} onClick={() => setSpeed(v)} style={{
-              width: 36, height: 36, borderRadius: 8,
-              border: `1.5px solid ${speed === v ? "#E32819" : "#374151"}`,
-              background: speed === v ? "#E32819" : "rgba(255,255,255,.05)",
-              color: speed === v ? "#fff" : "#9ca3af",
-              fontSize: 12, fontWeight: 700, cursor: "pointer",
-            }}>{v}×</button>
-          ))}
-        </div>
+        <span style={{ color: "#F5C842", fontSize: 9, fontWeight: 800, letterSpacing: 1.5, textTransform: "uppercase" }}>
+          Vel
+        </span>
+        {[1, 3, 6, 15].map((v) => (
+          <button key={v} onClick={() => setSpeed(v)} style={{
+            width: 32, height: 32, borderRadius: 7,
+            border: `1.5px solid ${speed === v ? "#E32819" : "#374151"}`,
+            background: speed === v ? "#E32819" : "rgba(255,255,255,.05)",
+            color: speed === v ? "#fff" : "#9ca3af",
+            fontSize: 11, fontWeight: 700, cursor: "pointer",
+          }}>{v}×</button>
+        ))}
       </div>
 
       {/* ── Spinner ── */}

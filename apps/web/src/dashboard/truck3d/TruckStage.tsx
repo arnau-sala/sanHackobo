@@ -40,7 +40,7 @@ export function TruckStage(props: TruckStageProps) {
     selectedSlotId,
     viewMode,
     onSelectSlot,
-    detailTab = "palets",
+    detailTab = "deliveries",
     detailItem = null,
     onDetailTabChange,
     onDetailItemChange,
