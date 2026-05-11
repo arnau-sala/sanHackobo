@@ -1,0 +1,404 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "createdAt": "2026-05-09T07:00:00Z",
+    "description": "Mock 18 paradas — bares reales BCN distribuidos por zonas",
+    "algorithm": "greedy_multi_objective_v1"
+  },
+  "depot": {
+    "id": "depot_ddi_mollet",
+    "name": "DDI Mollet del Vallès",
+    "address": "Carrer de la Indústria, Mollet del Vallès",
+    "lat": 41.5369,
+    "lng": 2.2131,
+    "departureTime": "07:00",
+    "returnDeadline": "15:00"
+  },
+  "vehicle": {
+    "id": "vehicle_001",
+    "plate": "1234-BCN",
+    "type": "camion_mediano",
+    "capacityKg": 2000,
+    "capacityUnits": 120,
+    "fuelType": "diesel"
+  },
+  "driver": {
+    "id": "driver_001",
+    "name": "Jordi Puig",
+    "zone": "Eixample_Gracia",
+    "experienceYears": 7,
+    "licenseType": "C"
+  },
+  "stops": [
+    {
+      "id": "stop_01",
+      "clientName": "Bar Calders",
+      "address": "Carrer del Parlament, 25, Sant Antoni",
+      "lat": 41.3793,
+      "lng": 2.1620,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "08:00", "to": "11:00" },
+      "historicalConfidence": 0.91,
+      "priority": 8,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 6 },
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 1 }
+        ],
+        "totalKg": 112,
+        "retornables": 2
+      },
+      "notes": "Portero automático — llamar antes"
+    },
+    {
+      "id": "stop_02",
+      "clientName": "Bar Marsella",
+      "address": "Carrer dels Escudellers, 65, Barri Gòtic",
+      "lat": 41.3791,
+      "lng": 2.1766,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "09:00", "to": "12:00" },
+      "historicalConfidence": 0.78,
+      "priority": 6,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 4 }
+        ],
+        "totalKg": 58,
+        "retornables": 0
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_03",
+      "clientName": "La Pepita Gracia",
+      "address": "Carrer de Còrsega, 343, Gràcia",
+      "lat": 41.3978,
+      "lng": 2.1620,
+      "zone": "Gracia",
+      "route": "R18",
+      "timeWindow": { "from": "07:30", "to": "10:00" },
+      "historicalConfidence": 0.95,
+      "priority": 9,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 8 },
+          { "sku": "VOLL_DAMM_BARRIL", "description": "Barril Voll-Damm 20L", "units": 2 }
+        ],
+        "totalKg": 198,
+        "retornables": 4
+      },
+      "notes": "Cliente VIP — prioridad máxima entrega AM"
+    },
+    {
+      "id": "stop_04",
+      "clientName": "Bar Bicicleta",
+      "address": "Carrer de Blai, 16, Poble Sec",
+      "lat": 41.3740,
+      "lng": 2.1614,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "08:30", "to": "11:30" },
+      "historicalConfidence": 0.62,
+      "priority": 5,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_25", "description": "Cajas Estrella Damm 25cl x24", "units": 3 },
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 3 }
+        ],
+        "totalKg": 86,
+        "retornables": 1
+      },
+      "notes": "Cliente nuevo Q1 2026"
+    },
+    {
+      "id": "stop_05",
+      "clientName": "Bar Electricitat",
+      "address": "Carrer de la Barceloneta, 54, Barceloneta",
+      "lat": 41.3791,
+      "lng": 2.1892,
+      "zone": "Barceloneta",
+      "route": "R18",
+      "timeWindow": { "from": "07:00", "to": "09:30" },
+      "historicalConfidence": 0.88,
+      "priority": 9,
+      "order": {
+        "products": [
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 3 }
+        ],
+        "totalKg": 120,
+        "retornables": 3
+      },
+      "notes": "Ventana muy estrecha — solo puede recibir antes de las 9:30"
+    },
+    {
+      "id": "stop_06",
+      "clientName": "Cafè del Centre",
+      "address": "Carrer de Provença, 236, Eixample",
+      "lat": 41.3940,
+      "lng": 2.1575,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "08:00", "to": "12:00" },
+      "historicalConfidence": 0.73,
+      "priority": 5,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 5 }
+        ],
+        "totalKg": 73,
+        "retornables": 2
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_07",
+      "clientName": "Bar Nou Candanchu",
+      "address": "Plaça de la Vila de Gràcia, 9, Gràcia",
+      "lat": 41.4022,
+      "lng": 2.1554,
+      "zone": "Gracia",
+      "route": "R18",
+      "timeWindow": { "from": "09:00", "to": "13:00" },
+      "historicalConfidence": 0.84,
+      "priority": 6,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 4 },
+          { "sku": "MORITZ_CAJA", "description": "Cajas Moritz 33cl x24", "units": 2 }
+        ],
+        "totalKg": 88,
+        "retornables": 0
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_08",
+      "clientName": "La Pepita Poblenou",
+      "address": "Carrer del Pallars, 97, Poblenou",
+      "lat": 41.3994,
+      "lng": 2.1942,
+      "zone": "Poblenou",
+      "route": "R18",
+      "timeWindow": { "from": "10:00", "to": "14:00" },
+      "historicalConfidence": 0.55,
+      "priority": 4,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 6 }
+        ],
+        "totalKg": 87,
+        "retornables": 1
+      },
+      "notes": "Cliente nuevo — primera entrega"
+    },
+    {
+      "id": "stop_09",
+      "clientName": "Bar Malpaso",
+      "address": "Carrer de Cartagena, 280, Sant Andreu",
+      "lat": 41.4235,
+      "lng": 2.1805,
+      "zone": "SantAndreu",
+      "route": "R18",
+      "timeWindow": { "from": "08:00", "to": "11:00" },
+      "historicalConfidence": 0.90,
+      "priority": 7,
+      "order": {
+        "products": [
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 2 },
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 3 }
+        ],
+        "totalKg": 150,
+        "retornables": 2
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_10",
+      "clientName": "Cafè de l'Acadèmia",
+      "address": "Carrer dels Còdols, 7, Barri Gòtic",
+      "lat": 41.3826,
+      "lng": 2.1751,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "07:30", "to": "10:00" },
+      "historicalConfidence": 0.97,
+      "priority": 10,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 10 },
+          { "sku": "EST_BARRIL_50", "description": "Barril Estrella Damm 50L", "units": 1 }
+        ],
+        "totalKg": 212,
+        "retornables": 5
+      },
+      "notes": "Prioritat absoluta — cadena, pagament immediat"
+    },
+    {
+      "id": "stop_11",
+      "clientName": "Bar Ramón",
+      "address": "Carrer de Navas de Tolosa, 2, Sant Andreu",
+      "lat": 41.4301,
+      "lng": 2.1864,
+      "zone": "SantAndreu",
+      "route": "R18",
+      "timeWindow": { "from": "09:00", "to": "14:00" },
+      "historicalConfidence": 0.68,
+      "priority": 4,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 3 }
+        ],
+        "totalKg": 44,
+        "retornables": 0
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_12",
+      "clientName": "El Xampanyet",
+      "address": "Carrer de Montcada, 22, Ribera",
+      "lat": 41.3836,
+      "lng": 2.1809,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "09:30", "to": "12:30" },
+      "historicalConfidence": 0.82,
+      "priority": 7,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 5 },
+          { "sku": "VOLL_DAMM_CAJA", "description": "Cajas Voll-Damm 33cl x24", "units": 2 }
+        ],
+        "totalKg": 102,
+        "retornables": 2
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_13",
+      "clientName": "Bar Mutt",
+      "address": "Carrer de Parlament, 11, Sant Antoni",
+      "lat": 41.3797,
+      "lng": 2.1600,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "08:00", "to": "11:00" },
+      "historicalConfidence": 0.76,
+      "priority": 6,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 4 }
+        ],
+        "totalKg": 58,
+        "retornables": 1
+      },
+      "notes": "Cerca de Bar Calders — mismo cluster aparcamiento"
+    },
+    {
+      "id": "stop_14",
+      "clientName": "Bar Olímpic",
+      "address": "Carrer de Sant Carles, 14, Barceloneta",
+      "lat": 41.3769,
+      "lng": 2.1883,
+      "zone": "Barceloneta",
+      "route": "R18",
+      "timeWindow": { "from": "07:00", "to": "09:30" },
+      "historicalConfidence": 0.85,
+      "priority": 8,
+      "order": {
+        "products": [
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 2 }
+        ],
+        "totalKg": 80,
+        "retornables": 2
+      },
+      "notes": "Ventana estrecha AM — solo recibe con Electricitat"
+    },
+    {
+      "id": "stop_15",
+      "clientName": "La Cervecita Nuestra de Cada Día",
+      "address": "Carrer de l'Albigesos, 10, Poblenou",
+      "lat": 41.4011,
+      "lng": 2.1968,
+      "zone": "Poblenou",
+      "route": "R18",
+      "timeWindow": { "from": "11:00", "to": "14:00" },
+      "historicalConfidence": 0.59,
+      "priority": 4,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 5 },
+          { "sku": "DAURA_CAJA", "description": "Cajas Daura (sin gluten) 33cl x24", "units": 1 }
+        ],
+        "totalKg": 87,
+        "retornables": 0
+      },
+      "notes": "Solo abre a las 11"
+    },
+    {
+      "id": "stop_16",
+      "clientName": "Quimet i Quimet",
+      "address": "Carrer del Poeta Cabanyes, 25, Poble Sec",
+      "lat": 41.3737,
+      "lng": 2.1630,
+      "zone": "Eixample",
+      "route": "R18",
+      "timeWindow": { "from": "08:00", "to": "10:30" },
+      "historicalConfidence": 0.93,
+      "priority": 8,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 7 },
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 1 }
+        ],
+        "totalKg": 142,
+        "retornables": 3
+      },
+      "notes": "Muy cerca Bar Bicicleta — mismo punto descarga Blai"
+    },
+    {
+      "id": "stop_17",
+      "clientName": "Bar Torpedo",
+      "address": "Carrer de Pujades, 104, Poblenou",
+      "lat": 41.3970,
+      "lng": 2.1921,
+      "zone": "Poblenou",
+      "route": "R18",
+      "timeWindow": { "from": "10:30", "to": "13:30" },
+      "historicalConfidence": 0.71,
+      "priority": 5,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 4 }
+        ],
+        "totalKg": 58,
+        "retornables": 0
+      },
+      "notes": ""
+    },
+    {
+      "id": "stop_18",
+      "clientName": "Bar Estrella Sant Andreu",
+      "address": "Passeig de Torras i Bages, 48, Sant Andreu",
+      "lat": 41.4352,
+      "lng": 2.1881,
+      "zone": "SantAndreu",
+      "route": "R18",
+      "timeWindow": { "from": "09:00", "to": "13:00" },
+      "historicalConfidence": 0.80,
+      "priority": 6,
+      "order": {
+        "products": [
+          { "sku": "EST_CAJA_33", "description": "Cajas Estrella Damm 33cl x24", "units": 6 },
+          { "sku": "EST_BARRIL_30", "description": "Barril Estrella Damm 30L", "units": 1 }
+        ],
+        "totalKg": 127,
+        "retornables": 2
+      },
+      "notes": ""
+    }
+  ]
+}

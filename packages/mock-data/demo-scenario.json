@@ -1,0 +1,135 @@
+{
+  "demoQuestions": [
+    "Que tengo que descargar ahora?",
+    "Donde esta la mercancia de este cliente?",
+    "Por que voy primero a este cliente?",
+    "Que retornables recojo aqui?",
+    "Que pasa si cambio la parada 5 por la 8?"
+  ],
+  "inputData": {
+    "depot": {
+      "id": "mollet",
+      "name": "DDI Mollet",
+      "lat": 41.539,
+      "lng": 2.213
+    },
+    "vehicle": {
+      "id": "V235045",
+      "type": "8_pallet_truck",
+      "palletSlots": 8,
+      "access": ["left", "right", "rear"]
+    },
+    "driver": {
+      "id": "850004",
+      "name": "Fran Romero"
+    },
+    "stops": [
+      {
+        "id": "stop_004",
+        "clientId": "9100627695",
+        "clientName": "BAR EL TUPI",
+        "address": "AVENIDA SANT LLORENC S/N",
+        "zone": "DD01",
+        "route": "DR0027",
+        "lat": 41.922,
+        "lng": 2.322,
+        "timeWindow": {
+          "from": "09:00",
+          "to": "13:00"
+        },
+        "historicalConfidence": 0.82,
+        "orders": ["order_001"]
+      }
+    ],
+    "orders": [
+      {
+        "id": "order_001",
+        "stopId": "stop_004",
+        "paymentType": "CONTADO",
+        "items": [
+          {
+            "productId": "ED13",
+            "name": "ESTRELLA DAMM 1/3 RET. PP",
+            "quantity": 4,
+            "unit": "Caja",
+            "volume": 0.42,
+            "weight": 8.5,
+            "returnable": true,
+            "warehouseLocation": "AA09A1",
+            "handlingType": "crate"
+          },
+          {
+            "productId": "ED30",
+            "name": "BARRIL ED30",
+            "quantity": 1,
+            "unit": "Barril",
+            "returnable": true,
+            "warehouseLocation": "BB02C2",
+            "handlingType": "keg"
+          }
+        ]
+      }
+    ]
+  },
+  "routePlan": {
+    "id": "route_plan_001",
+    "totalStops": 1,
+    "estimatedKm": 42.3,
+    "estimatedMinutes": 285,
+    "confidenceScore": 0.78,
+    "zoneDeviationScore": 0.12,
+    "stops": [
+      {
+        "sequence": 1,
+        "stopId": "stop_004",
+        "clusterId": "cluster_01",
+        "clientName": "BAR EL TUPI",
+        "arrivalEta": "09:15",
+        "serviceMinutes": 12,
+        "reasoning": [
+          "Dentro de ventana horaria",
+          "Alta confianza con el repartidor",
+          "Baja desviacion respecto a DR0027"
+        ]
+      }
+    ]
+  },
+  "loadPlan": {
+    "vehicleId": "V235045",
+    "strategy": "hybrid_by_route_blocks",
+    "palletSlots": [
+      {
+        "slotId": "P2",
+        "side": "right",
+        "accessPriority": "high",
+        "routeBlock": "stops_1_4",
+        "items": [
+          {
+            "stopId": "stop_004",
+            "clientName": "BAR EL TUPI",
+            "productId": "ED13",
+            "quantity": 4,
+            "unit": "Caja",
+            "layer": "bottom",
+            "returnable": true
+          },
+          {
+            "stopId": "stop_004",
+            "clientName": "BAR EL TUPI",
+            "productId": "ED30",
+            "quantity": 1,
+            "unit": "Barril",
+            "layer": "bottom",
+            "returnable": true
+          }
+        ]
+      },
+      {
+        "slotId": "P8",
+        "side": "rear",
+        "accessPriority": "returnables",
+        "reservedFor": "empty_crates_and_kegs"
+      }
+    ]
+  }
+}

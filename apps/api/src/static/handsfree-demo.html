@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Copiloto Hands-Free</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 24px; background: #0f1115; color: #e8ebf0; }
+      button { padding: 10px 16px; margin-right: 8px; border-radius: 8px; border: 0; cursor: pointer; }
+      #start { background: #e10600; color: #fff; }
+      #stop { background: #2d323d; color: #fff; }
+      .card { background: #171b22; border-radius: 12px; padding: 16px; margin-top: 16px; }
+      .muted { color: #a9b0bd; }
+      code { color: #f7d794; }
+    </style>
+  </head>
+  <body>
+    <h1>Copiloto manos libres</h1>
+    <p class="muted">Di <code>copiloto</code> + tu pregunta. Ejemplo: "copiloto que tengo que descargar ahora".</p>
+    <button id="start">Iniciar manos libres</button>
+    <button id="stop">Detener</button>
+
+    <div class="card">
+      <div><strong>Estado:</strong> <span id="state">parado</span></div>
+      <div><strong>Ultima transcripcion:</strong> <span id="lastTranscript">-</span></div>
+      <div><strong>Ultima respuesta:</strong> <span id="lastAnswer">-</span></div>
+    </div>
+
+    <script>
+      const stateEl = document.getElementById("state");
+      const lastTranscriptEl = document.getElementById("lastTranscript");
+      const lastAnswerEl = document.getElementById("lastAnswer");
+      const startBtn = document.getElementById("start");
+      const stopBtn = document.getElementById("stop");
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const wakeWord = "copiloto";
+      let recognition;
+      let running = false;
+      let busy = false;
+      let demoData = null;
+
+      async function loadDemoData() {
+        const res = await fetch("/api/demo-scenario");
+        demoData = await res.json();
+      }
+
+      function setState(text) {
+        stateEl.textContent = text;
+      }
+
+      async function askCopilot(question) {
+        if (!demoData || busy) return;
+        busy = true;
+        setState("procesando...");
+
+        try {
+          const payload = {
+            currentStopId: "stop_004",
+            question,
+            routePlan: demoData.routePlan,
+            loadPlan: demoData.loadPlan,
+            inputData: demoData.inputData
+          };
+
+          const res = await fetch("/api/voice/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            setState("error de backend");
+            lastAnswerEl.textContent = JSON.stringify(data);
+            return;
+          }
+
+          lastAnswerEl.textContent = data.response?.answer ?? "(sin respuesta)";
+          const audio = new Audio(`data:${data.tts.mimeType};base64,${data.tts.audioBase64}`);
+          await audio.play();
+          setState("escuchando");
+        } catch (error) {
+          setState("error");
+          lastAnswerEl.textContent = String(error);
+        } finally {
+          busy = false;
+        }
+      }
+
+      function startRecognition() {
+        if (!SpeechRecognition) {
+          alert("Este navegador no soporta SpeechRecognition. Usa Chrome/Edge.");
+          return;
+        }
+        recognition = new SpeechRecognition();
+        recognition.lang = "es-ES";
+        recognition.continuous = true;
+        recognition.interimResults = false;
+
+        recognition.onresult = async (event) => {
+          const result = event.results[event.results.length - 1];
+          const transcript = (result[0]?.transcript || "").trim().toLowerCase();
+          lastTranscriptEl.textContent = transcript || "-";
+
+          if (!transcript.includes(wakeWord)) return;
+          const question = transcript.replace(wakeWord, "").trim();
+          if (!question) return;
+          await askCopilot(question);
+        };
+
+        recognition.onend = () => {
+          if (running) recognition.start();
+        };
+        recognition.onerror = () => {
+          setState("error reconocimiento");
+        };
+
+        recognition.start();
+      }
+
+      startBtn.onclick = async () => {
+        if (running) return;
+        await loadDemoData();
+        running = true;
+        setState("escuchando");
+        startRecognition();
+      };
+
+      stopBtn.onclick = () => {
+        running = false;
+        if (recognition) recognition.stop();
+        setState("parado");
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,151 @@
+Diseña dos pantallas de una interfaz para una tablet instalada en la cabina de un camión de reparto de Damm.
+
+Contexto:
+La app se llama “Damm Smart Truck Copilot”. Ayuda al conductor a saber dónde está la mercancía dentro del camión para la siguiente entrega. El camión tiene 8 palets o zonas de carga en la parte trasera, accesibles por laterales. La interfaz debe ser muy visual, clara y usable mientras el conductor está parado. Queremos una imagen estática estilo 3D/isométrico del interior trasero del camión, como si se viera desde la cabina hacia el maletero/caja del camión. No debe ser una escena hiperrealista, sino una visualización limpia tipo dashboard logístico.
+
+Formato:
+- Diseña para tablet horizontal: 1280 x 800 px.
+- Estilo moderno, industrial, premium y operativo.
+- Marca Damm: rojo, negro, blanco y grises.
+- Fondo oscuro o gris antracita, con buen contraste.
+- Usa tarjetas limpias, bordes redondeados, sombras suaves.
+- Tipografía clara, grande y legible.
+- La interfaz debe poder entenderse en menos de 3 segundos.
+
+Objetivo visual:
+Mostrar un modelo 3D/isométrico estático de la zona de carga del camión dividido en 8 palets:
+- P1, P2, P3, P4 en lado izquierdo.
+- P5, P6, P7, P8 en lado derecho.
+- Representar cada palet como un bloque/caja dentro del camión.
+- Cada palet debe tener una etiqueta visible.
+- El camión debe verse como una caja de carga con perspectiva, suelo metálico y paredes laterales.
+- No incluir demasiado detalle realista; priorizar claridad.
+
+Pantalla 1: “Vista de carga completa”
+Crear una pantalla llamada: Truck Load Overview.
+
+Elementos:
+1. Header superior:
+   - Logo textual: “Damm Smart Truck Copilot”
+   - Ruta: “DR0027”
+   - Repartidor: “Fran Romero”
+   - Vehículo: “V235045”
+   - Estado: “Carga preparada”
+   - Hora estimada: “08:45”
+
+2. Panel principal central:
+   - Vista 3D/isométrica estática del interior del camión.
+   - Los 8 palets visibles.
+   - Cada palet debe mostrar:
+     - ID del palet: P1, P2, etc.
+     - Bloque de ruta: “Paradas 1–4”, “Paradas 5–8”, etc.
+     - Tipo de carga principal: “Cajas”, “Barriles”, “Mixto”, “Retornables”
+     - Nivel de ocupación: por ejemplo “82%”
+   - Usa colores o chips pequeños para distinguir:
+     - primeras paradas,
+     - paradas medias,
+     - últimas paradas,
+     - retornables.
+
+3. Panel lateral derecho:
+   - Título: “Siguiente entrega”
+   - Cliente: “BAR EL TUPÍ”
+   - Parada: “#04”
+   - ETA: “09:35”
+   - Dirección breve: “Av. Nostra Senyora de Montserrat”
+   - Productos:
+     - “4 cajas Estrella Damm”
+     - “1 barril ED30”
+     - “2 cajas Agua Veri”
+   - Ubicación:
+     - “Lateral derecho”
+     - “Palet P5”
+     - “Nivel inferior”
+   - Retornables esperados:
+     - “3 cajas”
+   - Botón principal rojo: “Iniciar entrega”
+   - Botón secundario: “Preguntar al copiloto”
+
+4. Barra inferior de KPIs:
+   - “Ocupación camión: 78%”
+   - “Acceso directo: 86%”
+   - “Retornables: espacio reservado”
+   - “Búsqueda estimada: baja”
+
+Sensación:
+Debe parecer una interfaz de producto real, no una presentación. La información debe estar bien jerarquizada. La vista del camión debe ocupar la mayor parte de la pantalla.
+
+Pantalla 2: “Modo siguiente entrega”
+Crear una segunda pantalla llamada: Next Stop Focus.
+
+Esta pantalla debe ser más simple y pensada para el conductor justo antes de bajar del camión.
+
+Elementos:
+1. Header superior compacto:
+   - “Siguiente entrega”
+   - Cliente: “BAR EL TUPÍ”
+   - Parada “#04 de 18”
+   - ETA “09:35”
+
+2. Panel principal:
+   - Misma vista 3D/isométrica estática del interior del camión.
+   - Solo una sección/palet debe estar iluminada claramente: “P5”.
+   - El palet P5 debe tener un glow rojo o amarillo suave.
+   - El resto de palets deben aparecer atenuados, en gris oscuro o con baja opacidad.
+   - Añadir una flecha o callout sencillo apuntando al palet iluminado con el texto:
+     “Recoger aquí”
+   - Mostrar también la indicación:
+     “Lateral derecho · Nivel inferior”
+   - No mostrar información detallada de todos los palets en esta pantalla.
+
+3. Panel inferior o lateral pequeño:
+   - Lista muy breve de lo que toca descargar:
+     - “4 cajas Estrella Damm”
+     - “1 barril ED30”
+     - “2 cajas Agua Veri”
+   - Retornables:
+     - “Recoger 3 cajas vacías”
+   - Botón principal grande:
+     - “Confirmar descarga”
+   - Botón secundario:
+     - “Hablar con copiloto”
+
+4. Estado visual:
+   - El foco debe estar en la zona iluminada.
+   - Todo debe verse limpio, con muy poca carga cognitiva.
+   - La pantalla debe funcionar aunque el conductor la mire rápido.
+
+Estilo visual:
+- Inspiración: dashboard logístico premium, cabina de camión, sistema industrial moderno.
+- No usar estilo infantil.
+- No usar mapas en estas dos pantallas.
+- No saturar con tablas.
+- Priorizar el modelo 3D/isométrico del camión.
+- Usar rojo Damm como color de acción y resaltado.
+- Usar amarillo/naranja solo para alerta o glow si mejora la visibilidad.
+- Iconos simples: camión, palet, caja, barril, reloj, ubicación.
+
+Contenido textual exacto recomendado:
+Pantalla 1:
+- “Carga del camión”
+- “Ruta DR0027”
+- “18 entregas”
+- “8 palets”
+- “Espacio retornables reservado”
+- “Siguiente entrega: BAR EL TUPÍ”
+- “Ubicación: P5 · Lateral derecho · Nivel inferior”
+
+Pantalla 2:
+- “BAR EL TUPÍ”
+- “Parada #04 de 18”
+- “Recoger en P5”
+- “Lateral derecho · Nivel inferior”
+- “Descargar 4 cajas, 1 barril, 2 cajas de agua”
+- “Recoger 3 cajas vacías”
+
+Entrega esperada:
+Genera dos frames separados:
+1. Truck Load Overview
+2. Next Stop Focus
+
+Ambos deben mantener la misma identidad visual y el mismo modelo de camión, pero la segunda pantalla debe tener mucha menos información y una sección claramente iluminada.

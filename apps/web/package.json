@@ -1,0 +1,32 @@
+{
+  "name": "@damm/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Damm Smart Truck Copilot - frontend components (react truck view, etc).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@damm/copilot": "*",
+    "@damm/optimizer-load": "*",
+    "@types/leaflet": "^1.9.21",
+    "@types/mapbox-gl": "^3.4.1",
+    "leaflet": "^1.9.4",
+    "mapbox-gl": "^3.23.1",
+    "ogl": "^1.0.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
+  }
+}

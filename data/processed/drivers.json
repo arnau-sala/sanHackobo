@@ -1,0 +1,148 @@
+[
+  {
+    "id": 850009,
+    "name": "ADRIA RAMOS ROSICH",
+    "routes": [
+      "DR0011"
+    ],
+    "totalDeliveries": 491
+  },
+  {
+    "id": 855189,
+    "name": "ALEXANDER JOSE DUGARTE NUNEZ",
+    "routes": [
+      "DR0050"
+    ],
+    "totalDeliveries": 584
+  },
+  {
+    "id": 850010,
+    "name": "ANTONIO DIAZ AGUILA",
+    "routes": [
+      "DR0010"
+    ],
+    "totalDeliveries": 619
+  },
+  {
+    "id": 850084,
+    "name": "CRISTIAN LORENTE AINAUD",
+    "routes": [
+      "DR0040"
+    ],
+    "totalDeliveries": 500
+  },
+  {
+    "id": 850011,
+    "name": "DAVID SEGOVIA ARMERO",
+    "routes": [
+      "DR0038"
+    ],
+    "totalDeliveries": 479
+  },
+  {
+    "id": 850004,
+    "name": "FRAN ROMERO PONCE",
+    "routes": [
+      "DR0001",
+      "DR0027",
+      "DR0038"
+    ],
+    "totalDeliveries": 480
+  },
+  {
+    "id": 855203,
+    "name": "JACINT MAS CORNET",
+    "routes": [
+      "DA0216"
+    ],
+    "totalDeliveries": 261
+  },
+  {
+    "id": 850012,
+    "name": "JORDI PUIGDELLIRE GALERA",
+    "routes": [
+      "DR0001"
+    ],
+    "totalDeliveries": 519
+  },
+  {
+    "id": 855205,
+    "name": "JORGE ESCALANTE GUARERAY",
+    "routes": [
+      "DR0054"
+    ],
+    "totalDeliveries": 459
+  },
+  {
+    "id": 850013,
+    "name": "JOSE MARIA SORIA JURADO",
+    "routes": [
+      "DR0023"
+    ],
+    "totalDeliveries": 535
+  },
+  {
+    "id": 850006,
+    "name": "JOSE VELEZ CASTRO",
+    "routes": [
+      "DR0006"
+    ],
+    "totalDeliveries": 571
+  },
+  {
+    "id": 850001,
+    "name": "JUAN JAVIER PONCE",
+    "routes": [
+      "DR0016"
+    ],
+    "totalDeliveries": 684
+  },
+  {
+    "id": 850014,
+    "name": "LLUIS CORS BOIX",
+    "routes": [
+      "DR0032"
+    ],
+    "totalDeliveries": 483
+  },
+  {
+    "id": 850021,
+    "name": "LUIS HERNANDEZ MESA",
+    "routes": [
+      "DR0031"
+    ],
+    "totalDeliveries": 266
+  },
+  {
+    "id": 855184,
+    "name": "MANUEL ANDRADES JIMENEZ",
+    "routes": [
+      "DR0052"
+    ],
+    "totalDeliveries": 93
+  },
+  {
+    "id": 855190,
+    "name": "PEREZ PEREZ NEWMAN GREGORIO",
+    "routes": [
+      "DR0051"
+    ],
+    "totalDeliveries": 808
+  },
+  {
+    "id": 850000,
+    "name": "REPARTIDOR MOVI",
+    "routes": [
+      "DR0045"
+    ],
+    "totalDeliveries": 338
+  },
+  {
+    "id": 850018,
+    "name": "RUBEN DIAZ",
+    "routes": [
+      "DR0017"
+    ],
+    "totalDeliveries": 757
+  }
+]

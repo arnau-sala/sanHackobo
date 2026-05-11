@@ -1,0 +1,558 @@
+/* TruckView3D - estilo del camion 3D (port del Figma `interfaz_camion`).
+
+   Convenio: el SVG vive en su propio "stage" (tarjeta blanca con header
+   rojo y strip P1..P8 debajo) y siempre adapta su ancho al contenedor
+   sin generar scroll horizontal. */
+
+/* Raiz del panel del camion (columna derecha del dashboard). */
+.truckOnlyRoot {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.truckColumn {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* ------------------------- Stage card ------------------------- */
+
+.stage {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+  padding: 6px 12px 8px 12px;
+  color: #0f172a;
+  box-sizing: border-box;
+  overflow-x: clip;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.stageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.stageHeaderText {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stageBadge {
+  width: 3px;
+  height: 18px;
+  background: #cc1122;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.stageHeaderText h3 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #111827;
+}
+
+.stagePill {
+  font-size: 11px;
+  background: #f3f4f6;
+  color: #4b5563;
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stageHints {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stageHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #92400e;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.modeTabs {
+  display: inline-flex;
+  background: #0f172a;
+  padding: 3px;
+  border-radius: 10px;
+  gap: 2px;
+}
+
+.modeTab {
+  background: transparent;
+  border: 0;
+  color: #cbd5e1;
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.modeTab[data-active="true"] {
+  background: #cc1122;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Fila: camion (SVG) a la izquierda, panel de detalle a la derecha.
+   El ancho del camion es SIEMPRE el mismo: se reserva hueco para la columna
+   aunque no este visible, asi el SVG no salta de tamaño al abrir/cerrar. */
+.truckDetailSplit {
+  --truck-detail-gap: 12px;
+  /* Misma logica que .palletDetailColumn: ancho reservado para el panel */
+  --detail-col-w: max(220px, min(280px, 34vw));
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: var(--truck-detail-gap);
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.truckSvgZone {
+  /* Ancho fijo = stage menos hueco del panel (aunque el aside no exista) */
+  flex: 0 0 auto;
+  width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  max-width: calc(100% - var(--truck-detail-gap) - var(--detail-col-w));
+  min-width: 0;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+}
+
+.palletDetailColumn {
+  flex: 0 0 var(--detail-col-w);
+  width: var(--detail-col-w);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.palletDetailColumn > * {
+  width: 100%;
+}
+
+.detailPanel {
+  flex: 0 0 var(--detail-col-w);
+  width: var(--detail-col-w);
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.detailPanel > * {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .truckDetailSplit {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .truckSvgZone {
+    width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .palletDetailColumn {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    justify-content: stretch;
+    padding-top: 0;
+  }
+
+  .palletDetailColumn > div {
+    max-width: none !important;
+  }
+}
+
+.svgWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  max-height: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Llena el wrap; viewBox + preserveAspectRatio="xMidYMid meet" escala al maximo dentro del rectangulo */
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  vertical-align: top;
+  overflow: visible;
+}
+
+/* ------------------------- Summary row ------------------------- */
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px 0 6px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1100px) {
+  .summaryRow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .summaryRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.summaryCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: transform 120ms, border-color 120ms, box-shadow 120ms;
+  min-width: 0;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.summaryCard:hover {
+  transform: translateY(-1px);
+  border-color: #94a3b8;
+}
+
+.summaryCard[data-selected="true"] {
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 2px #1e88e533;
+}
+
+.summaryCard[data-highlighted="true"] {
+  border-color: #f59e0b;
+  background: #fffbeb;
+}
+
+.summaryHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  color: #64748b;
+  gap: 4px;
+}
+
+.summarySlot {
+  color: var(--summary-slot-color, #d4a020);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.summaryCount {
+  font-size: 10px;
+  color: #111827;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.summaryBar {
+  margin-top: 6px;
+  height: 4px;
+  border-radius: 3px;
+  background: #1a253522;
+  overflow: hidden;
+}
+
+.summaryBar > div {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 280ms;
+}
+
+.summaryMeta {
+  margin-top: 4px;
+  font-size: 9px;
+  color: #4b5563;
+  line-height: 1.3;
+}
+
+.summaryMeta strong {
+  display: block;
+  color: #111827;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* ------------------------- Delivery queue ------------------------- */
+
+.queue {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 440px;
+  max-height: 600px;
+  min-width: 0;
+  max-width: 100%;
+  color: #0f172a;
+  box-sizing: border-box;
+}
+
+.queueCompact {
+  min-height: 160px;
+  max-height: min(38vh, 360px);
+  flex-shrink: 0;
+}
+
+.queueHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.queueHeader h3 {
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  color: #0f172a;
+}
+
+.queueHeader span {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.queueList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.queueCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.queueCard:hover {
+  border-color: #94a3b8;
+}
+
+.queueCard[data-active="true"] {
+  border-color: #cc1122;
+  box-shadow: 0 0 0 2px rgba(204, 17, 34, 0.12);
+}
+
+.queueCard[data-done="true"] {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+
+.queueCardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.queueCardHead strong {
+  display: block;
+  font-size: 14px;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+.queueCardHead small {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.queueParada {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #cc1122;
+  letter-spacing: 0.4px;
+}
+
+.queueCardMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.queueEta {
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.queueDone {
+  font-size: 10px;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.queueLabel {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #64748b;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.queueItems {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.queueItems li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.queueItems li i {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.queueMore {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.queueFoot {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.queueLoc {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.queueSlotChip {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-style: normal;
+}
+
+.queueStart {
+  background: #cc1122;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.queueStart:hover {
+  background: #a30d1b;
+}

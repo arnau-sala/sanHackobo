@@ -1,0 +1,799 @@
+/* TruckLoadView 2D (sin perspectiva 3D) */
+
+.wrapper {
+  --bg-1: #f8fafc;
+  --bg-2: #eef2ff;
+  --bg-3: #e2e8f0;
+  --wood: #8b5a2b;
+  --wood-light: #b7793e;
+  --wood-dark: #5a3a1a;
+  --cardboard: #c79a5a;
+  --cardboard-dark: #8a6a3e;
+  --crate-red: #b91c1c;
+  --crate-red-dark: #7f1d1d;
+  --crate-yellow: #facc15;
+  --keg-silver: #cbd5e1;
+  --keg-shadow: #475569;
+  --bottle-amber: #92400e;
+  --bottle-amber-dark: #5a2406;
+
+  --accent-high: #16a34a;
+  --accent-medium: #2563eb;
+  --accent-low: #f59e0b;
+  --accent-returnables: #8b5cf6;
+  --highlight: #fde047;
+  --highlight-glow: rgba(253, 224, 71, 0.85);
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+  color: #0f172a;
+  padding: 24px;
+  border-radius: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 20px;
+  min-height: 680px;
+}
+
+@media (max-width: 1100px) {
+  .wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -------- Header con KPIs -------- */
+
+.header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.header h2 small {
+  font-weight: 500;
+  color: #64748b;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.kpis {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.kpi {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  min-width: 100px;
+}
+
+.kpi span:first-child {
+  color: #64748b;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi span:last-child {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* -------- Toolbar de simulación -------- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.toolbarLabel {
+  flex: 1;
+  min-width: 200px;
+  color: #334155;
+}
+
+.toolbarLabel strong {
+  color: var(--highlight);
+  margin-right: 6px;
+}
+
+.toolbar button {
+  background: rgba(37, 99, 235, 0.18);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  color: #1e3a8a;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: rgba(37, 99, 235, 0.35);
+  border-color: rgba(37, 99, 235, 0.7);
+}
+
+.toolbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolbar button[data-active="true"] {
+  background: var(--highlight);
+  color: #0f172a;
+  border-color: var(--highlight);
+}
+
+/* -------- Escena plana -------- */
+
+.scene {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 520px;
+}
+
+.truckFlat {
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+}
+
+.palletRows {
+  display: grid;
+  gap: 14px;
+}
+
+.rowTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rowBack {
+  opacity: 0.92;
+}
+
+.rowFront {
+  opacity: 1;
+}
+
+/* -------- Palet individual -------- */
+
+.pallet {
+  position: relative;
+  flex: 1;
+  max-width: 170px;
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  font-family: inherit;
+  transition: transform 0.25s ease;
+  min-width: 130px;
+}
+
+.pallet:hover {
+  transform: translateY(-4px);
+}
+
+.pallet:focus-visible {
+  outline: 2px solid var(--highlight);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.pallet[data-selected="true"] .palletLabel {
+  background: rgba(37, 99, 235, 0.5);
+  border-left-width: 6px;
+}
+
+/* Glow de "descargando ahora" */
+.pallet[data-highlighted="true"] {
+  animation: palletPulse 1.2s ease-in-out infinite;
+}
+
+.pallet[data-highlighted="true"] .palletStack {
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(253, 224, 71, 0.25) 0%, transparent 70%);
+  box-shadow:
+    0 0 0 2px var(--highlight),
+    0 0 30px 8px var(--highlight-glow),
+    0 0 70px 14px rgba(253, 224, 71, 0.4);
+  border-radius: 6px;
+}
+
+.pallet[data-highlighted="true"] .palletBase {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 0 24px 6px var(--highlight-glow),
+    0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+.pallet[data-highlighted="true"] .deliveryFlag {
+  display: flex;
+}
+
+@keyframes palletPulse {
+  0%, 100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Bandera "↓ Descargar" sobre el palet */
+.deliveryFlag {
+  position: absolute;
+  top: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: var(--highlight);
+  color: #0f172a;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 11;
+}
+
+.deliveryFlag::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--highlight);
+}
+
+/* Stack de cajas/barriles dentro del palet */
+.palletStack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1px;
+  height: 165px;
+  padding: 2px 4px 0;
+  position: relative;
+  transition: box-shadow 0.3s ease;
+}
+
+.palletEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(148, 163, 184, 0.5);
+  font-size: 10px;
+  border: 1.5px dashed rgba(148, 163, 184, 0.18);
+  border-radius: 4px;
+  text-align: center;
+  font-style: italic;
+  padding: 8px;
+  line-height: 1.3;
+}
+
+.layer {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap-reverse;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* -------- Caja genérica -------- */
+
+.box {
+  position: relative;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-sizing: border-box;
+}
+
+.boxLabel {
+  font-size: 8px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.returnableBadge {
+  position: absolute;
+  top: 0;
+  right: 1px;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 800;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* CRATE — caja roja Damm con tapones de botellín visibles */
+.box[data-type="crate"] {
+  background:
+    radial-gradient(circle at 20% 25%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 50% 25%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 80% 25%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 20% 65%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 50% 65%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    radial-gradient(circle at 80% 65%, rgba(0, 0, 0, 0.55) 1.5px, transparent 2.2px),
+    linear-gradient(180deg, var(--crate-red) 0%, var(--crate-red-dark) 80%, #4c0a0a 100%);
+  color: var(--crate-yellow);
+  border: 1px solid #3b0606;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.4),
+    1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* KEG — barril metálico con anillo superior */
+.box[data-type="keg"] {
+  background:
+    linear-gradient(180deg, transparent 0%, transparent 12%, rgba(0, 0, 0, 0.18) 14%, transparent 18%),
+    linear-gradient(180deg, transparent 0%, transparent 80%, rgba(0, 0, 0, 0.25) 82%, transparent 88%),
+    linear-gradient(90deg, #94a3b8 0%, #e2e8f0 30%, #cbd5e1 55%, #64748b 100%);
+  border: 1px solid var(--keg-shadow);
+  border-radius: 6px;
+  color: #1e293b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+    1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.box[data-type="keg"]::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  right: 4px;
+  height: 4px;
+  background: linear-gradient(180deg, #cbd5e1 0%, #64748b 100%);
+  border-radius: 50%;
+  border: 1px solid #475569;
+}
+
+/* BOX — caja de cartón estándar */
+.box[data-type="box"],
+.box[data-type="pack"],
+.box[data-type="unknown"] {
+  background:
+    linear-gradient(180deg,
+      var(--cardboard) 0%,
+      var(--cardboard) 45%,
+      transparent 45%,
+      transparent 55%,
+      var(--cardboard) 55%,
+      var(--cardboard-dark) 100%);
+  background-color: var(--cardboard-dark);
+  border: 1px solid #5a3e1c;
+  color: rgba(0, 0, 0, 0.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.3),
+    1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.box[data-type="box"]::after,
+.box[data-type="pack"]::after,
+.box[data-type="unknown"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(50, 30, 10, 0.45);
+  transform: translateY(-50%);
+}
+
+/* BOTTLE — agrupación de botellas (rayado vertical) */
+.box[data-type="bottle"] {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--bottle-amber) 0px,
+      var(--bottle-amber) 4px,
+      var(--bottle-amber-dark) 4px,
+      var(--bottle-amber-dark) 6px
+    );
+  border: 1px solid var(--bottle-amber-dark);
+  color: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.35),
+    1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.box[data-type="bottle"]::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #1e293b 0px,
+      #1e293b 3px,
+      transparent 3px,
+      transparent 6px
+    );
+}
+
+/* UNIT — cajitas pequeñas blancas/grises (alimentación, vasos) */
+.box[data-type="unit"] {
+  background:
+    linear-gradient(180deg, #f1f5f9 0%, #cbd5e1 100%);
+  border: 1px solid #94a3b8;
+  color: #1e293b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.15),
+    1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* -------- Base de palet de madera -------- */
+
+.palletBase {
+  position: relative;
+  height: 18px;
+  margin-top: 1px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--wood) 0,
+      var(--wood) 14px,
+      var(--wood-dark) 14px,
+      var(--wood-dark) 16px
+    );
+  border-top: 1px solid var(--wood-light);
+  border-bottom: 1px solid #1f1106;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+    0 6px 10px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.3s ease;
+}
+
+.palletBase::before,
+.palletBase::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  width: 12px;
+  height: 5px;
+  background: #1f1106;
+  border-radius: 0 0 1px 1px;
+}
+
+.palletBase::before {
+  left: 18%;
+}
+
+.palletBase::after {
+  right: 18%;
+}
+
+/* Variant: palet de retornables con tinte morado */
+.pallet[data-priority="returnables"] .palletBase {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #6b21a8 0,
+      #6b21a8 14px,
+      #4c1d95 14px,
+      #4c1d95 16px
+    );
+}
+
+/* -------- Etiqueta del palet (P1, bloque, %fill) -------- */
+
+.palletLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 8px;
+  margin-top: 7px;
+  background: #0f172a;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  border-left: 4px solid;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s ease, border-left-width 0.2s ease;
+}
+
+.palletLabel[data-priority="high"] { border-left-color: var(--accent-high); }
+.palletLabel[data-priority="medium"] { border-left-color: var(--accent-medium); }
+.palletLabel[data-priority="low"] { border-left-color: var(--accent-low); }
+.palletLabel[data-priority="returnables"] { border-left-color: var(--accent-returnables); }
+
+.palletLabel small {
+  font-size: 10px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.palletBadge {
+  font-size: 8px;
+  padding: 1px 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border-radius: 3px;
+  margin-left: 5px;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+/* Indicador de fill ratio bajo la etiqueta */
+.fillBar {
+  height: 3px;
+  background: #cbd5e1;
+  margin-top: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fillBarInner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-medium), var(--accent-high));
+  transition: width 0.5s ease;
+}
+
+.fillBar[data-overflow="true"] .fillBarInner {
+  background: linear-gradient(90deg, var(--accent-medium), #ef4444);
+}
+
+/* -------- Drawer derecho (detalle del slot) -------- */
+
+.drawer {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 720px;
+  overflow-y: auto;
+  color: #0f172a;
+}
+
+.drawerEmpty {
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+  padding: 32px 12px;
+  font-size: 13px;
+}
+
+.drawerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drawerHeader h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #0f172a;
+}
+
+.drawerHeader span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.drawerStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.drawerStat {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.drawerStat span:first-child {
+  display: block;
+  font-size: 10px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.drawerStat span:last-child {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.itemRow {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.itemRowHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.itemRowClient {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.itemRowSeq {
+  font-size: 10px;
+  background: var(--accent-medium);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.itemRowName {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.itemRowMeta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  color: #cbd5e1;
+}
+
+.itemRowMeta span {
+  background: rgba(148, 163, 184, 0.18);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.itemRowReason {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 10px;
+  border-top: 1px dashed rgba(148, 163, 184, 0.2);
+  padding-top: 4px;
+}
+
+.warningList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.warningRow {
+  border-left: 4px solid;
+  background: #f8fafc;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #0f172a;
+}
+
+.warningRow[data-severity="info"] { border-color: #3b82f6; }
+.warningRow[data-severity="warning"] { border-color: #f59e0b; }
+.warningRow[data-severity="critical"] {
+  border-color: #ef4444;
+  background: rgba(127, 29, 29, 0.4);
+}
+
+.warningType {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+  color: #334155;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.legendDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  margin-right: 4px;
+  vertical-align: middle;
+}

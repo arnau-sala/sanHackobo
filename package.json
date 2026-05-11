@@ -1,0 +1,42 @@
+{
+  "name": "sanhackobo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prototype for the Damm / DDI Interhack challenge.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "postinstall": "npm run build -w @damm/optimizer-route",
+    "dev": "npm run build -w @damm/optimizer-route && concurrently -n api,web -c blue,green \"npm run dev -w @damm/api\" \"npm run dev -w @damm/web\"",
+    "dev:api": "npm run build -w @damm/optimizer-route && npm run dev -w @damm/api",
+    "dev:web": "npm run dev -w @damm/web",
+    "start:api": "npm run start -w @damm/api",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run build -w @damm/optimizer-route && tsc --noEmit -p tsconfig.json",
+    "lint": "npm run typecheck",
+    "test": "npm run test --workspaces --if-present",
+    "etl": "npx tsx scripts/etl.ts",
+    "geocode": "npx tsx scripts/geocode.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arnau-sala/sanHackobo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arnau-sala/sanHackobo/issues"
+  },
+  "homepage": "https://github.com/arnau-sala/sanHackobo#readme",
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@vercel/node": "^5.7.17",
+    "concurrently": "^9.2.0",
+    "esbuild": "^0.25.12",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}
