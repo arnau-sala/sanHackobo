@@ -1,8 +1,5 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export type HandlerResult = {
   status: number;
@@ -11,8 +8,8 @@ export type HandlerResult = {
 
 export async function demoScenarioRoute(): Promise<HandlerResult> {
   const demoPath = path.resolve(
-    __dirname,
-    "../../../../packages/mock-data/demo-scenario.json",
+    process.cwd(),
+    "packages/mock-data/demo-scenario.json",
   );
 
   try {

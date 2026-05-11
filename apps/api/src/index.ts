@@ -1,5 +1,5 @@
 import http from "http";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, statSync, createReadStream } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -43,6 +43,46 @@ function loadEnvFromRoot(): void {
 loadEnvFromRoot();
 
 const PORT = Number(process.env.PORT ?? 3001);
+
+// Static file serving for production (SPA frontend)
+const WEB_DIST = path.resolve(__dirname, "../../web/dist");
+
+const MIME_TYPES: Record<string, string> = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+  ".eot": "application/vnd.ms-fontobject",
+  ".mp3": "audio/mpeg",
+  ".mp4": "video/mp4",
+  ".webp": "image/webp",
+  ".txt": "text/plain; charset=utf-8",
+};
+
+function tryServeStatic(
+  res: http.ServerResponse,
+  filePath: string,
+): boolean {
+  if (!existsSync(filePath)) return false;
+  const stat = statSync(filePath);
+  if (!stat.isFile()) return false;
+  const ext = path.extname(filePath).toLowerCase();
+  res.setHeader("Content-Type", MIME_TYPES[ext] ?? "application/octet-stream");
+  res.setHeader("Cache-Control", ext === ".html" ? "no-cache" : "public, max-age=31536000, immutable");
+  res.statusCode = 200;
+  createReadStream(filePath).pipe(res);
+  return true;
+}
 
 function sendJson(res: http.ServerResponse, status: number, body: unknown): void {
   res.statusCode = status;
@@ -95,6 +135,16 @@ const server = http.createServer(async (req, res) => {
   const method = req.method ?? "GET";
   const url = req.url ?? "/";
   const pathname = requestPathname(url);
+
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (method === "OPTIONS") {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
 
   if (method === "GET" && pathname === "/health") {
     sendJson(res, 200, { ok: true, service: "copilot-api" });
@@ -191,7 +241,6 @@ const server = http.createServer(async (req, res) => {
     } catch { /* ignore */ }
     const pathParam = pathname.startsWith("/api/history/route/") ? pathname.replace("/api/history/route/", "") : undefined;
     const result = await historyHandler(method, pathname, query, pathParam);
-    res.setHeader("Access-Control-Allow-Origin", "*");
     sendJson(res, result.status, result.body);
     return;
   }
@@ -201,7 +250,6 @@ const server = http.createServer(async (req, res) => {
     try {
       const body = await readJsonBody(req);
       const result = await optimizeRealHandler(body);
-      res.setHeader("Access-Control-Allow-Origin", "*");
       sendJson(res, result.status, result.body);
       return;
     } catch {
@@ -210,14 +258,15 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // OPTIONS preflight CORS
-  if (method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    res.statusCode = 204;
-    res.end();
-    return;
+  // Static file serving — only for GET requests outside /api /handsfree /health
+  if (method === "GET" && existsSync(WEB_DIST)) {
+    // Try exact path match
+    const candidate = path.join(WEB_DIST, pathname);
+    if (tryServeStatic(res, candidate)) return;
+
+    // SPA fallback — all unmatched GETs get index.html
+    const indexHtml = path.join(WEB_DIST, "index.html");
+    if (tryServeStatic(res, indexHtml)) return;
   }
 
   sendJson(res, 404, {

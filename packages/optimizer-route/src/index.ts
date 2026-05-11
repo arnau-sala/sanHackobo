@@ -7,6 +7,7 @@ export type {
   Driver,
   InputPayload,
   Order,
+  OrderItem,
   Stop,
   Vehicle,
 } from "./types/input.types";

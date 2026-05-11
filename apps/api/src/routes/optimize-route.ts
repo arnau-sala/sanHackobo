@@ -1,19 +1,5 @@
-import { createRequire } from "node:module";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { optimizeRoute, DEFAULT_WEIGHTS } from "@damm/optimizer-route";
 import type { InputPayload, ScoringWeights } from "@damm/optimizer-route";
-
-const require = createRequire(import.meta.url);
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../../");
-const optimizerDist = path.join(repoRoot, "packages/optimizer-route/dist/index.js");
-
-const {
-  optimizeRoute,
-  DEFAULT_WEIGHTS,
-} = require(optimizerDist) as {
-  optimizeRoute: (input: InputPayload, weights?: ScoringWeights) => unknown;
-  DEFAULT_WEIGHTS: ScoringWeights;
-};
 
 export type HandlerResult = {
   status: number;

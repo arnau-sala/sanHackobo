@@ -1,8 +1,5 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export type HtmlHandlerResult = {
   status: number;
@@ -12,7 +9,7 @@ export type HtmlHandlerResult = {
 
 export async function handsfreeDemoRoute(): Promise<HtmlHandlerResult> {
   try {
-    const htmlPath = path.resolve(__dirname, "../static/handsfree-demo.html");
+    const htmlPath = path.resolve(process.cwd(), "apps/api/src/static/handsfree-demo.html");
     const html = readFileSync(htmlPath, "utf8");
     return {
       status: 200,

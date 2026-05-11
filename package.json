@@ -33,7 +33,9 @@
   "homepage": "https://github.com/arnau-sala/sanHackobo#readme",
   "devDependencies": {
     "@types/node": "^25.6.2",
+    "@vercel/node": "^5.7.17",
     "concurrently": "^9.2.0",
+    "esbuild": "^0.25.12",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   }

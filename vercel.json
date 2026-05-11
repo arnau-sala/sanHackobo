@@ -1,0 +1,16 @@
+{
+  "installCommand": "npm ci --ignore-scripts",
+  "buildCommand": "npm run build -w @damm/optimizer-route && npm run build -w @damm/web && node scripts/bundle-api.mjs",
+  "outputDirectory": "apps/web/dist",
+  "rewrites": [
+    { "source": "/health", "destination": "/api/handler" },
+    { "source": "/handsfree", "destination": "/api/handler" },
+    { "source": "/api/:path*", "destination": "/api/handler" }
+  ],
+  "functions": {
+    "api/handler.js": {
+      "maxDuration": 60,
+      "includeFiles": "{data/**,packages/mock-data/**,apps/api/src/static/**}"
+    }
+  }
+}

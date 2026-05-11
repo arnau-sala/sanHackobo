@@ -7,8 +7,7 @@
  * con optimizer-route, ejecuta optimizeRoute() y devuelve el plan completo.
  */
 import { readFile } from "fs/promises";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
+import { resolve } from "path";
 import { optimizeRoute } from "@damm/optimizer-route";
 import { optimizeLoad } from "@damm/optimizer-load";
 import type { HandlerResult } from "./optimize-load.js";
@@ -19,8 +18,7 @@ import type {
   OrderItem,
 } from "@damm/optimizer-route";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PROCESSED = resolve(__dirname, "../../../../data/processed");
+const PROCESSED = resolve(process.cwd(), "data/processed");
 
 let _routesCache: any[] | null = null;
 let _materialsCache: any[] | null = null;
@@ -226,8 +224,8 @@ export async function optimizeRealHandler(body: unknown): Promise<HandlerResult>
     const routePlanForLoad = {
       id: `route-${transportId}`,
       totalStops: routePlan.stops.length,
-      estimatedKm: routePlan.totalDistanceKm ?? 0,
-      estimatedMinutes: routePlan.totalDurationMin ?? 0,
+      estimatedKm: routePlan.kpis?.totalDistanceKm ?? 0,
+      estimatedMinutes: routePlan.kpis?.totalDriveMinutes ?? 0,
       stops: routePlan.stops.map(s => ({
         sequence: s.sequence,
         stopId: s.stopId,
