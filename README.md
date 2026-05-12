@@ -1,104 +1,84 @@
 # Damm Smart Truck Copilot
 
-Prototype for the Damm / DDI Interhack challenge.
+> 🥈 Second Prize Winner — Damm Challenge at the [1st Edition of InterHack](https://www.interhackbcn.com/)
 
-The goal of this project is to optimize the full delivery operation, not only the route. The system proposes a delivery sequence, translates it into a truck loading plan, and assists the driver during the route.
+Truck Copilot is a hackathon prototype that rethinks delivery logistics from a human perspective.
 
-> We do not optimize only for the shortest route. We optimize for a route that is easy to load, easy to unload, and realistic for the driver.
+Instead of optimizing only the route, we optimize the **entire delivery experience**:
+- smarter truck loading,
+- easier unloading,
+- AI assistance for drivers,
+- and smoother workflows for warehouse workers and supervisors.
 
----
+🌐 **Live Demo**  
+https://sanhackobo.vercel.app/
 
-## Problem
-
-DDI delivery trucks serve multiple hospitality clients in a single route. A truck can include around 15–25 deliveries, with many different product types: crates, kegs, bottles, packs, single units, cleaning products, food products and returnable containers.
-
-Today, the warehouse preparation process is mainly product-oriented. This is efficient for picking and loading, but it can make unloading harder: the driver may need to search for products across different areas of the truck for each customer.
-
-The challenge is to find a better balance between:
-
-- Fast warehouse preparation.
-- Efficient truck space usage.
-- Easy unloading at each stop.
-- Delivery order and customer time windows.
-- Driver knowledge of the area.
-- Returnable containers collected during the route.
-- Real operational constraints such as lateral truck access, product handling and safety.
+🏆 **Devpost**  
+https://devpost.com/software/truck-copilot
 
 ---
 
-## Solution
+## The Problem
 
-**Damm Smart Truck Copilot** is a prototype that combines:
+Delivery systems usually optimize *where* the truck goes, but not *how the cargo is organized*.
 
-1. **Route optimization**  
-   Generates a recommended delivery order using distance, customer zones, time windows, driver familiarity and operational constraints.
+That creates real operational problems:
+- drivers waste time searching for products,
+- unloading becomes inefficient,
+- and distractions increase during the route.
 
-2. **Truck load optimization**  
-   Converts the route into a physical loading plan, assigning products to truck slots or pallets according to delivery order, product type, accessibility and returnables.
-
-3. **Driver copilot**  
-   Provides explanations and assistance during the route, answering questions such as:
-   - What do I need to unload at this stop?
-   - Where is this customer’s merchandise?
-   - Why is this stop recommended now?
-   - What returnables should I collect?
-   - What happens if I change the route order?
-
-4. **Visual interface**  
-   Shows the route, truck layout, loading plan, warnings, KPIs and operational recommendations.
+We wanted to build something focused on the people actually doing the work every day.
 
 ---
 
-## Core idea
+## Our Solution
 
-The main concept is a **hybrid loading strategy**.
+Truck Copilot combines:
+- 🗺️ Smart route optimization
+- 📦 Intelligent truck loading
+- 🤖 AI voice copilot for drivers
+- 🚛 Interactive truck visualization
 
-Instead of loading the truck only by product reference or only by customer, the system groups the route into delivery blocks.
+The system organizes the truck according to the delivery flow, making upcoming stops easier and faster to unload.
 
-Example:
+We also integrated voice AI with ElevenLabs so drivers can interact hands-free with delivery information:
+- locate products,
+- recalculate routes,
+- receive stop summaries,
+- and get live operational guidance.
 
-```txt
-Block A: stops 1–4
-Block B: stops 5–8
-Block C: stops 9–12
-Block D: stops 13–18
-```
-
----
-
-## Repo layout (monorepo)
-
-| Path | Role |
-|------|------|
-| `apps/api` | HTTP API: copilot, voz (ElevenLabs), optimización de ruta |
-| `apps/web` | Frontend Vite + React (visualización / demos) |
-| `packages/copilot` | Motor copilot (contexto + respuestas demo) |
-| `packages/optimizer-route` | Optimizador de ruta |
-| `packages/optimizer-load` | Optimizador de carga |
-| `packages/mock-data` | JSON de escenarios |
-| `packages/contracts` | Tipos compartidos (re-exports) |
-| `docs/` | Contratos API, flujo demo, supuestos |
-| `scripts/data-parser` | Placeholder para parsers |
+The goal is reducing friction, distractions and delivery time while improving the overall user experience.
 
 ---
 
-## Developer setup
+## Why it stands out
 
-1. **Requisitos**: Node.js 20+ y npm.
-2. **Instalar**: en la raíz del repo ejecuta `npm install`.
-3. **Entorno** (voz opcional): copia `.env.example` a `.env` y configura `ELEVENLABS_API_KEY` si usas TTS/STT.
-4. **Desarrollo**:
-   - Todo junto: `npm run dev` (API `:3001` + web `:5173`, proxy `/api`).
-   - Solo API: `npm run dev:api`
-   - Solo web: `npm run dev:web`
-5. **Comprobaciones**: `npm run typecheck`, `npm run test`, `npm run build` (cada workspace con script definido).
+This project focuses heavily on:
+- human-centered logistics,
+- operational UX,
+- AI-assisted workflows,
+- and practical usability instead of only theoretical optimization.
 
-Más detalle: [docs/demo-flow.md](docs/demo-flow.md), [docs/api-contracts.md](docs/api-contracts.md).
+One of the biggest challenges was balancing warehouse efficiency with the real experience of drivers on the road.
 
 ---
 
-## Branch strategy (hackathon)
+## Tech Stack
 
-- `main`: estable para demo / integración.
-- Ramas cortas por feature (`feature/copilot`, `feature/route-opt`, …); merge a `main` o `develop` con PR pequeños para reducir conflictos.
-- Evita historiales no relacionados: si una rama viene de otro repo, usa `cherry-pick` o merge explícito `--allow-unrelated-histories` solo si el equipo lo acuerda.
+- React + Vite
+- Node.js + TypeScript
+- Modular monorepo architecture
+- Route optimization engine
+- Load optimization logic
+- AI copilot system
+- ElevenLabs voice integration
+
+---
+
+## Team
+
+- Aitor Bolige
+- Zoe Escobar
+- Toni Ortiz
+- Arnau Sala
+- Iván Torres
